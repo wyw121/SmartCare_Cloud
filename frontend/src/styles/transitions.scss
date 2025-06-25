@@ -1,0 +1,119 @@
+/* 过渡动画样式 */
+
+/* 页面切换动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* 滑动动画 */
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: all 0.3s;
+}
+
+.slide-right-enter-from {
+  transform: translateX(-100%);
+}
+
+.slide-right-leave-to {
+  transform: translateX(100%);
+}
+
+.slide-left-enter-active,
+.slide-left-leave-active {
+  transition: all 0.3s;
+}
+
+.slide-left-enter-from {
+  transform: translateX(100%);
+}
+
+.slide-left-leave-to {
+  transform: translateX(-100%);
+}
+
+/* 弹出动画 */
+.zoom-enter-active,
+.zoom-leave-active {
+  transition: all 0.3s;
+}
+
+.zoom-enter-from,
+.zoom-leave-to {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+/* 下拉动画 */
+.dropdown-enter-active {
+  transition: all 0.3s ease;
+}
+
+.dropdown-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  transform: translateY(-20px);
+  opacity: 0;
+}
+
+/* 侧边栏折叠动画 */
+.sidebar-collapse-transition {
+  transition: width 0.3s ease-in-out;
+}
+
+/* 加载动画 */
+@keyframes loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-spinner {
+  animation: loading 1s linear infinite;
+}
+
+/* 脉冲动画 */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+/* 摇摆动画 */
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-2px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(2px);
+  }
+}
+
+.shake {
+  animation: shake 0.5s;
+}
