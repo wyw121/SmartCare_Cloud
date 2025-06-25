@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from 'vue'
+import { nextTick, ref } from 'vue'
 
 // 响应式数据
 const scrollContainer = ref()

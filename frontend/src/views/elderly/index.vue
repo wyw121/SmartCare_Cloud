@@ -215,9 +215,9 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted } from 'vue'
+import { batchDeleteElderly, createElderly, deleteElderly, getElderlyPage, updateElderly } from '@/api/elderly'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getElderlyPage, createElderly, updateElderly, deleteElderly, batchDeleteElderly } from '@/api/elderly'
+import { onMounted, reactive, ref } from 'vue'
 
 export default {
   name: 'ElderlyManagement',

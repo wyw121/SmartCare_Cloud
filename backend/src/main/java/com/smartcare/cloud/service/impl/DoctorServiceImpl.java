@@ -18,7 +18,7 @@ import java.util.Map;
 
 /**
  * 医生服务实现类
- * 
+ *
  * @author SmartCare Team
  * @since 2024-01-01
  */
@@ -28,47 +28,47 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
     @Override
     public PageInfo<Doctor> getPageList(DoctorPageDTO dto) {
         PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
-        
+
         QueryWrapper<Doctor> queryWrapper = new QueryWrapper<>();
-        
+
         // 姓名模糊查询
         if (StringUtils.hasText(dto.getName())) {
             queryWrapper.like("name", dto.getName());
         }
-        
+
         // 工号精确查询
         if (StringUtils.hasText(dto.getEmployeeNumber())) {
             queryWrapper.eq("employee_number", dto.getEmployeeNumber());
         }
-        
+
         // 科室精确查询
         if (StringUtils.hasText(dto.getDepartment())) {
             queryWrapper.eq("department", dto.getDepartment());
         }
-        
+
         // 职称精确查询
         if (StringUtils.hasText(dto.getTitle())) {
             queryWrapper.eq("title", dto.getTitle());
         }
-        
+
         // 专长模糊查询
         if (StringUtils.hasText(dto.getSpecialization())) {
             queryWrapper.like("specialization", dto.getSpecialization());
         }
-        
+
         // 状态查询
         if (dto.getStatus() != null) {
             queryWrapper.eq("status", dto.getStatus());
         }
-        
+
         // 医院ID查询
         if (dto.getHospitalId() != null) {
             queryWrapper.eq("hospital_id", dto.getHospitalId());
         }
-        
+
         // 按创建时间倒序
         queryWrapper.orderByDesc("create_time");
-        
+
         List<Doctor> list = this.list(queryWrapper);
         return new PageInfo<>(list);
     }
@@ -77,8 +77,8 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
     public List<Doctor> getByDepartment(String department) {
         QueryWrapper<Doctor> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("department", department)
-                   .eq("status", 1)
-                   .orderBy(true, true, "title", "name");
+                .eq("status", 1)
+                .orderBy(true, true, "title", "name");
         return this.list(queryWrapper);
     }
 
@@ -86,8 +86,8 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
     public List<Doctor> getByHospitalId(Long hospitalId) {
         QueryWrapper<Doctor> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("hospital_id", hospitalId)
-                   .eq("status", 1)
-                   .orderBy(true, true, "department", "title", "name");
+                .eq("status", 1)
+                .orderBy(true, true, "department", "title", "name");
         return this.list(queryWrapper);
     }
 
@@ -119,14 +119,14 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
         doctor.setUpdateTime(LocalDateTime.now());
         return this.updateById(doctor);
     }
-    
+
     @Override
     public boolean save(Doctor entity) {
         entity.setCreateTime(LocalDateTime.now());
         entity.setUpdateTime(LocalDateTime.now());
         return super.save(entity);
     }
-    
+
     @Override
     public boolean updateById(Doctor entity) {
         entity.setUpdateTime(LocalDateTime.now());

@@ -1,13 +1,13 @@
 package com.smartcare.cloud.dto;
 
-import lombok.Data;
-
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import lombok.Data;
+
 /**
  * 老人档案分页查询DTO
- * 
+ *
  * @author GitHub Copilot
  * @since 2025-06-25
  */
@@ -49,7 +49,8 @@ public class ElderlyPageDTO {
     private String phone;
 
     /**
-     * 健康状况 (HEALTHY-健康, SUBHEALTH-亚健康, SICK-疾病, SERIOUS-重病, DANGER-危险, WARNING-预警)
+     * 健康状况 (HEALTHY-健康, SUBHEALTH-亚健康, SICK-疾病, SERIOUS-重病, DANGER-危险,
+     * WARNING-预警)
      */
     private String healthStatus;
 

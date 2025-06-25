@@ -4,7 +4,66 @@ import request from '@/utils/request'
  * 健康预警相关API
  */
 
-// 分页查询健康预警列表
+/**
+ * 获取预警统计数据
+ */
+export function getWarningStatistics() {
+  return request({
+    url: '/health/warnings/statistics',
+    method: 'get'
+  })
+}
+
+/**
+ * 获取预警列表
+ * @param {Object} params - 查询参数
+ */
+export function getWarningList(params) {
+  return request({
+    url: '/health/warnings',
+    method: 'get',
+    params
+  })
+}
+
+/**
+ * 获取预警详情
+ * @param {number} id - 预警ID
+ */
+export function getWarningDetail(id) {
+  return request({
+    url: `/health/warnings/${id}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 处理预警
+ * @param {number} id - 预警ID
+ * @param {Object} data - 处理数据
+ */
+export function processWarning(id, data) {
+  return request({
+    url: `/health/warnings/${id}/process`,
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 忽略预警
+ * @param {number} id - 预警ID
+ * @param {string} reason - 忽略原因
+ */
+export function ignoreWarning(id, reason) {
+  return request({
+    url: `/health/warnings/${id}/ignore`,
+    method: 'post',
+    data: { reason }
+  })
+}
+
+// 分页查询健康预警列表（兼容旧版API）
 export function getHealthWarningPageList(data) {
   return request({
     url: '/api/health-warning/page',

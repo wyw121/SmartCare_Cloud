@@ -33,7 +33,10 @@
           <el-avatar :src="userInfo.avatar" :size="32">
             <img src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
           </el-avatar>
-          <span class="username">{{ userInfo.realName }}</span>
+          <div class="user-info">
+            <span class="username">{{ userInfo.name || '未知用户' }}</span>
+            <span class="user-role">{{ userInfo.roleText || '普通用户' }}</span>
+          </div>
           <el-icon class="el-icon--right">
             <arrow-down />
           </el-icon>
@@ -41,13 +44,20 @@
         
         <template #dropdown>
           <el-dropdown-menu>
-            <router-link to="/profile">
-              <el-dropdown-item>
+            <el-dropdown-item disabled>
+              <div class="user-dropdown-info">
+                <div>用户：{{ userInfo.name }}</div>
+                <div>角色：{{ userInfo.roleText }}</div>
+                <div>部门：{{ userInfo.department || '暂无' }}</div>
+              </div>
+            </el-dropdown-item>
+            <el-dropdown-item divided>
+              <router-link to="/profile" class="dropdown-link">
                 <el-icon><User /></el-icon>
                 个人中心
-              </el-dropdown-item>
-            </router-link>
-            <el-dropdown-item @click="handleSettings">
+              </router-link>
+            </el-dropdown-item>
+            <el-dropdown-item @click="handleSettings" v-role="'admin'">
               <el-icon><Setting /></el-icon>
               系统设置
             </el-dropdown-item>
@@ -63,22 +73,20 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { 
-  FullScreen, 
-  Aim, 
-  Bell, 
-  User, 
-  Setting, 
-  SwitchButton, 
-  ArrowDown 
-} from '@element-plus/icons-vue'
 import { useAppStore } from '@/store/app'
 import { useUserStore } from '@/store/user'
-import Hamburger from './Hamburger.vue'
+import {
+    ArrowDown,
+    Bell,
+    Setting,
+    SwitchButton,
+    User
+} from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import Breadcrumb from './Breadcrumb.vue'
+import Hamburger from './Hamburger.vue'
 
 const router = useRouter()
 const appStore = useAppStore()
@@ -220,10 +228,23 @@ document.addEventListener('fullscreenchange', () => {
         background: rgba(0, 0, 0, 0.025);
       }
       
-      .username {
-        font-size: 14px;
-        color: #303133;
-        font-weight: 500;
+      .user-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        
+        .username {
+          font-size: 14px;
+          color: #303133;
+          font-weight: 500;
+          line-height: 1;
+        }
+        
+        .user-role {
+          font-size: 12px;
+          color: #909399;
+          line-height: 1;
+        }
       }
       
       .el-icon {
@@ -232,6 +253,21 @@ document.addEventListener('fullscreenchange', () => {
       }
     }
   }
+}
+
+.user-dropdown-info {
+  font-size: 12px;
+  color: #606266;
+  line-height: 1.5;
+  padding: 4px 0;
+}
+
+.dropdown-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: inherit;
+  text-decoration: none;
 }
 
 :deep(.el-dropdown-menu__item) {

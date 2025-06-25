@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * 医生管理控制器
- * 
+ *
  * @author SmartCare Team
  * @since 2024-01-01
  */
@@ -30,7 +30,7 @@ public class DoctorController {
 
     /**
      * 分页查询医生列表
-     * 
+     *
      * @param dto 查询条件
      * @return 分页结果
      */
@@ -47,7 +47,7 @@ public class DoctorController {
 
     /**
      * 新增医生
-     * 
+     *
      * @param doctor 医生信息
      * @return 操作结果
      */
@@ -60,7 +60,7 @@ public class DoctorController {
             if (existing != null) {
                 return ResponseResult.error("医生工号已存在");
             }
-            
+
             boolean result = doctorService.save(doctor);
             if (result) {
                 return ResponseResult.success("新增医生成功");
@@ -74,7 +74,7 @@ public class DoctorController {
 
     /**
      * 更新医生信息
-     * 
+     *
      * @param doctor 医生信息
      * @return 操作结果
      */
@@ -95,7 +95,7 @@ public class DoctorController {
 
     /**
      * 根据ID查询医生详情
-     * 
+     *
      * @param id 医生ID
      * @return 医生详情
      */
@@ -116,7 +116,7 @@ public class DoctorController {
 
     /**
      * 删除医生
-     * 
+     *
      * @param id 医生ID
      * @return 操作结果
      */
@@ -137,7 +137,7 @@ public class DoctorController {
 
     /**
      * 批量删除医生
-     * 
+     *
      * @param ids 医生ID列表
      * @return 操作结果
      */
@@ -158,7 +158,7 @@ public class DoctorController {
 
     /**
      * 根据科室查询医生列表
-     * 
+     *
      * @param department 科室
      * @return 医生列表
      */
@@ -175,7 +175,7 @@ public class DoctorController {
 
     /**
      * 根据医院ID查询医生列表
-     * 
+     *
      * @param hospitalId 医院ID
      * @return 医生列表
      */
@@ -192,7 +192,7 @@ public class DoctorController {
 
     /**
      * 统计各科室医生数量
-     * 
+     *
      * @return 统计结果
      */
     @Operation(summary = "统计各科室医生数量")
@@ -208,7 +208,7 @@ public class DoctorController {
 
     /**
      * 更新医生状态
-     * 
+     *
      * @param id 医生ID
      * @param status 状态
      * @return 操作结果

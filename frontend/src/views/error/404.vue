@@ -50,8 +50,8 @@
 </template>
 
 <script setup>
+import { ArrowLeft, HomeFilled, Refresh } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
-import { HomeFilled, ArrowLeft, Refresh } from '@element-plus/icons-vue'
 
 const router = useRouter()
 

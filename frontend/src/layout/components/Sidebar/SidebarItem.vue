@@ -33,8 +33,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
 import { isExternal } from '@/utils/validate'
+import { ref } from 'vue'
 import AppLink from './Link.vue'
 
 // Props

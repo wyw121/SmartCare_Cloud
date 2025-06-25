@@ -260,20 +260,27 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { 
-  Search, Refresh, Download, View, Check, Close, Delete, 
-  Warning, InfoFilled, CircleCheck 
-} from '@element-plus/icons-vue'
 import {
-  getHealthWarningPageList,
-  handleHealthWarning,
-  updateHealthWarningStatus,
-  deleteHealthWarning,
-  deleteHealthWarningBatch,
-  getWarningLevelStatistics
+    deleteHealthWarning,
+    deleteHealthWarningBatch,
+    getHealthWarningPageList,
+    getWarningLevelStatistics,
+    handleHealthWarning,
+    updateHealthWarningStatus
 } from '@/api/healthWarning'
+import {
+    Check,
+    CircleCheck,
+    Close, Delete,
+    Download,
+    InfoFilled,
+    Refresh,
+    Search,
+    View,
+    Warning
+} from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { onMounted, reactive, ref } from 'vue'
 
 // 响应式数据
 const tableLoading = ref(false)

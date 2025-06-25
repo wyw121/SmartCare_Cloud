@@ -1,8 +1,8 @@
 import request from '@/utils/request'
 
 // 导入各个模块的API
-export * from './elderly'
 export * from './doctor'
+export * from './elderly'
 export * from './healthWarning'
 
 /**

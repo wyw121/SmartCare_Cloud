@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * 智慧医养大数据公共服务平台启动类
- * 
+ *
  * @author GitHub Copilot
  * @date 2025-06-25
  */

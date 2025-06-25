@@ -1,6 +1,6 @@
+import { useUserStore } from '@/store'
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { useUserStore } from '@/store'
 
 // 创建axios实例
 const service = axios.create({

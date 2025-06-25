@@ -1,50 +1,43 @@
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
-import 'element-plus/theme-chalk/dark/css-vars.css'
-import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-import { use } from 'echarts/core'
-import VChart from 'vue-echarts'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import { createPinia } from 'pinia'
+import { createApp } from 'vue'
+
+// 正确导入 ECharts
+import {
+  BarChart,
+  LineChart,
+  PieChart
+} from 'echarts/charts'
+import {
+  GridComponent,
+  LegendComponent,
+  TitleComponent,
+  TooltipComponent
+} from 'echarts/components'
+import * as echarts from 'echarts/core'
+import { CanvasRenderer } from 'echarts/renderers'
+
+// 正确导入 vue-echarts
+import VChart, { THEME_KEY } from 'vue-echarts'
 
 import App from './App.vue'
 import router from './router'
 import './styles/index.scss'
+import { permissionDirective, roleDirective } from './utils/permission'
 
 // 注册 ECharts 组件
-import {
-  CanvasRenderer,
-  SVGRenderer
-} from 'echarts/renderers'
-import {
+echarts.use([
   BarChart,
   LineChart,
   PieChart,
-  ScatterChart,
-  RadarChart
-} from 'echarts/charts'
-import {
-  GridComponent,
+  TitleComponent,
   TooltipComponent,
-  LegendComponent,
-  DataZoomComponent,
-  GraphicComponent
-} from 'echarts/components'
-
-use([
-  CanvasRenderer,
-  SVGRenderer,
-  BarChart,
-  LineChart,
-  PieChart,
-  ScatterChart,
-  RadarChart,
   GridComponent,
-  TooltipComponent,
   LegendComponent,
-  DataZoomComponent,
-  GraphicComponent
+  CanvasRenderer
 ])
 
 const app = createApp(App)
@@ -54,11 +47,20 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 
+// 注册 vue-echarts 组件
+app.component('v-chart', VChart)
+app.provide(THEME_KEY, 'light')
+
+// 注册权限指令
+app.directive('permission', permissionDirective)
+app.directive('role', roleDirective)
+
 app.use(createPinia())
 app.use(router)
 app.use(ElementPlus, {
   locale: zhCn,
 })
-app.component('VChart', VChart)
 
+console.log('App is mounting...')
 app.mount('#app')
+console.log('App mounted successfully')

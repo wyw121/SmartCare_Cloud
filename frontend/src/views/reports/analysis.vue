@@ -229,20 +229,20 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
-import { ElMessage } from 'element-plus'
 import {
-  TrendCharts,
-  Warning,
-  Star,
-  PieChart,
-  ArrowUp,
-  ArrowDown,
-  Document,
-  Printer,
-  Lightning
+    ArrowDown,
+    ArrowUp,
+    Document,
+    Lightning,
+    PieChart,
+    Printer,
+    Star,
+    TrendCharts,
+    Warning
 } from '@element-plus/icons-vue'
 import * as echarts from 'echarts'
+import { ElMessage } from 'element-plus'
+import { nextTick, onMounted, reactive, ref } from 'vue'
 
 // 响应式数据
 const tableLoading = ref(false)

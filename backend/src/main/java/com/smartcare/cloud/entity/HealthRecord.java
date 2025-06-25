@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 /**
  * 健康记录实体类
- * 
+ *
  * @author SmartCare Cloud Team
  * @since 2024-01-01
  */

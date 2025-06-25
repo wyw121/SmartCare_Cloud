@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * MyBatis Plus配置类
- * 
+ *
  * @author SmartCare Team
  * @date 2024-01-01
  */
@@ -33,11 +33,11 @@ public class MybatisPlusConfig {
     public GlobalConfig globalConfig() {
         GlobalConfig globalConfig = new GlobalConfig();
         GlobalConfig.DbConfig dbConfig = new GlobalConfig.DbConfig();
-        
+
         // 逻辑删除配置
         dbConfig.setLogicDeleteValue("1");
         dbConfig.setLogicNotDeleteValue("0");
-        
+
         globalConfig.setDbConfig(dbConfig);
         return globalConfig;
     }

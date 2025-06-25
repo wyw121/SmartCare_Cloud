@@ -7,7 +7,6 @@
 </template>
 
 <script setup>
-import { Fold, Expand } from '@element-plus/icons-vue'
 
 // Props
 const props = defineProps({

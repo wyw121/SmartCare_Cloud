@@ -48,7 +48,11 @@
             </div>
           </template>
           <div class="chart-container">
-            <v-chart :option="trendChartOption" style="height: 300px;" />
+            <v-chart :option="trendChartOption" style="height: 300px;" v-if="chartReady" />
+            <div v-else class="chart-loading">
+              <el-icon style="font-size: 48px; color: #ddd;"><TrendCharts /></el-icon>
+              <p>图表加载中...</p>
+            </div>
           </div>
         </el-card>
       </el-col>
@@ -61,7 +65,11 @@
             </div>
           </template>
           <div class="chart-container">
-            <v-chart :option="pieChartOption" style="height: 300px;" />
+            <v-chart :option="pieChartOption" style="height: 300px;" v-if="chartReady" />
+            <div v-else class="chart-loading">
+              <el-icon style="font-size: 48px; color: #ddd;"><PieChart /></el-icon>
+              <p>图表加载中...</p>
+            </div>
           </div>
         </el-card>
       </el-col>
@@ -129,18 +137,27 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import { 
-  Platform, ArrowUp, ArrowDown, Warning,
-  User, Monitor, DocumentAdd, Setting
+import {
+  ArrowDown,
+  ArrowUp,
+  DocumentAdd,
+  Monitor,
+  PieChart,
+  Platform,
+  Setting,
+  TrendCharts,
+  User,
+  Warning
 } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
+import { onMounted, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
 // 响应式数据
 const activeTab = ref('7d')
+const chartReady = ref(false)
 
 // 统计数据
 const stats = reactive([
@@ -149,7 +166,7 @@ const stats = reactive([
     value: '1,258',
     change: '+12',
     trend: 'up',
-    icon: 'User',
+    icon: User,
     color: '#409EFF'
   },
   {
@@ -157,7 +174,7 @@ const stats = reactive([
     value: '23',
     change: '-5',
     trend: 'down',
-    icon: 'Warning',
+    icon: Warning,
     color: '#F56C6C'
   },
   {
@@ -165,7 +182,7 @@ const stats = reactive([
     value: '89',
     change: '+3',
     trend: 'up',
-    icon: 'Monitor',
+    icon: Monitor,
     color: '#67C23A'
   },
   {
@@ -173,7 +190,7 @@ const stats = reactive([
     value: '45',
     change: '+8',
     trend: 'up',
-    icon: 'DocumentAdd',
+    icon: DocumentAdd,
     color: '#E6A23C'
   }
 ])
@@ -205,19 +222,33 @@ const warningList = reactive([
 
 // 快速操作
 const quickActions = reactive([
-  { name: '新增老人', icon: 'User', color: '#409EFF', route: '/elderly/add' },
-  { name: '健康记录', icon: 'DocumentAdd', color: '#67C23A', route: '/health/records' },
-  { name: '设备监控', icon: 'Monitor', color: '#E6A23C', route: '/equipment/monitor' },
-  { name: '系统设置', icon: 'Setting', color: '#909399', route: '/system/users' }
+  { name: '新增老人', icon: User, color: '#409EFF', route: '/elderly/add' },
+  { name: '健康记录', icon: DocumentAdd, color: '#67C23A', route: '/health/records' },
+  { name: '设备监控', icon: Monitor, color: '#E6A23C', route: '/equipment/monitor' },
+  { name: '系统设置', icon: Setting, color: '#909399', route: '/system/users' }
 ])
 
 // 图表配置
 const trendChartOption = reactive({
+  title: {
+    text: '健康趋势分析',
+    textStyle: {
+      fontSize: 16,
+      color: '#303133'
+    }
+  },
   tooltip: {
     trigger: 'axis'
   },
   legend: {
-    data: ['健康人数', '预警人数']
+    data: ['健康人数', '预警人数'],
+    bottom: 0
+  },
+  grid: {
+    left: '3%',
+    right: '4%',
+    bottom: '10%',
+    containLabel: true
   },
   xAxis: {
     type: 'category',
@@ -232,26 +263,70 @@ const trendChartOption = reactive({
       type: 'line',
       data: [820, 932, 901, 934, 1290, 1330, 1320],
       smooth: true,
-      itemStyle: { color: '#67C23A' }
+      itemStyle: { color: '#67C23A' },
+      areaStyle: {
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          colorStops: [{
+            offset: 0, color: 'rgba(103, 194, 58, 0.3)'
+          }, {
+            offset: 1, color: 'rgba(103, 194, 58, 0.1)'
+          }]
+        }
+      }
     },
     {
       name: '预警人数',
       type: 'line',
       data: [20, 25, 18, 23, 35, 28, 23],
       smooth: true,
-      itemStyle: { color: '#F56C6C' }
+      itemStyle: { color: '#F56C6C' },
+      areaStyle: {
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          colorStops: [{
+            offset: 0, color: 'rgba(245, 108, 108, 0.3)'
+          }, {
+            offset: 1, color: 'rgba(245, 108, 108, 0.1)'
+          }]
+        }
+      }
     }
   ]
 })
 
 const pieChartOption = reactive({
+  title: {
+    text: '健康状况分布',
+    left: 'center',
+    textStyle: {
+      fontSize: 16,
+      color: '#303133'
+    }
+  },
   tooltip: {
-    trigger: 'item'
+    trigger: 'item',
+    formatter: '{a} <br/>{b} : {c} ({d}%)'
+  },
+  legend: {
+    orient: 'vertical',
+    left: 'left',
+    data: ['健康', '亚健康', '疾病', '重病']
   },
   series: [
     {
+      name: '健康状况',
       type: 'pie',
-      radius: '70%',
+      radius: '50%',
+      center: ['50%', '60%'],
       data: [
         { value: 856, name: '健康', itemStyle: { color: '#67C23A' } },
         { value: 234, name: '亚健康', itemStyle: { color: '#E6A23C' } },
@@ -284,7 +359,11 @@ const handleAction = (action) => {
 
 // 生命周期
 onMounted(() => {
-  // 初始化数据
+  // 模拟图表加载延迟
+  setTimeout(() => {
+    chartReady.value = true
+    console.log('仪表板图表已加载')
+  }, 1000)
   console.log('仪表板已加载')
 })
 </script>
@@ -409,6 +488,17 @@ onMounted(() => {
 
       .chart-container {
         padding: 16px 0;
+        
+        .chart-loading {
+          text-align: center;
+          padding: 60px 20px;
+          color: var(--el-text-color-placeholder);
+          
+          p {
+            margin: 12px 0 0 0;
+            font-size: 14px;
+          }
+        }
       }
     }
   }

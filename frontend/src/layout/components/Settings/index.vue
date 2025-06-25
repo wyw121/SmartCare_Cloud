@@ -123,10 +123,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { ElMessage } from 'element-plus'
-import { Setting } from '@element-plus/icons-vue'
 import { useAppStore } from '@/store/app'
+import { Setting } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
+import { computed, ref } from 'vue'
 
 const appStore = useAppStore()
 

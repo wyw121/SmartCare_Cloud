@@ -4,7 +4,7 @@ import lombok.Data;
 
 /**
  * 统一响应结果类
- * 
+ *
  * @author GitHub Copilot
  * @since 2025-06-25
  */

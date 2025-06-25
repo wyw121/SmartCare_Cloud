@@ -32,10 +32,10 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, nextTick } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { Close } from '@element-plus/icons-vue'
 import { useTagsViewStore } from '@/store/tagsView'
+import { Close } from '@element-plus/icons-vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import ScrollPane from './ScrollPane.vue'
 
 const route = useRoute()

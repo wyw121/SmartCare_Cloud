@@ -1,9 +1,7 @@
 -- 智慧医养大数据公共服务平台数据库初始化脚本
 -- 创建数据库
 CREATE DATABASE IF NOT EXISTS smartcare_cloud DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 USE smartcare_cloud;
-
 -- 老人档案表
 CREATE TABLE IF NOT EXISTS `elderly` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -35,8 +33,7 @@ CREATE TABLE IF NOT EXISTS `elderly` (
     KEY `idx_phone` (`phone`),
     KEY `idx_health_status` (`health_status`),
     KEY `idx_create_time` (`create_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='老人档案表';
-
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '老人档案表';
 -- 医生信息表
 CREATE TABLE IF NOT EXISTS `doctor` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -62,8 +59,7 @@ CREATE TABLE IF NOT EXISTS `doctor` (
     KEY `idx_name` (`name`),
     KEY `idx_phone` (`phone`),
     KEY `idx_department` (`department`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='医生信息表';
-
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '医生信息表';
 -- 健康记录表
 CREATE TABLE IF NOT EXISTS `health_record` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -91,8 +87,7 @@ CREATE TABLE IF NOT EXISTS `health_record` (
     KEY `idx_doctor_id` (`doctor_id`),
     KEY `idx_record_date` (`record_date`),
     KEY `idx_record_type` (`record_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='健康记录表';
-
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '健康记录表';
 -- 健康预警表
 CREATE TABLE IF NOT EXISTS `health_warning` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -116,8 +111,7 @@ CREATE TABLE IF NOT EXISTS `health_warning` (
     KEY `idx_warning_type` (`warning_type`),
     KEY `idx_warning_level` (`warning_level`),
     KEY `idx_warning_time` (`warning_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='健康预警表';
-
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '健康预警表';
 -- 设备信息表
 CREATE TABLE IF NOT EXISTS `equipment` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -146,8 +140,7 @@ CREATE TABLE IF NOT EXISTS `equipment` (
     KEY `idx_equipment_type` (`equipment_type`),
     KEY `idx_elderly_id` (`elderly_id`),
     KEY `idx_status` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='设备信息表';
-
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '设备信息表';
 -- 用户表
 CREATE TABLE IF NOT EXISTS `user` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -173,38 +166,150 @@ CREATE TABLE IF NOT EXISTS `user` (
     KEY `idx_phone` (`phone`),
     KEY `idx_email` (`email`),
     KEY `idx_role` (`role`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表';
-
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户表';
 -- 插入初始数据
 -- 插入管理员用户 (密码: admin123, 实际项目中应该加密)
-INSERT INTO `user` (`username`, `password`, `real_name`, `role`, `department`) 
-VALUES ('admin', '$2a$10$7JB720yubVSOfvVaMWye2.bP7gR/zHQXSn0A2h.Rh5C/Z8bpNkb.G', '系统管理员', 'ADMIN', '信息技术部')
-ON DUPLICATE KEY UPDATE `username` = `username`;
-
+INSERT INTO `user` (
+        `username`,
+        `password`,
+        `real_name`,
+        `role`,
+        `department`
+    )
+VALUES (
+        'admin',
+        '$2a$10$7JB720yubVSOfvVaMWye2.bP7gR/zHQXSn0A2h.Rh5C/Z8bpNkb.G',
+        '系统管理员',
+        'ADMIN',
+        '信息技术部'
+    ) ON DUPLICATE KEY
+UPDATE `username` = `username`;
 -- 插入测试医生数据
-INSERT INTO `doctor` (`name`, `gender`, `phone`, `email`, `department`, `title`, `speciality`, `experience_years`, `license_number`) 
-VALUES 
-('张医生', 1, '13800138001', 'zhang@hospital.com', '内科', '主任医师', '心血管疾病', 15, 'DOC001'),
-('李医生', 0, '13800138002', 'li@hospital.com', '老年科', '副主任医师', '老年慢性病', 12, 'DOC002'),
-('王医生', 1, '13800138003', 'wang@hospital.com', '康复科', '主治医师', '康复治疗', 8, 'DOC003')
-ON DUPLICATE KEY UPDATE `name` = `name`;
-
+INSERT INTO `doctor` (
+        `name`,
+        `gender`,
+        `phone`,
+        `email`,
+        `department`,
+        `title`,
+        `speciality`,
+        `experience_years`,
+        `license_number`
+    )
+VALUES (
+        '张医生',
+        1,
+        '13800138001',
+        'zhang@hospital.com',
+        '内科',
+        '主任医师',
+        '心血管疾病',
+        15,
+        'DOC001'
+    ),
+    (
+        '李医生',
+        0,
+        '13800138002',
+        'li@hospital.com',
+        '老年科',
+        '副主任医师',
+        '老年慢性病',
+        12,
+        'DOC002'
+    ),
+    (
+        '王医生',
+        1,
+        '13800138003',
+        'wang@hospital.com',
+        '康复科',
+        '主治医师',
+        '康复治疗',
+        8,
+        'DOC003'
+    ) ON DUPLICATE KEY
+UPDATE `name` = `name`;
 -- 插入测试老人数据
-INSERT INTO `elderly` (`name`, `gender`, `id_card`, `age`, `phone`, `address`, `health_status`, `family_doctor_id`) 
-VALUES 
-('张老伯', 1, '320102195001011234', 74, '13900139001', '南京市玄武区梅园新村1号', 'HEALTHY', 1),
-('李奶奶', 0, '320102194801015678', 76, '13900139002', '南京市秦淮区夫子庙2号', 'SUBHEALTH', 2),
-('王大爷', 1, '320102194501019012', 79, '13900139003', '南京市鼓楼区湖南路3号', 'WARNING', 3)
-ON DUPLICATE KEY UPDATE `name` = `name`;
-
+INSERT INTO `elderly` (
+        `name`,
+        `gender`,
+        `id_card`,
+        `age`,
+        `phone`,
+        `address`,
+        `health_status`,
+        `family_doctor_id`
+    )
+VALUES (
+        '张老伯',
+        1,
+        '320102195001011234',
+        74,
+        '13900139001',
+        '南京市玄武区梅园新村1号',
+        'HEALTHY',
+        1
+    ),
+    (
+        '李奶奶',
+        0,
+        '320102194801015678',
+        76,
+        '13900139002',
+        '南京市秦淮区夫子庙2号',
+        'SUBHEALTH',
+        2
+    ),
+    (
+        '王大爷',
+        1,
+        '320102194501019012',
+        79,
+        '13900139003',
+        '南京市鼓楼区湖南路3号',
+        'WARNING',
+        3
+    ) ON DUPLICATE KEY
+UPDATE `name` = `name`;
 -- 插入测试设备数据
-INSERT INTO `equipment` (`equipment_code`, `equipment_name`, `equipment_type`, `brand`, `model`, `elderly_id`, `status`) 
-VALUES 
-('EQ001', '血压监测仪', '血压设备', '欧姆龙', 'HEM-7136', 1, 'NORMAL'),
-('EQ002', '血糖仪', '血糖设备', '强生', 'OneTouch', 2, 'NORMAL'),
-('EQ003', '心率监测器', '心率设备', '飞利浦', 'HeartStart', 3, 'WARNING')
-ON DUPLICATE KEY UPDATE `equipment_code` = `equipment_code`;
-
+INSERT INTO `equipment` (
+        `equipment_code`,
+        `equipment_name`,
+        `equipment_type`,
+        `brand`,
+        `model`,
+        `elderly_id`,
+        `status`
+    )
+VALUES (
+        'EQ001',
+        '血压监测仪',
+        '血压设备',
+        '欧姆龙',
+        'HEM-7136',
+        1,
+        'NORMAL'
+    ),
+    (
+        'EQ002',
+        '血糖仪',
+        '血糖设备',
+        '强生',
+        'OneTouch',
+        2,
+        'NORMAL'
+    ),
+    (
+        'EQ003',
+        '心率监测器',
+        '心率设备',
+        '飞利浦',
+        'HeartStart',
+        3,
+        'WARNING'
+    ) ON DUPLICATE KEY
+UPDATE `equipment_code` = `equipment_code`;
 -- 医生信息表
 CREATE TABLE IF NOT EXISTS `t_doctor` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -232,8 +337,7 @@ CREATE TABLE IF NOT EXISTS `t_doctor` (
     KEY `idx_department` (`department`),
     KEY `idx_title` (`title`),
     KEY `idx_phone` (`phone`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='医生信息表';
-
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '医生信息表';
 -- 健康预警表
 CREATE TABLE IF NOT EXISTS `t_health_warning` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -263,8 +367,7 @@ CREATE TABLE IF NOT EXISTS `t_health_warning` (
     KEY `idx_status` (`status`),
     KEY `idx_trigger_time` (`trigger_time`),
     KEY `idx_create_time` (`create_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='健康预警表';
-
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '健康预警表';
 -- 健康记录表
 CREATE TABLE IF NOT EXISTS `t_health_record` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -295,8 +398,7 @@ CREATE TABLE IF NOT EXISTS `t_health_record` (
     KEY `idx_record_date` (`record_date`),
     KEY `idx_doctor_id` (`doctor_id`),
     KEY `idx_abnormal_status` (`abnormal_status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='健康记录表';
-
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '健康记录表';
 -- 设备管理表
 CREATE TABLE IF NOT EXISTS `t_equipment` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -326,8 +428,7 @@ CREATE TABLE IF NOT EXISTS `t_equipment` (
     KEY `idx_device_type` (`device_type`),
     KEY `idx_device_status` (`device_status`),
     KEY `idx_last_data_time` (`last_data_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='设备管理表';
-
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '设备管理表';
 -- 用户管理表
 CREATE TABLE IF NOT EXISTS `t_user` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -350,37 +451,251 @@ CREATE TABLE IF NOT EXISTS `t_user` (
     KEY `idx_email` (`email`),
     KEY `idx_phone` (`phone`),
     KEY `idx_role` (`role`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户管理表';
-
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户管理表';
 -- 插入测试数据
 -- 老人档案测试数据
-INSERT IGNORE INTO `t_elderly` (`name`, `gender`, `id_card`, `birth_date`, `age`, `phone`, `address`, `emergency_contact_name`, `emergency_contact_phone`, `health_status`, `care_level`, `medical_history`) VALUES
-('张三', 1, '110101195001011234', '1950-01-01', 74, '13800139001', '北京市朝阳区某某街道1号', '张小明', '13900139001', 'HEALTHY', 1, '高血压病史10年'),
-('李四', 0, '110101195502022345', '1955-02-02', 69, '13800139002', '北京市海淀区某某路2号', '李小红', '13900139002', 'SUBHEALTH', 2, '糖尿病病史8年'),
-('王五', 1, '110101194803033456', '1948-03-03', 76, '13800139003', '北京市西城区某某胡同3号', '王小华', '13900139003', 'WARNING', 3, '心脏病病史15年，高血压并发症');
-
+INSERT IGNORE INTO `t_elderly` (
+        `name`,
+        `gender`,
+        `id_card`,
+        `birth_date`,
+        `age`,
+        `phone`,
+        `address`,
+        `emergency_contact_name`,
+        `emergency_contact_phone`,
+        `health_status`,
+        `care_level`,
+        `medical_history`
+    )
+VALUES (
+        '张三',
+        1,
+        '110101195001011234',
+        '1950-01-01',
+        74,
+        '13800139001',
+        '北京市朝阳区某某街道1号',
+        '张小明',
+        '13900139001',
+        'HEALTHY',
+        1,
+        '高血压病史10年'
+    ),
+    (
+        '李四',
+        0,
+        '110101195502022345',
+        '1955-02-02',
+        69,
+        '13800139002',
+        '北京市海淀区某某路2号',
+        '李小红',
+        '13900139002',
+        'SUBHEALTH',
+        2,
+        '糖尿病病史8年'
+    ),
+    (
+        '王五',
+        1,
+        '110101194803033456',
+        '1948-03-03',
+        76,
+        '13800139003',
+        '北京市西城区某某胡同3号',
+        '王小华',
+        '13900139003',
+        'WARNING',
+        3,
+        '心脏病病史15年，高血压并发症'
+    );
 -- 医生信息测试数据
-INSERT IGNORE INTO `t_doctor` (`employee_number`, `name`, `gender`, `age`, `phone`, `email`, `department`, `title`, `specialization`, `experience_years`, `hospital_name`) VALUES
-('D001', '刘医生', '男', 45, '13700137001', 'dr.liu@hospital.com', '内科', '主任医师', '心血管疾病诊疗', 20, '北京市第一人民医院'),
-('D002', '陈医生', '女', 38, '13700137002', 'dr.chen@hospital.com', '内分泌科', '副主任医师', '糖尿病、甲状腺疾病', 15, '北京市第一人民医院'),
-('D003', '王医生', '男', 42, '13700137003', 'dr.wang@hospital.com', '神经内科', '主治医师', '老年痴呆、帕金森病', 18, '北京市第一人民医院');
-
+INSERT IGNORE INTO `t_doctor` (
+        `employee_number`,
+        `name`,
+        `gender`,
+        `age`,
+        `phone`,
+        `email`,
+        `department`,
+        `title`,
+        `specialization`,
+        `experience_years`,
+        `hospital_name`
+    )
+VALUES (
+        'D001',
+        '刘医生',
+        '男',
+        45,
+        '13700137001',
+        'dr.liu@hospital.com',
+        '内科',
+        '主任医师',
+        '心血管疾病诊疗',
+        20,
+        '北京市第一人民医院'
+    ),
+    (
+        'D002',
+        '陈医生',
+        '女',
+        38,
+        '13700137002',
+        'dr.chen@hospital.com',
+        '内分泌科',
+        '副主任医师',
+        '糖尿病、甲状腺疾病',
+        15,
+        '北京市第一人民医院'
+    ),
+    (
+        'D003',
+        '王医生',
+        '男',
+        42,
+        '13700137003',
+        'dr.wang@hospital.com',
+        '神经内科',
+        '主治医师',
+        '老年痴呆、帕金森病',
+        18,
+        '北京市第一人民医院'
+    );
 -- 健康预警测试数据
-INSERT IGNORE INTO `t_health_warning` (`elderly_id`, `elderly_name`, `warning_type`, `warning_level`, `title`, `content`, `trigger_data`, `data_source`, `trigger_time`) VALUES
-(1, '张三', '血压异常', 3, '血压异常偏高预警', '监测到血压值持续偏高，建议及时就医检查', '收缩压180mmHg，舒张压110mmHg', '血压监测设备', NOW() - INTERVAL 2 HOUR),
-(2, '李四', '血糖异常', 2, '血糖波动预警', '血糖值出现较大波动，建议调整饮食和用药', '空腹血糖12.5mmol/L', '血糖监测设备', NOW() - INTERVAL 1 HOUR),
-(3, '王五', '心率异常', 4, '心率异常紧急预警', '心率异常，疑似心律不齐，建议立即就医', '心率35次/分钟，心律不规整', '心率监测设备', NOW() - INTERVAL 30 MINUTE);
-
+INSERT IGNORE INTO `t_health_warning` (
+        `elderly_id`,
+        `elderly_name`,
+        `warning_type`,
+        `warning_level`,
+        `title`,
+        `content`,
+        `trigger_data`,
+        `data_source`,
+        `trigger_time`
+    )
+VALUES (
+        1,
+        '张三',
+        '血压异常',
+        3,
+        '血压异常偏高预警',
+        '监测到血压值持续偏高，建议及时就医检查',
+        '收缩压180mmHg，舒张压110mmHg',
+        '血压监测设备',
+        NOW() - INTERVAL 2 HOUR
+    ),
+    (
+        2,
+        '李四',
+        '血糖异常',
+        2,
+        '血糖波动预警',
+        '血糖值出现较大波动，建议调整饮食和用药',
+        '空腹血糖12.5mmol/L',
+        '血糖监测设备',
+        NOW() - INTERVAL 1 HOUR
+    ),
+    (
+        3,
+        '王五',
+        '心率异常',
+        4,
+        '心率异常紧急预警',
+        '心率异常，疑似心律不齐，建议立即就医',
+        '心率35次/分钟，心律不规整',
+        '心率监测设备',
+        NOW() - INTERVAL 30 MINUTE
+    );
 -- 设备管理测试数据
-INSERT IGNORE INTO `t_equipment` (`device_id`, `device_name`, `device_type`, `manufacturer`, `model`, `elderly_id`, `elderly_name`, `installation_location`, `installation_date`, `device_status`, `battery_level`) VALUES
-('BP001', '智能血压计1号', '血压计', '欧姆龙', 'HEM-7136', 1, '张三', '张三家客厅', '2024-01-01', 1, 85),
-('BG001', '智能血糖仪1号', '血糖仪', '强生', 'OneTouch', 2, '李四', '李四家卧室', '2024-01-02', 1, 72),
-('HR001', '心率监测器1号', '心率监测器', '华为', 'WATCH GT3', 3, '王五', '王五随身佩戴', '2024-01-03', 2, 45);
-
+INSERT IGNORE INTO `t_equipment` (
+        `device_id`,
+        `device_name`,
+        `device_type`,
+        `manufacturer`,
+        `model`,
+        `elderly_id`,
+        `elderly_name`,
+        `installation_location`,
+        `installation_date`,
+        `device_status`,
+        `battery_level`
+    )
+VALUES (
+        'BP001',
+        '智能血压计1号',
+        '血压计',
+        '欧姆龙',
+        'HEM-7136',
+        1,
+        '张三',
+        '张三家客厅',
+        '2024-01-01',
+        1,
+        85
+    ),
+    (
+        'BG001',
+        '智能血糖仪1号',
+        '血糖仪',
+        '强生',
+        'OneTouch',
+        2,
+        '李四',
+        '李四家卧室',
+        '2024-01-02',
+        1,
+        72
+    ),
+    (
+        'HR001',
+        '心率监测器1号',
+        '心率监测器',
+        '华为',
+        'WATCH GT3',
+        3,
+        '王五',
+        '王五随身佩戴',
+        '2024-01-03',
+        2,
+        45
+    );
 -- 用户管理测试数据
-INSERT IGNORE INTO `t_user` (`username`, `password`, `real_name`, `email`, `phone`, `role`, `department`) VALUES
-('admin', '$2a$10$7JB720yubVSP5XEH.UJNKe8I8.TZCpGPq1FtCm1oEhGPwGr/dLd2C', '系统管理员', 'admin@smartcare.com', '13500135000', 'ADMIN', '系统管理部'),
-('doctor01', '$2a$10$7JB720yubVSP5XEH.UJNKe8I8.TZCpGPq1FtCm1oEhGPwGr/dLd2C', '刘医生', 'dr.liu@hospital.com', '13700137001', 'DOCTOR', '内科'),
-('nurse01', '$2a$10$7JB720yubVSP5XEH.UJNKe8I8.TZCpGPq1FtCm1oEhGPwGr/dLd2C', '护士小张', 'nurse.zhang@hospital.com', '13600136001', 'NURSE', '护理部');
-
+INSERT IGNORE INTO `t_user` (
+        `username`,
+        `password`,
+        `real_name`,
+        `email`,
+        `phone`,
+        `role`,
+        `department`
+    )
+VALUES (
+        'admin',
+        '$2a$10$7JB720yubVSP5XEH.UJNKe8I8.TZCpGPq1FtCm1oEhGPwGr/dLd2C',
+        '系统管理员',
+        'admin@smartcare.com',
+        '13500135000',
+        'ADMIN',
+        '系统管理部'
+    ),
+    (
+        'doctor01',
+        '$2a$10$7JB720yubVSP5XEH.UJNKe8I8.TZCpGPq1FtCm1oEhGPwGr/dLd2C',
+        '刘医生',
+        'dr.liu@hospital.com',
+        '13700137001',
+        'DOCTOR',
+        '内科'
+    ),
+    (
+        'nurse01',
+        '$2a$10$7JB720yubVSP5XEH.UJNKe8I8.TZCpGPq1FtCm1oEhGPwGr/dLd2C',
+        '护士小张',
+        'nurse.zhang@hospital.com',
+        '13600136001',
+        'NURSE',
+        '护理部'
+    );
 COMMIT;

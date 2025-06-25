@@ -49,16 +49,22 @@
     <el-card class="operation-card">
       <el-row>
         <el-col :span="24">
-          <el-button type="primary" @click="handleAdd" :icon="Plus">新增医生</el-button>
+          <el-button type="primary" @click="handleAdd" :icon="Plus" v-permission="'doctor:add'">新增医生</el-button>
           <el-button 
             type="danger" 
             @click="handleBatchDelete" 
             :disabled="multipleSelection.length === 0"
             :icon="Delete"
+            v-permission="'doctor:delete'"
           >
             批量删除
           </el-button>
-          <el-button type="success" @click="handleExport" :icon="Download">导出数据</el-button>
+          <el-button type="success" @click="handleExport" :icon="Download" v-permission="'doctor:export'">导出数据</el-button>
+          
+          <!-- 角色信息显示 -->
+          <div class="role-info">
+            <el-tag type="info" size="small">当前角色：{{ currentUserRole }}</el-tag>
+          </div>
         </el-col>
       </el-row>
     </el-card>
@@ -94,7 +100,13 @@
             <el-button type="primary" size="small" @click="handleView(scope.row)" :icon="View">
               查看
             </el-button>
-            <el-button type="warning" size="small" @click="handleEdit(scope.row)" :icon="Edit">
+            <el-button 
+              type="warning" 
+              size="small" 
+              @click="handleEdit(scope.row)" 
+              :icon="Edit"
+              v-permission="'doctor:edit'"
+            >
               编辑
             </el-button>
             <el-button 
@@ -102,6 +114,7 @@
               size="small" 
               @click="handleDelete(scope.row)"
               :icon="Delete"
+              v-permission="'doctor:delete'"
             >
               删除
             </el-button>
@@ -228,16 +241,19 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { Search, Refresh, Plus, Delete, Download, View, Edit } from '@element-plus/icons-vue'
 import {
-  getDoctorPageList,
   addDoctor,
-  updateDoctor,
   deleteDoctor,
-  deleteDoctorBatch
+  deleteDoctorBatch,
+  getDoctorPageList,
+  updateDoctor
 } from '@/api/doctor'
+import { useUserStore } from '@/store/user'
+import { Delete, Download, Edit, Plus, Refresh, Search, View } from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { computed, onMounted, reactive, ref } from 'vue'
+
+const userStore = useUserStore()
 
 // 响应式数据
 const tableLoading = ref(false)
@@ -247,6 +263,9 @@ const dialogTitle = ref('新增医生')
 const isEdit = ref(false)
 const tableData = ref([])
 const multipleSelection = ref([])
+
+// 计算属性
+const currentUserRole = computed(() => userStore.userRoleText)
 
 // 搜索表单
 const searchForm = reactive({
@@ -510,6 +529,11 @@ onMounted(() => {
 .operation-card,
 .table-card {
   margin-bottom: 20px;
+}
+
+.role-info {
+  margin-left: 15px;
+  display: inline-block;
 }
 
 .pagination-container {

@@ -31,14 +31,14 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import { useAppStore } from '@/store/app'
-import Sidebar from './components/Sidebar/index.vue'
-import Navbar from './components/Navbar.vue'
-import AppMain from './components/AppMain.vue'
+import { computed } from 'vue'
 import AppFooter from './components/AppFooter.vue'
-import TagsView from './components/TagsView/index.vue'
+import AppMain from './components/AppMain.vue'
+import Navbar from './components/Navbar.vue'
 import Settings from './components/Settings/index.vue'
+import Sidebar from './components/Sidebar/index.vue'
+import TagsView from './components/TagsView/index.vue'
 
 const appStore = useAppStore()
 

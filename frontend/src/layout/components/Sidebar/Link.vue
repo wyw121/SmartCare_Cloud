@@ -5,9 +5,9 @@
 </template>
 
 <script setup>
+import { isExternal } from '@/utils/validate'
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
-import { isExternal } from '@/utils/validate'
 
 // Props
 const props = defineProps({

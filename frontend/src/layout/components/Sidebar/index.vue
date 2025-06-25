@@ -26,12 +26,12 @@
 </template>
 
 <script>
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { Cpu } from '@element-plus/icons-vue'
 import { useAppStore } from '@/store/app'
+import { useUserStore } from '@/store/user'
+import { filterMenusByRole } from '@/utils/permission'
+import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import SidebarItem from './SidebarItem.vue'
-import routes from '@/router'
 
 export default {
   name: 'Sidebar',
@@ -40,7 +40,9 @@ export default {
   },
   setup() {
     const route = useRoute()
+    const router = useRouter()
     const appStore = useAppStore()
+    const userStore = useUserStore()
 
     const collapsed = computed(() => !appStore.sidebar.opened)
     
@@ -52,25 +54,48 @@ export default {
       return path
     })
 
-    // 过滤路由，只显示需要在侧边栏显示的路由
+    // 基于角色过滤路由
     const routes = computed(() => {
-      return filterRoutes(routes.routes)
-    })
-
-    const filterRoutes = (routes) => {
-      const res = []
-      routes.forEach(route => {
-        // 跳过hidden的路由和登录页面
-        if (!route.meta?.hidden && route.path !== '/login' && route.path !== '/:pathMatch(.*)*') {
-          const tmp = { ...route }
-          if (tmp.children) {
-            tmp.children = filterRoutes(tmp.children)
-          }
-          res.push(tmp)
+      const allRoutes = router.getRoutes()
+      const userRole = userStore.userRole
+      
+      // 预定义的菜单结构
+      const menuItems = [
+        {
+          path: '/dashboard',
+          name: 'dashboard',
+          meta: { title: '仪表板', icon: 'DataBoard' }
+        },
+        {
+          path: '/elderly',
+          name: 'elderly',
+          meta: { title: '老人管理', icon: 'User' }
+        },
+        {
+          path: '/doctor',
+          name: 'doctor',
+          meta: { title: '医生管理', icon: 'Avatar' }
+        },
+        {
+          path: '/health-warning',
+          name: 'health-warning',
+          meta: { title: '健康预警', icon: 'Warning' }
+        },
+        {
+          path: '/reports',
+          name: 'reports',
+          meta: { title: '报表统计', icon: 'DataAnalysis' }
+        },
+        {
+          path: '/system',
+          name: 'system',
+          meta: { title: '系统管理', icon: 'Setting' }
         }
-      })
-      return res
-    }
+      ]
+      
+      // 根据角色过滤菜单
+      return filterMenusByRole(menuItems, userRole)
+    })
 
     return {
       collapsed,
