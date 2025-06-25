@@ -1,13 +1,26 @@
 import request from '@/utils/request'
+import { getMockWarningPage, getMockLevelStatistics } from './mockHealthWarning'
 
 /**
  * 健康预警相关API
  */
 
+// 开发环境标识
+const isDev = process.env.NODE_ENV === 'development'
+
 /**
  * 获取预警统计数据
  */
 export function getWarningStatistics() {
+  if (isDev) {
+    return Promise.resolve({ 
+      data: {
+        code: 200,
+        message: '查询成功',
+        data: { urgent: 15, high: 32, medium: 48, low: 25 }
+      }
+    })
+  }
   return request({
     url: '/health/warnings/statistics',
     method: 'get'
@@ -65,6 +78,12 @@ export function ignoreWarning(id, reason) {
 
 // 分页查询健康预警列表（兼容旧版API）
 export function getHealthWarningPageList(data) {
+  if (isDev) {
+    // 开发环境使用Mock数据
+    return Promise.resolve({ 
+      data: getMockWarningPage(data)
+    })
+  }
   return request({
     url: '/api/health-warning/page',
     method: 'post',
@@ -100,6 +119,12 @@ export function getHealthWarningById(id) {
 
 // 删除健康预警
 export function deleteHealthWarning(id) {
+  if (isDev) {
+    // 开发环境模拟删除操作
+    return Promise.resolve({ 
+      data: { code: 200, message: '删除成功' }
+    })
+  }
   return request({
     url: `/api/health-warning/${id}`,
     method: 'delete'
@@ -108,6 +133,12 @@ export function deleteHealthWarning(id) {
 
 // 批量删除健康预警
 export function deleteHealthWarningBatch(ids) {
+  if (isDev) {
+    // 开发环境模拟批量删除操作
+    return Promise.resolve({ 
+      data: { code: 200, message: '批量删除成功' }
+    })
+  }
   return request({
     url: '/api/health-warning/batch',
     method: 'delete',
@@ -117,6 +148,12 @@ export function deleteHealthWarningBatch(ids) {
 
 // 处理健康预警
 export function handleHealthWarning(id, data) {
+  if (isDev) {
+    // 开发环境模拟处理操作
+    return Promise.resolve({ 
+      data: { code: 200, message: '处理成功' }
+    })
+  }
   return request({
     url: `/api/health-warning/${id}/handle`,
     method: 'put',
@@ -126,6 +163,12 @@ export function handleHealthWarning(id, data) {
 
 // 更新预警状态
 export function updateHealthWarningStatus(id, status) {
+  if (isDev) {
+    // 开发环境模拟状态更新操作
+    return Promise.resolve({ 
+      data: { code: 200, message: '状态更新成功' }
+    })
+  }
   return request({
     url: `/api/health-warning/${id}/status/${status}`,
     method: 'put'
@@ -150,6 +193,12 @@ export function getUnhandledWarningCount() {
 
 // 获取各级别预警统计
 export function getWarningLevelStatistics() {
+  if (isDev) {
+    // 开发环境使用Mock数据
+    return Promise.resolve({ 
+      data: getMockLevelStatistics()
+    })
+  }
   return request({
     url: '/api/health-warning/statistics/level',
     method: 'get'
