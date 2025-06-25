@@ -1,0 +1,44 @@
+{
+  "recommendations": [
+    // GitHub Copilot相关扩展
+    "github.copilot",
+    "github.copilot-chat",
+    // Java开发扩展
+    "redhat.java",
+    "vscjava.vscode-java-pack",
+    "vscjava.vscode-spring-boot",
+    "vscjava.vscode-spring-initializr",
+    "vscjava.vscode-spring-boot-dashboard",
+    // Vue.js开发扩展
+    "vue.volar",
+    "vue.vscode-typescript-vue-plugin",
+    // 前端开发工具
+    "bradlc.vscode-tailwindcss",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    // 数据库相关
+    "mtxr.sqltools",
+    "mtxr.sqltools-driver-mysql",
+    // Git工具
+    "eamodio.gitlens",
+    "github.vscode-pull-request-github",
+    // 代码质量
+    "sonarsource.sonarlint-vscode",
+    "ms-vscode.vscode-json",
+    // Docker支持
+    "ms-azuretools.vscode-docker",
+    // 实用工具
+    "ms-vscode.vscode-thunder-client",
+    "humao.rest-client",
+    "ms-vscode.vscode-yaml",
+    "redhat.vscode-xml",
+    // 主题和图标
+    "pkief.material-icon-theme",
+    "zhuangtongfa.material-theme",
+    // Markdown支持
+    "yzhang.markdown-all-in-one",
+    "shd101wyy.markdown-preview-enhanced",
+    // 中文语言包
+    "ms-ceintl.vscode-language-pack-zh-hans"
+  ]
+}

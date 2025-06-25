@@ -1,8 +1,278 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {}
+  "folders": [
+    {
+      "name": "🏥 智慧医养平台 (主项目)",
+      "path": "."
+    },
+    {
+      "name": "⚙️ 后端服务 (Spring Boot)",
+      "path": "./backend"
+    },
+    {
+      "name": "🎨 前端界面 (Vue3)",
+      "path": "./frontend"
+    },
+    {
+      "name": "📄 文档资料",
+      "path": "./.github/docs"
+    }
+  ],
+  "settings": {
+    // GitHub Copilot 配置
+    "github.copilot.enable": {
+      "*": true,
+      "yaml": true,
+      "plaintext": true,
+      "markdown": true,
+      "java": true,
+      "javascript": true,
+      "typescript": true,
+      "vue": true,
+      "sql": true,
+      "xml": true,
+      "json": true
+    },
+    "github.copilot.chat.welcomeMessage": "never",
+    "github.copilot.advanced": {
+      "debug.overrideEngine": "copilot-codex"
+    },
+    // 编辑器配置
+    "editor.fontSize": 14,
+    "editor.lineHeight": 1.6,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll.eslint": "explicit"
+    },
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": true,
+    "editor.minimap.enabled": true,
+    "editor.wordWrap": "on",
+    // 文件关联
+    "files.associations": {
+      "*.vue": "vue",
+      "*.xml": "xml",
+      "*.yml": "yaml",
+      "*.yaml": "yaml",
+      "copilot-instructions.md": "markdown"
+    },
+    // 排除不必要的文件，优化Copilot索引
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/target": true,
+      "**/.git": true,
+      "**/.DS_Store": true,
+      "**/Thumbs.db": true,
+      "**/*.class": true,
+      "**/dist": true,
+      "**/.cache": true,
+      "**/coverage": true
+    },
+    // 搜索配置
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/target": true,
+      "**/*.log": true,
+      "**/dist": true,
+      "**/.cache": true,
+      "**/coverage": true
+    },
+    // Java配置 - 针对Spring Boot项目
+    "java.jdt.ls.java.home": null,
+    "java.configuration.runtimes": [],
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.saveActions.organizeImports": true,
+    "java.sources.organizeImports.starThreshold": 99,
+    "java.sources.organizeImports.staticStarThreshold": 99,
+    "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
+    // Spring Boot配置
+    "spring-boot.ls.problem.application-properties.enabled": true,
+    "spring-boot.ls.problem.application-yaml.enabled": true,
+    // Vue.js配置
+    "vetur.format.defaultFormatter.html": "prettier",
+    "vetur.format.defaultFormatter.css": "prettier",
+    "vetur.format.defaultFormatter.js": "prettier",
+    "vetur.format.defaultFormatter.ts": "prettier",
+    // ESLint配置
+    "eslint.validate": [
+      "javascript",
+      "javascriptreact",
+      "typescript",
+      "typescriptreact",
+      "vue"
+    ],
+    // Prettier配置
+    "prettier.singleQuote": true,
+    "prettier.semi": false,
+    "prettier.trailingComma": "es5",
+    // 终端配置
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "terminal.integrated.fontSize": 14,
+    // 工作台外观
+    "workbench.startupEditor": "readme",
+    "workbench.tree.indent": 20,
+    // 调试配置
+    "debug.console.fontSize": 14,
+    "debug.inlineValues": "auto",
+    // 自动保存
+    "files.autoSave": "onFocusChange",
+    "files.autoSaveDelay": 1000,
+    // Git配置
+    "git.autofetch": true,
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+    // 面包屑导航
+    "breadcrumbs.enabled": true,
+    "breadcrumbs.showFiles": true,
+    "breadcrumbs.showSymbols": true,
+    // IntelliSense配置
+    "editor.quickSuggestions": {
+      "other": true,
+      "comments": false,
+      "strings": true
+    },
+    "editor.suggestSelection": "first",
+    "editor.acceptSuggestionOnCommitCharacter": false,
+    // 任务和调试
+    "task.autoDetect": "on",
+    "task.showDecorations": true,
+    // 项目特定的Emmet配置
+    "emmet.includeLanguages": {
+      "vue-html": "html",
+      "vue": "html"
+    }
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "🚀 启动开发环境",
+        "type": "shell",
+        "command": "echo",
+        "args": [
+          "开发环境启动完成！"
+        ],
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        },
+        "dependsOrder": "sequence",
+        "dependsOn": [
+          "后端编译",
+          "前端安装依赖"
+        ]
+      },
+      {
+        "label": "后端编译",
+        "type": "shell",
+        "command": "mvn",
+        "args": [
+          "compile"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/backend"
+        },
+        "group": "build"
+      },
+      {
+        "label": "前端安装依赖",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "install"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/frontend"
+        },
+        "group": "build"
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "java",
+        "name": "🖥️ 启动后端服务",
+        "request": "launch",
+        "mainClass": "com.smartcare.cloud.SmartCareCloudApplication",
+        "projectName": "smartcare-cloud-backend",
+        "args": [],
+        "vmArgs": [
+          "-Dspring.profiles.active=dev",
+          "-Dfile.encoding=UTF-8"
+        ],
+        "env": {
+          "JAVA_OPTS": "-Xms512m -Xmx1024m"
+        }
+      },
+      {
+        "name": "🌐 启动前端服务",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/frontend",
+        "program": "${workspaceFolder}/frontend/node_modules/.bin/vite",
+        "args": [
+          "--host",
+          "--port",
+          "3000"
+        ],
+        "env": {
+          "NODE_ENV": "development"
+        },
+        "console": "integratedTerminal"
+      }
+    ],
+    "compounds": [
+      {
+        "name": "🚀 启动完整开发环境",
+        "configurations": [
+          "🖥️ 启动后端服务",
+          "🌐 启动前端服务"
+        ],
+        "stopAll": true
+      }
+    ]
+  },
+  "extensions": {
+    "recommendations": [
+      // GitHub Copilot相关
+      "github.copilot",
+      "github.copilot-chat",
+      // Java开发扩展包
+      "redhat.java",
+      "vscjava.vscode-java-pack",
+      "vscjava.vscode-spring-boot",
+      "vscjava.vscode-spring-initializr",
+      // Vue.js开发
+      "vue.volar",
+      "vue.vscode-typescript-vue-plugin",
+      // 前端工具
+      "esbenp.prettier-vscode",
+      "dbaeumer.vscode-eslint",
+      // 数据库工具
+      "mtxr.sqltools",
+      "mtxr.sqltools-driver-mysql",
+      // Git工具
+      "eamodio.gitlens",
+      "github.vscode-pull-request-github",
+      // 代码质量
+      "sonarsource.sonarlint-vscode",
+      // Docker支持
+      "ms-azuretools.vscode-docker",
+      // API测试
+      "humao.rest-client",
+      // 主题和图标
+      "pkief.material-icon-theme",
+      // Markdown支持
+      "yzhang.markdown-all-in-one",
+      // 中文语言包
+      "ms-ceintl.vscode-language-pack-zh-hans"
+    ]
+  }
 }
