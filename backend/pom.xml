@@ -40,11 +40,13 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Spring Boot Security -->
+        <!-- Spring Boot Security - 临时注释掉 -->
+        <!--
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+        -->
 
         <!-- Spring Boot Validation -->
         <dependency>
@@ -120,12 +122,13 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Lombok -->
+        <!-- Lombok - 已注释，由于兼容性问题
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+        -->
 
         <!-- Apache Commons -->
         <dependency>

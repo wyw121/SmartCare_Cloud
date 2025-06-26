@@ -54,6 +54,18 @@
           <i class="el-icon-download"></i>
           导出数据
         </el-button>
+        <el-button type="warning" @click="handleImport">
+          <i class="el-icon-upload"></i>
+          导入数据
+        </el-button>
+        <el-button type="info" @click="handleHealthStatistics">
+          <i class="el-icon-data-analysis"></i>
+          健康统计
+        </el-button>
+        <el-button type="primary" @click="handleCareLevelStats">
+          <i class="el-icon-pie-chart"></i>
+          照护统计
+        </el-button>
       </div>
     </el-card>
 
@@ -88,12 +100,16 @@
             <el-tag>{{ getCareLevelText(scope.row.careLevel) }}</el-tag>
           </template>
         </el-table-column>
+        <el-table-column prop="roomNumber" label="房间号" width="80" />
+        <el-table-column prop="guardianName" label="监护人" width="100" />
         <el-table-column prop="address" label="居住地址" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" width="160" />
-        <el-table-column label="操作" width="180" fixed="right">
+        <el-table-column label="操作" width="280" fixed="right">
           <template #default="scope">
             <el-button size="mini" @click="handleView(scope.row)">查看</el-button>
             <el-button size="mini" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
+            <el-button size="mini" type="success" @click="handleHealthRecords(scope.row)">健康档案</el-button>
+            <el-button size="mini" type="warning" @click="handleAssessmentReport(scope.row)">评估报告</el-button>
             <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -203,6 +219,85 @@
             placeholder="请输入过敏史"
           />
         </el-form-item>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="血型">
+              <el-select v-model="formData.bloodType" placeholder="请选择血型">
+                <el-option label="A型" value="A" />
+                <el-option label="B型" value="B" />
+                <el-option label="AB型" value="AB" />
+                <el-option label="O型" value="O" />
+                <el-option label="其他" value="OTHER" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="照护等级">
+              <el-select v-model="formData.careLevel" placeholder="请选择照护等级">
+                <el-option label="自理" :value="1" />
+                <el-option label="半自理" :value="2" />
+                <el-option label="不能自理" :value="3" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="身高(cm)">
+              <el-input-number v-model="formData.height" :min="50" :max="250" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="体重(kg)">
+              <el-input-number v-model="formData.weight" :min="20" :max="200" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="用药史">
+          <el-input
+            v-model="formData.medicationHistory"
+            type="textarea"
+            :rows="3"
+            placeholder="请输入用药史"
+          />
+        </el-form-item>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="监护人姓名">
+              <el-input v-model="formData.guardianName" placeholder="请输入监护人姓名" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="监护人电话">
+              <el-input v-model="formData.guardianPhone" placeholder="请输入监护人电话" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="监护人关系">
+              <el-select v-model="formData.guardianRelation" placeholder="请选择关系">
+                <el-option label="子女" value="子女" />
+                <el-option label="配偶" value="配偶" />
+                <el-option label="亲属" value="亲属" />
+                <el-option label="其他" value="其他" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="房间号">
+              <el-input v-model="formData.roomNumber" placeholder="请输入房间号" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="备注">
+          <el-input
+            v-model="formData.remark"
+            type="textarea"
+            :rows="2"
+            placeholder="请输入备注信息"
+          />
+        </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
@@ -215,9 +310,20 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted } from 'vue'
+import {
+  batchDeleteElderly,
+  createElderly,
+  deleteElderly,
+  exportElderlyData,
+  generateAssessmentReport,
+  getCareLevelStatistics,
+  getElderlyHealthRecords,
+  getElderlyHealthStatistics,
+  getElderlyPage,
+  updateElderly
+} from '@/api/elderly'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getElderlyPage, createElderly, updateElderly, deleteElderly, batchDeleteElderly } from '@/api/elderly'
+import { onMounted, reactive, ref } from 'vue'
 
 export default {
   name: 'ElderlyManagement',
@@ -260,7 +366,17 @@ export default {
       emergencyContactName: '',
       emergencyContactPhone: '',
       medicalHistory: '',
-      allergyHistory: ''
+      allergyHistory: '',
+      bloodType: '',
+      careLevel: null,
+      height: null,
+      weight: null,
+      medicationHistory: '',
+      guardianName: '',
+      guardianPhone: '',
+      guardianRelation: '',
+      roomNumber: '',
+      remark: ''
     })
 
     // 表单验证规则
@@ -323,16 +439,21 @@ export default {
       loading.value = true
       try {
         const params = {
-          current: pagination.current,
-          size: pagination.size,
+          pageNum: pagination.current,
+          pageSize: pagination.size,
           ...searchForm
         }
+        console.log('请求参数:', params)
         const response = await getElderlyPage(params)
+        console.log('响应数据:', response)
         if (response.code === 200) {
           tableData.value = response.data.records
           pagination.total = response.data.total
+        } else {
+          ElMessage.error('获取数据失败：' + response.message)
         }
       } catch (error) {
+        console.error('请求错误:', error)
         ElMessage.error('获取数据失败：' + error.message)
       } finally {
         loading.value = false
@@ -420,8 +541,88 @@ export default {
     }
 
     // 导出
-    const handleExport = () => {
-      ElMessage.info('导出功能开发中...')
+    const handleExport = async () => {
+      try {
+        const ids = selectedRows.value.map(row => row.id)
+        const response = await exportElderlyData(ids.length > 0 ? ids : null)
+        if (response.code === 200) {
+          ElMessage.success('导出成功')
+          // 这里可以添加文件下载逻辑
+        } else {
+          ElMessage.error('导出失败：' + response.message)
+        }
+      } catch (error) {
+        ElMessage.error('导出失败：' + error.message)
+      }
+    }
+
+    // 导入
+    const handleImport = () => {
+      ElMessage.info('导入功能开发中...')
+    }
+
+    // 健康统计
+    const handleHealthStatistics = async () => {
+      try {
+        const response = await getElderlyHealthStatistics()
+        if (response.code === 200) {
+          ElMessageBox.alert(JSON.stringify(response.data, null, 2), '健康状态统计', {
+            confirmButtonText: '确定'
+          })
+        } else {
+          ElMessage.error('获取统计失败：' + response.message)
+        }
+      } catch (error) {
+        ElMessage.error('获取统计失败：' + error.message)
+      }
+    }
+
+    // 照护统计
+    const handleCareLevelStats = async () => {
+      try {
+        const response = await getCareLevelStatistics()
+        if (response.code === 200) {
+          ElMessageBox.alert(JSON.stringify(response.data, null, 2), '照护等级统计', {
+            confirmButtonText: '确定'
+          })
+        } else {
+          ElMessage.error('获取统计失败：' + response.message)
+        }
+      } catch (error) {
+        ElMessage.error('获取统计失败：' + error.message)
+      }
+    }
+
+    // 健康档案
+    const handleHealthRecords = async (row) => {
+      try {
+        const response = await getElderlyHealthRecords(row.id)
+        if (response.code === 200) {
+          ElMessageBox.alert(JSON.stringify(response.data, null, 2), `${row.name} - 健康档案`, {
+            confirmButtonText: '确定'
+          })
+        } else {
+          ElMessage.error('获取健康档案失败：' + response.message)
+        }
+      } catch (error) {
+        ElMessage.error('获取健康档案失败：' + error.message)
+      }
+    }
+
+    // 评估报告
+    const handleAssessmentReport = async (row) => {
+      try {
+        const response = await generateAssessmentReport(row.id)
+        if (response.code === 200) {
+          ElMessageBox.alert(JSON.stringify(response.data, null, 2), `${row.name} - 健康评估报告`, {
+            confirmButtonText: '确定'
+          })
+        } else {
+          ElMessage.error('生成报告失败：' + response.message)
+        }
+      } catch (error) {
+        ElMessage.error('生成报告失败：' + error.message)
+      }
     }
 
     // 表格选择变化
@@ -489,7 +690,17 @@ export default {
         emergencyContactName: '',
         emergencyContactPhone: '',
         medicalHistory: '',
-        allergyHistory: ''
+        allergyHistory: '',
+        bloodType: '',
+        careLevel: null,
+        height: null,
+        weight: null,
+        medicationHistory: '',
+        guardianName: '',
+        guardianPhone: '',
+        guardianRelation: '',
+        roomNumber: '',
+        remark: ''
       })
     }
 
@@ -521,6 +732,11 @@ export default {
       handleDelete,
       handleBatchDelete,
       handleExport,
+      handleImport,
+      handleHealthStatistics,
+      handleCareLevelStats,
+      handleHealthRecords,
+      handleAssessmentReport,
       handleSelectionChange,
       handleSizeChange,
       handleCurrentChange,

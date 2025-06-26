@@ -142,7 +142,8 @@
     "emmet.includeLanguages": {
       "vue-html": "html",
       "vue": "html"
-    }
+    },
+    "powershell.cwd": "🏥 智慧医养平台 (主项目)"
   },
   "tasks": {
     "version": "2.0.0",

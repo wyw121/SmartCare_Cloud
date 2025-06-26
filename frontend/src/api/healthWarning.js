@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { getMockWarningPage, getMockLevelStatistics } from './mockHealthWarning'
+import { getMockLevelStatistics, getMockWarningPage } from './mockHealthWarning'
 
 /**
  * 健康预警相关API

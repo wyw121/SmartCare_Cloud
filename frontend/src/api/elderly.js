@@ -6,7 +6,7 @@ import request from '@/utils/request'
  */
 export function getElderlyPage(params) {
   return request({
-    url: '/api/elderly/page',
+    url: '/elderly/page',
     method: 'post',
     data: params
   })
@@ -18,7 +18,7 @@ export function getElderlyPage(params) {
  */
 export function getElderlyById(id) {
   return request({
-    url: `/api/elderly/${id}`,
+    url: `/elderly/${id}`,
     method: 'get'
   })
 }
@@ -29,7 +29,7 @@ export function getElderlyById(id) {
  */
 export function createElderly(data) {
   return request({
-    url: '/api/elderly',
+    url: '/elderly',
     method: 'post',
     data
   })
@@ -41,7 +41,7 @@ export function createElderly(data) {
  */
 export function updateElderly(data) {
   return request({
-    url: '/api/elderly',
+    url: '/elderly',
     method: 'put',
     data
   })
@@ -53,7 +53,7 @@ export function updateElderly(data) {
  */
 export function deleteElderly(id) {
   return request({
-    url: `/api/elderly/${id}`,
+    url: `/elderly/${id}`,
     method: 'delete'
   })
 }
@@ -64,7 +64,7 @@ export function deleteElderly(id) {
  */
 export function batchDeleteElderly(ids) {
   return request({
-    url: '/api/elderly/batch',
+    url: '/elderly/batch',
     method: 'delete',
     data: ids
   })
@@ -75,7 +75,7 @@ export function batchDeleteElderly(ids) {
  */
 export function getKeyElderlyList() {
   return request({
-    url: '/api/elderly/key',
+    url: '/elderly/key',
     method: 'get'
   })
 }
@@ -85,7 +85,163 @@ export function getKeyElderlyList() {
  */
 export function getElderlyHealthStatistics() {
   return request({
-    url: '/api/elderly/health-statistics',
+    url: '/elderly/health-statistics',
     method: 'get'
+  })
+}
+
+/**
+ * 获取老人健康档案
+ * @param {Number} id 老人ID
+ */
+export function getElderlyHealthRecords(id) {
+  return request({
+    url: `/elderly/${id}/health-records`,
+    method: 'get'
+  })
+}
+
+/**
+ * 添加健康记录
+ * @param {Number} id 老人ID
+ * @param {Object} data 健康记录数据
+ */
+export function addHealthRecord(id, data) {
+  return request({
+    url: `/elderly/${id}/health-records`,
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 获取老人紧急联系人
+ * @param {Number} id 老人ID
+ */
+export function getEmergencyContacts(id) {
+  return request({
+    url: `/elderly/${id}/emergency-contacts`,
+    method: 'get'
+  })
+}
+
+/**
+ * 更新紧急联系人
+ * @param {Number} id 老人ID
+ * @param {Object} data 紧急联系人数据
+ */
+export function updateEmergencyContacts(id, data) {
+  return request({
+    url: `/elderly/${id}/emergency-contacts`,
+    method: 'put',
+    data
+  })
+}
+
+/**
+ * 获取老人照护计划
+ * @param {Number} id 老人ID
+ */
+export function getCarePlan(id) {
+  return request({
+    url: `/elderly/${id}/care-plan`,
+    method: 'get'
+  })
+}
+
+/**
+ * 更新照护计划
+ * @param {Number} id 老人ID
+ * @param {Object} data 照护计划数据
+ */
+export function updateCarePlan(id, data) {
+  return request({
+    url: `/elderly/${id}/care-plan`,
+    method: 'put',
+    data
+  })
+}
+
+/**
+ * 获取健康预警信息
+ * @param {Number} id 老人ID
+ */
+export function getHealthWarnings(id) {
+  return request({
+    url: `/elderly/${id}/health-warnings`,
+    method: 'get'
+  })
+}
+
+/**
+ * 生成健康评估报告
+ * @param {Number} id 老人ID
+ */
+export function generateAssessmentReport(id) {
+  return request({
+    url: `/elderly/${id}/assessment-report`,
+    method: 'post'
+  })
+}
+
+/**
+ * 批量导出老人档案
+ * @param {Array} ids 老人ID列表
+ */
+export function exportElderlyData(ids) {
+  return request({
+    url: '/elderly/export',
+    method: 'post',
+    data: ids
+  })
+}
+
+/**
+ * 批量导入老人档案
+ * @param {Object} data 导入数据
+ */
+export function importElderlyData(data) {
+  return request({
+    url: '/elderly/import',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 获取照护等级统计
+ */
+export function getCareLevelStatistics() {
+  return request({
+    url: '/elderly/care-level-statistics',
+    method: 'get'
+  })
+}
+
+/**
+ * 获取年龄段分布统计
+ */
+export function getAgeDistribution() {
+  return request({
+    url: '/elderly/age-distribution',
+    method: 'get'
+  })
+}
+
+/**
+ * 搜索老人档案（支持模糊搜索）
+ * @param {String} keyword 搜索关键词
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize 每页大小
+ */
+export function searchElderly(keyword, pageNum, pageSize) {
+  return request({
+    url: '/elderly/search',
+    method: 'get',
+    params: {
+      keyword,
+      pageNum,
+      pageSize
+    }
   })
 }

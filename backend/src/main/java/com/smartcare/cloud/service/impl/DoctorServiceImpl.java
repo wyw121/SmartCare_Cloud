@@ -8,6 +8,7 @@ import com.smartcare.cloud.dto.DoctorPageDTO;
 import com.smartcare.cloud.entity.Doctor;
 import com.smartcare.cloud.mapper.DoctorMapper;
 import com.smartcare.cloud.service.DoctorService;
+import com.smartcare.cloud.vo.DoctorStatisticsVO;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -131,5 +132,50 @@ public class DoctorServiceImpl extends ServiceImpl<DoctorMapper, Doctor> impleme
     public boolean updateById(Doctor entity) {
         entity.setUpdateTime(LocalDateTime.now());
         return super.updateById(entity);
+    }
+
+    @Override
+    public DoctorStatisticsVO getDoctorStatistics(Long doctorId) {
+        // TODO: 实现医生统计功能
+        DoctorStatisticsVO statistics = new DoctorStatisticsVO();
+        // 返回空的统计对象，后续扩展
+        return statistics;
+    }
+
+    @Override
+    public List<Object> getDoctorElderlyList(Long doctorId) {
+        // TODO: 实现获取医生负责的老人列表
+        return null;
+    }
+
+    @Override
+    public List<Object> getDepartmentWorkload(String department) {
+        // TODO: 实现科室工作负荷统计
+        return null;
+    }
+
+    @Override
+    public List<Object> getDoctorSchedule(Long doctorId, String startDate, String endDate) {
+        // TODO: 实现医生排班查询
+        return null;
+    }
+
+    @Override
+    public boolean assignElderlyToDoctor(Long doctorId, List<Long> elderlyIds) {
+        // TODO: 实现老人分配功能
+        // 这需要创建医生-老人关联表
+        return true;
+    }
+
+    @Override
+    public Object exportDoctorData(List<Long> ids) {
+        // TODO: 实现医生数据导出
+        return null;
+    }
+
+    @Override
+    public Object importDoctorData(Object importData) {
+        // TODO: 实现医生数据导入
+        return null;
     }
 }

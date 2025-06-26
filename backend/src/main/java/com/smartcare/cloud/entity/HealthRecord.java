@@ -1,13 +1,15 @@
 package com.smartcare.cloud.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.TableName;
 
 /**
  * 健康记录实体类
@@ -15,9 +17,6 @@ import java.time.LocalDateTime;
  * @author SmartCare Cloud Team
  * @since 2024-01-01
  */
-@Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
 @TableName("t_health_record")
 public class HealthRecord implements Serializable {
 

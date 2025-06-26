@@ -146,7 +146,7 @@
 
 <script setup>
 import { useUserStore } from '@/store/user'
-import { Avatar, Lock, User, Setting, Loading } from '@element-plus/icons-vue'
+import { Avatar, Loading, Lock, Setting, User } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'

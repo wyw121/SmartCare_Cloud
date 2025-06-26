@@ -36,7 +36,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  */
 @Tag(name = "老人档案管理", description = "老人档案相关接口")
 @RestController
-@RequestMapping("/api/elderly")
+@RequestMapping("/elderly")
 @Validated
 public class ElderlyController {
 
@@ -50,8 +50,15 @@ public class ElderlyController {
      */
     @Operation(summary = "分页查询老人档案")
     @PostMapping("/page")
-    public ResponseResult<Page<Elderly>> getElderlyPage(@Valid @RequestBody ElderlyPageDTO pageDTO) {
+    public ResponseResult<Page<Elderly>> getElderlyPage(@RequestBody ElderlyPageDTO pageDTO) {
         log.info("分页查询老人档案，参数：{}", pageDTO);
+        // 设置默认值
+        if (pageDTO.getPageNum() == null || pageDTO.getPageNum() < 1) {
+            pageDTO.setPageNum(1);
+        }
+        if (pageDTO.getPageSize() == null || pageDTO.getPageSize() < 1) {
+            pageDTO.setPageSize(10);
+        }
         return elderlyService.getElderlyPage(pageDTO);
     }
 
@@ -125,5 +132,149 @@ public class ElderlyController {
     public ResponseResult<Object> getElderlyHealthStatistics() {
         log.info("获取老人健康状态统计");
         return elderlyService.getElderlyHealthStatistics();
+    }
+
+    /**
+     * 获取老人健康档案
+     */
+    @Operation(summary = "获取老人健康档案")
+    @GetMapping("/{id}/health-records")
+    public ResponseResult<Object> getElderlyHealthRecords(
+            @Parameter(description = "老人ID") @PathVariable @NotNull Long id) {
+        log.info("获取老人健康档案，ID：{}", id);
+        return elderlyService.getElderlyHealthRecords(id);
+    }
+
+    /**
+     * 添加健康记录
+     */
+    @Operation(summary = "添加健康记录")
+    @PostMapping("/{id}/health-records")
+    public ResponseResult<Void> addHealthRecord(
+            @Parameter(description = "老人ID") @PathVariable @NotNull Long id,
+            @RequestBody Object healthRecord) {
+        log.info("添加健康记录，老人ID：{}", id);
+        return elderlyService.addHealthRecord(id, healthRecord);
+    }
+
+    /**
+     * 获取老人紧急联系人
+     */
+    @Operation(summary = "获取老人紧急联系人")
+    @GetMapping("/{id}/emergency-contacts")
+    public ResponseResult<Object> getEmergencyContacts(
+            @Parameter(description = "老人ID") @PathVariable @NotNull Long id) {
+        log.info("获取老人紧急联系人，ID：{}", id);
+        return elderlyService.getEmergencyContacts(id);
+    }
+
+    /**
+     * 更新紧急联系人
+     */
+    @Operation(summary = "更新紧急联系人")
+    @PutMapping("/{id}/emergency-contacts")
+    public ResponseResult<Void> updateEmergencyContacts(
+            @Parameter(description = "老人ID") @PathVariable @NotNull Long id,
+            @RequestBody Object emergencyContacts) {
+        log.info("更新紧急联系人，老人ID：{}", id);
+        return elderlyService.updateEmergencyContacts(id, emergencyContacts);
+    }
+
+    /**
+     * 获取老人照护计划
+     */
+    @Operation(summary = "获取老人照护计划")
+    @GetMapping("/{id}/care-plan")
+    public ResponseResult<Object> getCarePlan(
+            @Parameter(description = "老人ID") @PathVariable @NotNull Long id) {
+        log.info("获取老人照护计划，ID：{}", id);
+        return elderlyService.getCarePlan(id);
+    }
+
+    /**
+     * 更新照护计划
+     */
+    @Operation(summary = "更新照护计划")
+    @PutMapping("/{id}/care-plan")
+    public ResponseResult<Void> updateCarePlan(
+            @Parameter(description = "老人ID") @PathVariable @NotNull Long id,
+            @RequestBody Object carePlan) {
+        log.info("更新照护计划，老人ID：{}", id);
+        return elderlyService.updateCarePlan(id, carePlan);
+    }
+
+    /**
+     * 获取健康预警信息
+     */
+    @Operation(summary = "获取健康预警信息")
+    @GetMapping("/{id}/health-warnings")
+    public ResponseResult<Object> getHealthWarnings(
+            @Parameter(description = "老人ID") @PathVariable @NotNull Long id) {
+        log.info("获取健康预警信息，ID：{}", id);
+        return elderlyService.getHealthWarnings(id);
+    }
+
+    /**
+     * 生成健康评估报告
+     */
+    @Operation(summary = "生成健康评估报告")
+    @PostMapping("/{id}/assessment-report")
+    public ResponseResult<Object> generateAssessmentReport(
+            @Parameter(description = "老人ID") @PathVariable @NotNull Long id) {
+        log.info("生成健康评估报告，老人ID：{}", id);
+        return elderlyService.generateAssessmentReport(id);
+    }
+
+    /**
+     * 批量导出老人档案
+     */
+    @Operation(summary = "批量导出老人档案")
+    @PostMapping("/export")
+    public ResponseResult<Object> exportElderlyData(@RequestBody List<Long> ids) {
+        log.info("批量导出老人档案，IDs：{}", ids);
+        return elderlyService.exportElderlyData(ids);
+    }
+
+    /**
+     * 批量导入老人档案
+     */
+    @Operation(summary = "批量导入老人档案")
+    @PostMapping("/import")
+    public ResponseResult<Object> importElderlyData(@RequestBody Object importData) {
+        log.info("批量导入老人档案");
+        return elderlyService.importElderlyData(importData);
+    }
+
+    /**
+     * 获取照护等级统计
+     */
+    @Operation(summary = "获取照护等级统计")
+    @GetMapping("/care-level-statistics")
+    public ResponseResult<Object> getCareLevelStatistics() {
+        log.info("获取照护等级统计");
+        return elderlyService.getCareLevelStatistics();
+    }
+
+    /**
+     * 获取年龄段分布统计
+     */
+    @Operation(summary = "获取年龄段分布统计")
+    @GetMapping("/age-distribution")
+    public ResponseResult<Object> getAgeDistribution() {
+        log.info("获取年龄段分布统计");
+        return elderlyService.getAgeDistribution();
+    }
+
+    /**
+     * 搜索老人档案（支持模糊搜索）
+     */
+    @Operation(summary = "搜索老人档案")
+    @GetMapping("/search")
+    public ResponseResult<Object> searchElderly(
+            @Parameter(description = "搜索关键词") String keyword,
+            @Parameter(description = "页码") Integer pageNum,
+            @Parameter(description = "每页大小") Integer pageSize) {
+        log.info("搜索老人档案，关键词：{}", keyword);
+        return elderlyService.searchElderly(keyword, pageNum, pageSize);
     }
 }

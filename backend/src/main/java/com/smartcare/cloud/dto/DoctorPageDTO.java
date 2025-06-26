@@ -1,14 +1,11 @@
 package com.smartcare.cloud.dto;
 
-import lombok.Data;
-
 /**
  * 医生分页查询DTO
  *
  * @author SmartCare Team
  * @since 2024-01-01
  */
-@Data
 public class DoctorPageDTO {
 
     /**

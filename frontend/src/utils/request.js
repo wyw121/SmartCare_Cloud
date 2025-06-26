@@ -4,7 +4,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 
 // 创建axios实例
 const service = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json;charset=UTF-8'

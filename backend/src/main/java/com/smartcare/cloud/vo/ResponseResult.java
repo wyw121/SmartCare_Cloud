@@ -1,14 +1,11 @@
 package com.smartcare.cloud.vo;
 
-import lombok.Data;
-
 /**
  * 统一响应结果类
  *
  * @author GitHub Copilot
  * @since 2025-06-25
  */
-@Data
 public class ResponseResult<T> {
 
     /**
@@ -93,5 +90,38 @@ public class ResponseResult<T> {
      */
     public boolean isSuccess() {
         return this.code != null && this.code == 200;
+    }
+
+    // 手动添加getter/setter方法
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
     }
 }

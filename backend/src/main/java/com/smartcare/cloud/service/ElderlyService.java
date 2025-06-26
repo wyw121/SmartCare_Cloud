@@ -1,11 +1,11 @@
 package com.smartcare.cloud.service;
 
+import java.util.List;
+
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.smartcare.cloud.dto.ElderlyPageDTO;
 import com.smartcare.cloud.entity.Elderly;
 import com.smartcare.cloud.vo.ResponseResult;
-
-import java.util.List;
 
 /**
  * 老人信息服务接口
@@ -76,4 +76,111 @@ public interface ElderlyService {
      * @return 统计结果
      */
     ResponseResult<Object> getElderlyHealthStatistics();
+
+    /**
+     * 获取老人健康档案
+     *
+     * @param id 老人ID
+     * @return 健康档案列表
+     */
+    ResponseResult<Object> getElderlyHealthRecords(Long id);
+
+    /**
+     * 添加健康记录
+     *
+     * @param id 老人ID
+     * @param healthRecord 健康记录
+     * @return 操作结果
+     */
+    ResponseResult<Void> addHealthRecord(Long id, Object healthRecord);
+
+    /**
+     * 获取老人紧急联系人
+     *
+     * @param id 老人ID
+     * @return 紧急联系人信息
+     */
+    ResponseResult<Object> getEmergencyContacts(Long id);
+
+    /**
+     * 更新紧急联系人
+     *
+     * @param id 老人ID
+     * @param emergencyContacts 紧急联系人信息
+     * @return 操作结果
+     */
+    ResponseResult<Void> updateEmergencyContacts(Long id, Object emergencyContacts);
+
+    /**
+     * 获取老人照护计划
+     *
+     * @param id 老人ID
+     * @return 照护计划
+     */
+    ResponseResult<Object> getCarePlan(Long id);
+
+    /**
+     * 更新照护计划
+     *
+     * @param id 老人ID
+     * @param carePlan 照护计划
+     * @return 操作结果
+     */
+    ResponseResult<Void> updateCarePlan(Long id, Object carePlan);
+
+    /**
+     * 获取健康预警信息
+     *
+     * @param id 老人ID
+     * @return 预警信息列表
+     */
+    ResponseResult<Object> getHealthWarnings(Long id);
+
+    /**
+     * 生成健康评估报告
+     *
+     * @param id 老人ID
+     * @return 评估报告
+     */
+    ResponseResult<Object> generateAssessmentReport(Long id);
+
+    /**
+     * 批量导出老人档案
+     *
+     * @param ids 老人ID列表
+     * @return 导出数据
+     */
+    ResponseResult<Object> exportElderlyData(List<Long> ids);
+
+    /**
+     * 批量导入老人档案
+     *
+     * @param importData 导入数据
+     * @return 导入结果
+     */
+    ResponseResult<Object> importElderlyData(Object importData);
+
+    /**
+     * 获取照护等级统计
+     *
+     * @return 统计结果
+     */
+    ResponseResult<Object> getCareLevelStatistics();
+
+    /**
+     * 获取年龄段分布统计
+     *
+     * @return 统计结果
+     */
+    ResponseResult<Object> getAgeDistribution();
+
+    /**
+     * 搜索老人档案（支持模糊搜索）
+     *
+     * @param keyword 搜索关键词
+     * @param pageNum 页码
+     * @param pageSize 每页大小
+     * @return 搜索结果
+     */
+    ResponseResult<Object> searchElderly(String keyword, Integer pageNum, Integer pageSize);
 }

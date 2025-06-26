@@ -5,6 +5,7 @@ import com.smartcare.cloud.dto.DoctorPageDTO;
 import com.smartcare.cloud.entity.Doctor;
 import com.smartcare.cloud.service.DoctorService;
 import com.smartcare.cloud.vo.ResponseResult;
+import com.smartcare.cloud.vo.DoctorStatisticsVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -225,6 +226,137 @@ public class DoctorController {
             }
         } catch (Exception e) {
             return ResponseResult.error("更新医生状态失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取医生统计信息
+     *
+     * @param id 医生ID
+     * @return 统计信息
+     */
+    @Operation(summary = "获取医生统计信息")
+    @GetMapping("/{id}/statistics")
+    public ResponseResult<DoctorStatisticsVO> getDoctorStatistics(@PathVariable Long id) {
+        try {
+            DoctorStatisticsVO statistics = doctorService.getDoctorStatistics(id);
+            return ResponseResult.success(statistics);
+        } catch (Exception e) {
+            return ResponseResult.error("获取医生统计信息失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 分配老人给医生
+     *
+     * @param doctorId 医生ID
+     * @param elderlyIds 老人ID列表
+     * @return 操作结果
+     */
+    @Operation(summary = "分配老人给医生")
+    @PostMapping("/{doctorId}/assign-elderly")
+    public ResponseResult<String> assignElderlyToDoctor(
+            @PathVariable Long doctorId,
+            @RequestBody List<Long> elderlyIds) {
+        try {
+            boolean result = doctorService.assignElderlyToDoctor(doctorId, elderlyIds);
+            if (result) {
+                return ResponseResult.success("分配老人成功");
+            } else {
+                return ResponseResult.error("分配老人失败");
+            }
+        } catch (Exception e) {
+            return ResponseResult.error("分配老人失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取医生负责的老人列表
+     *
+     * @param doctorId 医生ID
+     * @return 老人列表
+     */
+    @Operation(summary = "获取医生负责的老人列表")
+    @GetMapping("/{doctorId}/elderly")
+    public ResponseResult<List<Object>> getDoctorElderlyList(@PathVariable Long doctorId) {
+        try {
+            List<Object> elderlyList = doctorService.getDoctorElderlyList(doctorId);
+            return ResponseResult.success(elderlyList);
+        } catch (Exception e) {
+            return ResponseResult.error("获取老人列表失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取科室医生工作负荷统计
+     *
+     * @param department 科室名称
+     * @return 工作负荷统计
+     */
+    @Operation(summary = "获取科室医生工作负荷统计")
+    @GetMapping("/department/{department}/workload")
+    public ResponseResult<List<Object>> getDepartmentWorkload(@PathVariable String department) {
+        try {
+            List<Object> workload = doctorService.getDepartmentWorkload(department);
+            return ResponseResult.success(workload);
+        } catch (Exception e) {
+            return ResponseResult.error("获取工作负荷统计失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取医生排班信息
+     *
+     * @param doctorId 医生ID
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @return 排班信息
+     */
+    @Operation(summary = "获取医生排班信息")
+    @GetMapping("/{doctorId}/schedule")
+    public ResponseResult<List<Object>> getDoctorSchedule(
+            @PathVariable Long doctorId,
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+        try {
+            List<Object> schedule = doctorService.getDoctorSchedule(doctorId, startDate, endDate);
+            return ResponseResult.success(schedule);
+        } catch (Exception e) {
+            return ResponseResult.error("获取排班信息失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 导出医生数据
+     *
+     * @param ids 医生ID列表（可选）
+     * @return 导出结果
+     */
+    @Operation(summary = "导出医生数据")
+    @PostMapping("/export")
+    public ResponseResult<Object> exportDoctorData(@RequestBody(required = false) List<Long> ids) {
+        try {
+            Object exportData = doctorService.exportDoctorData(ids);
+            return ResponseResult.success(exportData);
+        } catch (Exception e) {
+            return ResponseResult.error("导出医生数据失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 批量导入医生数据
+     *
+     * @param importData 导入数据
+     * @return 导入结果
+     */
+    @Operation(summary = "批量导入医生数据")
+    @PostMapping("/import")
+    public ResponseResult<Object> importDoctorData(@RequestBody Object importData) {
+        try {
+            Object result = doctorService.importDoctorData(importData);
+            return ResponseResult.success(result);
+        } catch (Exception e) {
+            return ResponseResult.error("导入医生数据失败: " + e.getMessage());
         }
     }
 }

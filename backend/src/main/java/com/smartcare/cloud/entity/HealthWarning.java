@@ -1,9 +1,12 @@
 package com.smartcare.cloud.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
-import lombok.Data;
-
 import java.time.LocalDateTime;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 
 /**
  * 健康预警实体
@@ -11,7 +14,6 @@ import java.time.LocalDateTime;
  * @author SmartCare Team
  * @since 2024-01-01
  */
-@Data
 @TableName("t_health_warning")
 public class HealthWarning {
 

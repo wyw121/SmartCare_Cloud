@@ -3,6 +3,7 @@ package com.smartcare.cloud.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.smartcare.cloud.entity.Doctor;
 import com.smartcare.cloud.dto.DoctorPageDTO;
+import com.smartcare.cloud.vo.DoctorStatisticsVO;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -70,4 +71,63 @@ public interface DoctorService extends IService<Doctor> {
      * @return 更新结果
      */
     boolean updateStatus(Long id, Integer status);
+
+    /**
+     * 获取医生统计信息
+     *
+     * @param doctorId 医生ID
+     * @return 统计信息
+     */
+    DoctorStatisticsVO getDoctorStatistics(Long doctorId);
+
+    /**
+     * 分配老人给医生
+     *
+     * @param doctorId 医生ID
+     * @param elderlyIds 老人ID列表
+     * @return 分配结果
+     */
+    boolean assignElderlyToDoctor(Long doctorId, List<Long> elderlyIds);
+
+    /**
+     * 获取医生负责的老人列表
+     *
+     * @param doctorId 医生ID
+     * @return 老人列表
+     */
+    List<Object> getDoctorElderlyList(Long doctorId);
+
+    /**
+     * 获取科室医生工作负荷统计
+     *
+     * @param department 科室名称
+     * @return 工作负荷统计
+     */
+    List<Object> getDepartmentWorkload(String department);
+
+    /**
+     * 获取医生排班信息
+     *
+     * @param doctorId 医生ID
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @return 排班信息
+     */
+    List<Object> getDoctorSchedule(Long doctorId, String startDate, String endDate);
+
+    /**
+     * 导出医生数据
+     *
+     * @param ids 医生ID列表（可选）
+     * @return 导出数据
+     */
+    Object exportDoctorData(List<Long> ids);
+
+    /**
+     * 批量导入医生数据
+     *
+     * @param importData 导入数据
+     * @return 导入结果
+     */
+    Object importDoctorData(Object importData);
 }

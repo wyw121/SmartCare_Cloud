@@ -3,28 +3,23 @@ package com.smartcare.cloud.dto;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import lombok.Data;
-
 /**
  * 老人档案分页查询DTO
  *
  * @author GitHub Copilot
  * @since 2025-06-25
  */
-@Data
 public class ElderlyPageDTO {
 
     /**
      * 页码，从1开始
      */
-    @NotNull(message = "页码不能为空")
     @Min(value = 1, message = "页码必须大于0")
     private Integer pageNum = 1;
 
     /**
      * 每页大小
      */
-    @NotNull(message = "每页大小不能为空")
     @Min(value = 1, message = "每页大小必须大于0")
     private Integer pageSize = 10;
 
@@ -34,9 +29,9 @@ public class ElderlyPageDTO {
     private String name;
 
     /**
-     * 性别 (1-男, 0-女)
+     * 性别 (MALE-男, FEMALE-女)
      */
-    private Integer gender;
+    private String gender;
 
     /**
      * 身份证号
@@ -101,5 +96,118 @@ public class ElderlyPageDTO {
      */
     public Integer getSize() {
         return this.pageSize;
+    }
+
+    // 手动添加getter/setter方法（由于Lombok可能有问题）
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getIdCard() {
+        return idCard;
+    }
+
+    public void setIdCard(String idCard) {
+        this.idCard = idCard;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getHealthStatus() {
+        return healthStatus;
+    }
+
+    public void setHealthStatus(String healthStatus) {
+        this.healthStatus = healthStatus;
+    }
+
+    public Integer getMinAge() {
+        return minAge;
+    }
+
+    public void setMinAge(Integer minAge) {
+        this.minAge = minAge;
+    }
+
+    public Integer getMaxAge() {
+        return maxAge;
+    }
+
+    public void setMaxAge(Integer maxAge) {
+        this.maxAge = maxAge;
+    }
+
+    public Integer getPageNum() {
+        return pageNum;
+    }
+
+    public void setPageNum(Integer pageNum) {
+        this.pageNum = pageNum;
+    }
+
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public Integer getCareLevel() {
+        return careLevel;
+    }
+
+    public void setCareLevel(Integer careLevel) {
+        this.careLevel = careLevel;
+    }
+
+    public Long getFamilyDoctorId() {
+        return familyDoctorId;
+    }
+
+    public void setFamilyDoctorId(Long familyDoctorId) {
+        this.familyDoctorId = familyDoctorId;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public String getOrderBy() {
+        return orderBy;
+    }
+
+    public void setOrderBy(String orderBy) {
+        this.orderBy = orderBy;
+    }
+
+    public String getOrderDirection() {
+        return orderDirection;
+    }
+
+    public void setOrderDirection(String orderDirection) {
+        this.orderDirection = orderDirection;
     }
 }

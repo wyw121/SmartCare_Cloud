@@ -8,15 +8,12 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
-import lombok.Data;
-
 /**
  * 医生实体类
  *
  * @author SmartCare Team
  * @since 2024-01-01
  */
-@Data
 @TableName("t_doctor")
 public class Doctor {
 

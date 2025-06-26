@@ -1,7 +1,5 @@
 package com.smartcare.cloud.dto;
 
-import lombok.Data;
-
 import java.time.LocalDateTime;
 
 /**
@@ -10,7 +8,6 @@ import java.time.LocalDateTime;
  * @author SmartCare Team
  * @since 2024-01-01
  */
-@Data
 public class HealthWarningPageDTO {
 
     /**

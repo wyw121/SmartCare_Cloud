@@ -51,6 +51,7 @@ import SearchSection from '@/components/doctor/SearchSection.vue'
 import TableSection from '@/components/doctor/TableSection.vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
+import { getDoctorPageList } from '@/api/doctor'
 
 // 响应式数据
 const loading = ref(false)
@@ -86,56 +87,29 @@ onMounted(() => {
 const getDoctorList = async () => {
   loading.value = true
   try {
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    const mockData = {
-      records: [
-        {
-          id: 1,
-          employeeNumber: 'D001',
-          name: '张医生',
-          gender: '男',
-          age: 45,
-          phone: '13800138001',
-          email: 'zhang@hospital.com',
-          department: '心血管科',
-          title: '主任医师',
-          specialization: '心血管疾病诊治，心脏介入手术',
-          education: '医学博士',
-          workYears: 20,
-          status: 1,
-          createTime: '2024-01-01 09:00:00',
-          address: '北京市朝阳区',
-          introduction: '从事心血管疾病诊治20年，擅长冠心病、高血压等疾病的治疗'
-        },
-        {
-          id: 2,
-          employeeNumber: 'D002',
-          name: '李医生',
-          gender: '女',
-          age: 38,
-          phone: '13800138002',
-          email: 'li@hospital.com',
-          department: '内分泌科',
-          title: '副主任医师',
-          specialization: '糖尿病、甲状腺疾病',
-          education: '医学硕士',
-          workYears: 15,
-          status: 1,
-          createTime: '2024-01-02 10:00:00',
-          address: '北京市海淀区',
-          introduction: '专注内分泌疾病诊治，在糖尿病管理方面有丰富经验'
-        }
-      ],
-      total: 2
+    const params = {
+      pageNum: pageParams.current,
+      pageSize: pageParams.size,
+      ...searchParams
     }
     
-    doctorList.value = mockData.records
-    pageParams.total = mockData.total
+    const response = await getDoctorPageList(params)
+    
+    if (response.code === 200) {
+      doctorList.value = response.data.list || []
+      pageParams.total = response.data.total || 0
+    } else {
+      ElMessage.error(response.message || '获取医生列表失败')
+      doctorList.value = []
+      pageParams.total = 0
+    }
   } catch (error) {
-    ElMessage.error('获取医生列表失败')
-    console.error(error)
+    ElMessage.error('获取医生列表失败: ' + (error.message || '网络错误'))
+    console.error('获取医生列表失败:', error)
+    
+    // 错误时显示空数据
+    doctorList.value = []
+    pageParams.total = 0
   } finally {
     loading.value = false
   }
