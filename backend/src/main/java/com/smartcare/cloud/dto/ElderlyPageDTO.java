@@ -1,7 +1,6 @@
 package com.smartcare.cloud.dto;
 
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 /**
  * 老人档案分页查询DTO

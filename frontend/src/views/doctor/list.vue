@@ -333,12 +333,12 @@ const getList = async () => {
       pageNum: pageInfo.pageNum,
       pageSize: pageInfo.pageSize
     }
-    const { data } = await getDoctorPageList(params)
-    if (data.code === 200) {
-      tableData.value = data.data.list
-      pageInfo.total = data.data.total
+    const response = await getDoctorPageList(params)
+    if (response.code === 200) {
+      tableData.value = response.data.list
+      pageInfo.total = response.data.total
     } else {
-      ElMessage.error(data.message || '获取医生列表失败')
+      ElMessage.error(response.message || '获取医生列表失败')
     }
   } catch (error) {
     console.error('获取医生列表失败:', error)
@@ -392,12 +392,12 @@ const handleDelete = async (row) => {
       type: 'warning'
     })
     
-    const { data } = await deleteDoctor(row.id)
-    if (data.code === 200) {
+    const response = await deleteDoctor(row.id)
+    if (response.code === 200) {
       ElMessage.success('删除成功')
       getList()
     } else {
-      ElMessage.error(data.message || '删除失败')
+      ElMessage.error(response.message || '删除失败')
     }
   } catch (error) {
     if (error !== 'cancel') {
@@ -422,12 +422,12 @@ const handleBatchDelete = async () => {
     })
     
     const ids = multipleSelection.value.map(item => item.id)
-    const { data } = await deleteDoctorBatch(ids)
-    if (data.code === 200) {
+    const response = await deleteDoctorBatch(ids)
+    if (response.code === 200) {
       ElMessage.success('批量删除成功')
       getList()
     } else {
-      ElMessage.error(data.message || '批量删除失败')
+      ElMessage.error(response.message || '批量删除失败')
     }
   } catch (error) {
     if (error !== 'cancel') {
@@ -475,12 +475,12 @@ const handleSubmit = async () => {
       result = await addDoctor(doctorForm)
     }
     
-    if (result.data.code === 200) {
+    if (result.code === 200) {
       ElMessage.success(isEdit.value ? '编辑成功' : '新增成功')
       dialogVisible.value = false
       getList()
     } else {
-      ElMessage.error(result.data.message || (isEdit.value ? '编辑失败' : '新增失败'))
+      ElMessage.error(result.message || (isEdit.value ? '编辑失败' : '新增失败'))
     }
   } catch (error) {
     console.error('提交失败:', error)

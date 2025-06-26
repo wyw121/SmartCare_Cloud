@@ -281,6 +281,12 @@ const routes = [
       }
     ]
   },
+  {
+    path: '/doctor-test',
+    name: 'DoctorTest',
+    component: () => import('@/views/doctor-simple-test.vue'),
+    meta: { title: '医生测试页面', hidden: true }
+  },
   // 404页面必须放在最后
   {
     path: '/:pathMatch(.*)*',

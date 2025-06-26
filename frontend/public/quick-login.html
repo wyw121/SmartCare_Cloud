@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Login for Testing</title>
+</head>
+<body>
+    <h1>Quick Login for Testing</h1>
+    <button onclick="setLogin()">Set Admin Login</button>
+    
+    <script>
+        function setLogin() {
+            // 模拟登录状态
+            const userData = {
+                id: 1,
+                username: 'admin',
+                password: '123456',
+                name: '系统管理员',
+                role: 'admin',
+                roleText: '管理员',
+                permissions: ['*'],
+                avatar: '',
+                department: '系统管理部',
+                phone: '13800138000',
+                email: 'admin@smartcare.com',
+                description: '拥有系统全部管理权限，负责平台整体运营管理',
+                token: 'test-token-' + Date.now()
+            };
+            
+            // 保存到 localStorage
+            localStorage.setItem('user-data', JSON.stringify(userData));
+            localStorage.setItem('user-token', userData.token);
+            localStorage.setItem('user-role', userData.role);
+            
+            alert('Admin login set! Now you can access the application.');
+            
+            // 跳转到医生管理页面
+            window.location.href = '/doctor/list';
+        }
+    </script>
+</body>
+</html>

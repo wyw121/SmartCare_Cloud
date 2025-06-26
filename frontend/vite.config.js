@@ -15,32 +15,7 @@ export default defineConfig({
     port: 3000,
     host: true,
     proxy: {
-      '/elderly': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false
-      },
-      '/doctor': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false
-      },
-      '/health-warning': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false
-      },
-      '/dashboard': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false
-      },
-      '/reports': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false
-      },
-      '/system': {
+      '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false

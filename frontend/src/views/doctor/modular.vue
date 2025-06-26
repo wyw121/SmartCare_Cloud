@@ -44,6 +44,7 @@
 </template>
 
 <script setup>
+import { getDoctorPageList } from '@/api/doctor'
 import PageHeader from '@/components/common/PageHeader.vue'
 import DoctorDetailDialog from '@/components/doctor/DetailDialog.vue'
 import DoctorFormDialog from '@/components/doctor/FormDialog.vue'
@@ -51,7 +52,6 @@ import SearchSection from '@/components/doctor/SearchSection.vue'
 import TableSection from '@/components/doctor/TableSection.vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
-import { getDoctorPageList } from '@/api/doctor'
 
 // 响应式数据
 const loading = ref(false)

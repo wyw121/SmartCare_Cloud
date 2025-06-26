@@ -1,10 +1,11 @@
 package com.smartcare.cloud.mapper;
 
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.smartcare.cloud.entity.Elderly;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
 
 /**
  * 老人信息Mapper接口
@@ -18,8 +19,8 @@ public interface ElderlyMapper extends BaseMapper<Elderly> {
     /**
      * 自定义分页查询，明确指定查询字段
      */
-    @Select("SELECT id, name, id_card, phone, address, gender, birth_date, health_status, " +
-            "create_time AS createTime, update_time AS updateTime, is_deleted " +
-            "FROM elderly WHERE is_deleted = 0 ORDER BY create_time DESC")
+    @Select("SELECT id, name, id_card, phone, address, gender, birth_date, health_status, "
+            + "create_time AS createTime, update_time AS updateTime, is_deleted "
+            + "FROM elderly WHERE is_deleted = 0 ORDER BY create_time DESC")
     Page<Elderly> selectElderlyPage(Page<Elderly> page);
 }

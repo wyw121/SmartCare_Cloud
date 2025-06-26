@@ -78,6 +78,7 @@ public class DoctorStatisticsVO {
 
     // 内部类：周排班
     public static class WeeklySchedule {
+
         private String dayOfWeek;
         private String timeSlot;
         private String scheduleType;
@@ -128,6 +129,7 @@ public class DoctorStatisticsVO {
 
     // 内部类：重点老人
     public static class KeyElderly {
+
         private Long elderlyId;
         private String elderlyName;
         private String healthStatus;

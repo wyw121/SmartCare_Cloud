@@ -1,5 +1,11 @@
 package com.smartcare.cloud.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
@@ -9,13 +15,6 @@ import com.smartcare.cloud.entity.Doctor;
 import com.smartcare.cloud.mapper.DoctorMapper;
 import com.smartcare.cloud.service.DoctorService;
 import com.smartcare.cloud.vo.DoctorStatisticsVO;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 医生服务实现类
