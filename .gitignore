@@ -1,5 +1,5 @@
 # 智慧医养平台 - .gitignore 配置
-
+.env
 # Java编译输出
 *.class
 *.jar

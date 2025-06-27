@@ -12,6 +12,7 @@
       "name": "🎨 前端界面 (Vue3)",
       "path": "./frontend"
     },
+    
     {
       "name": "📄 文档资料",
       "path": "./.github/docs"
