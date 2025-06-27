@@ -7,42 +7,71 @@ import request from '@/utils/request'
 /**
  * 获取数据概览统计
  */
-export function getOverviewData() {
+export function getOverviewStatistics() {
   return request({
-    url: '/reports/overview',
+    url: '/api/reports/overview',
     method: 'get'
   })
 }
 
 /**
- * 获取健康趋势数据
- * @param {Object} params - 查询参数
- * @param {string} params.timeRange - 时间范围 (7d, 30d, 3m, 1y)
+ * 获取健康状况统计
  */
-export function getHealthTrendData(params) {
+export function getHealthStatusStatistics() {
   return request({
-    url: '/reports/health-trend',
+    url: '/api/reports/health-status',
+    method: 'get'
+  })
+}
+
+/**
+ * 获取预警统计分析
+ */
+export function getWarningAnalysis() {
+  return request({
+    url: '/api/reports/warning-analysis',
+    method: 'get'
+  })
+}
+
+/**
+ * 获取医疗服务统计
+ */
+export function getMedicalServiceStatistics() {
+  return request({
+    url: '/api/reports/medical-service',
+    method: 'get'
+  })
+}
+
+/**
+ * 获取趋势分析数据
+ * @param {string} timeRange - 时间范围
+ */
+export function getTrendAnalysis(timeRange = '30') {
+  return request({
+    url: '/api/reports/trend-analysis',
     method: 'get',
-    params
+    params: { timeRange }
   })
 }
 
 /**
- * 获取疾病分布数据
+ * 获取照护等级统计
  */
-export function getDiseaseDistribution() {
+export function getCareLevelStatistics() {
   return request({
-    url: '/reports/disease-distribution',
+    url: '/api/reports/care-level',
     method: 'get'
   })
 }
 
 /**
- * 获取年龄段分析数据
+ * 获取设备使用统计
  */
-export function getAgeAnalysis() {
+export function getEquipmentUsageStatistics() {
   return request({
-    url: '/reports/age-analysis',
+    url: '/api/reports/equipment-usage',
     method: 'get'
   })
 }

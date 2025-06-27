@@ -3,6 +3,7 @@ package com.smartcare.cloud.service;
 import java.util.List;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.smartcare.cloud.dto.ElderlyPageDTO;
 import com.smartcare.cloud.entity.Elderly;
 import com.smartcare.cloud.vo.ResponseResult;
@@ -13,7 +14,7 @@ import com.smartcare.cloud.vo.ResponseResult;
  * @author SmartCare Team
  * @date 2024-01-01
  */
-public interface ElderlyService {
+public interface ElderlyService extends IService<Elderly> {
 
     /**
      * 分页查询老人信息

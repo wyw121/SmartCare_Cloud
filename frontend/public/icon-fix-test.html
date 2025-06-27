@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Element Plus 图标完整测试</title>
+    <script type="module">
+        // 测试所有统计页面中使用的图标是否可以正确导入
+        try {
+            const { 
+                DataAnalysis, 
+                CircleCheck, 
+                Warning, 
+                Document, 
+                Bell, 
+                User, 
+                UserFilled, 
+                TrendCharts, 
+                Monitor, 
+                Refresh, 
+                Download 
+            } = await import('@element-plus/icons-vue');
+            
+            console.log('✅ 所有图标导入成功:', {
+                DataAnalysis: !!DataAnalysis,
+                CircleCheck: !!CircleCheck,
+                Warning: !!Warning,
+                Document: !!Document,
+                Bell: !!Bell,
+                User: !!User,
+                UserFilled: !!UserFilled,
+                TrendCharts: !!TrendCharts,
+                Monitor: !!Monitor,
+                Refresh: !!Refresh,
+                Download: !!Download
+            });
+            
+            document.getElementById('test-result').innerHTML = '<span style="color: green;">✅ 所有图标导入测试通过</span>';
+            document.getElementById('visit-link').style.display = 'block';
+            
+        } catch (error) {
+            console.error('❌ 图标导入失败:', error);
+            document.getElementById('test-result').innerHTML = '<span style="color: red;">❌ 图标导入失败: ' + error.message + '</span>';
+        }
+    </script>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            padding: 40px; 
+            background: #f5f5f5;
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        .result-box { 
+            padding: 20px; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 8px; 
+            margin: 20px 0;
+            text-align: center;
+        }
+        .visit-link { 
+            display: none; 
+            margin: 20px 0; 
+            text-align: center;
+        }
+        .visit-link a {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #409eff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .visit-link a:hover {
+            background: #337ecc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Element Plus 图标修复验证</h1>
+        
+        <h2>修复内容：</h2>
+        <ul>
+            <li>❌ 移除了不存在的 <code>Heart</code> 图标</li>
+            <li>✅ 替换为 <code>CircleCheck</code> 图标</li>
+            <li>✅ 验证所有其他图标的有效性</li>
+        </ul>
+        
+        <div class="result-box">
+            <h3>图标导入测试结果：</h3>
+            <div id="test-result">🔄 正在测试图标导入...</div>
+        </div>
+        
+        <div id="visit-link" class="visit-link">
+            <a href="/reports/statistics">📊 访问统计报表页面</a>
+        </div>
+        
+        <h2>技术说明：</h2>
+        <p>Element Plus Icons Vue 版本: 2.3.1</p>
+        <p>修复的语法错误: SyntaxError - 'Heart' 图标不存在</p>
+        <p>解决方案: 使用 CircleCheck 图标替代，保持语义一致性</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>统计报表数据测试</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+        }
+        .test-title {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .api-result {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success {
+            color: #28a745;
+        }
+        .error {
+            color: #dc3545;
+        }
+        .loading {
+            color: #007bff;
+        }
+        .status {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 智慧医养统计报表 - 数据测试</h1>
+        
+        <div style="margin-bottom: 20px;">
+            <button class="btn" onclick="testAllAPIs()">测试所有API</button>
+            <button class="btn" onclick="clearResults()">清空结果</button>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">📊 数据概览统计</div>
+            <div id="overview-status" class="status"></div>
+            <div id="overview-result" class="api-result"></div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">💚 健康状况统计</div>
+            <div id="health-status" class="status"></div>
+            <div id="health-result" class="api-result"></div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">⚠️ 预警分析统计</div>
+            <div id="warning-status" class="status"></div>
+            <div id="warning-result" class="api-result"></div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">📈 趋势分析数据</div>
+            <div id="trend-status" class="status"></div>
+            <div id="trend-result" class="api-result"></div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">🏥 医疗服务统计</div>
+            <div id="medical-status" class="status"></div>
+            <div id="medical-result" class="api-result"></div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">👥 照护等级统计</div>
+            <div id="care-status" class="status"></div>
+            <div id="care-result" class="api-result"></div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">📱 设备使用统计</div>
+            <div id="equipment-status" class="status"></div>
+            <div id="equipment-result" class="api-result"></div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:8080';
+        
+        async function fetchAPI(url, statusId, resultId, title) {
+            const statusEl = document.getElementById(statusId);
+            const resultEl = document.getElementById(resultId);
+            
+            statusEl.innerHTML = `<span class="loading">🔄 正在加载 ${title}...</span>`;
+            statusEl.className = 'status loading';
+            
+            try {
+                const response = await fetch(`${BASE_URL}${url}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                statusEl.innerHTML = `<span class="success">✅ ${title} 加载成功</span>`;
+                statusEl.className = 'status success';
+                resultEl.textContent = JSON.stringify(data, null, 2);
+                
+                return data;
+            } catch (error) {
+                statusEl.innerHTML = `<span class="error">❌ ${title} 加载失败: ${error.message}</span>`;
+                statusEl.className = 'status error';
+                resultEl.textContent = `Error: ${error.message}`;
+                
+                return null;
+            }
+        }
+        
+        async function testAllAPIs() {
+            const tests = [
+                {
+                    url: '/api/reports/overview',
+                    statusId: 'overview-status',
+                    resultId: 'overview-result',
+                    title: '数据概览'
+                },
+                {
+                    url: '/api/reports/health-status',
+                    statusId: 'health-status',
+                    resultId: 'health-result',
+                    title: '健康状况统计'
+                },
+                {
+                    url: '/api/reports/warning-analysis',
+                    statusId: 'warning-status',
+                    resultId: 'warning-result',
+                    title: '预警分析'
+                },
+                {
+                    url: '/api/reports/trend-analysis?timeRange=30',
+                    statusId: 'trend-status',
+                    resultId: 'trend-result',
+                    title: '趋势分析'
+                },
+                {
+                    url: '/api/reports/medical-service',
+                    statusId: 'medical-status',
+                    resultId: 'medical-result',
+                    title: '医疗服务统计'
+                },
+                {
+                    url: '/api/reports/care-level',
+                    statusId: 'care-status',
+                    resultId: 'care-result',
+                    title: '照护等级统计'
+                },
+                {
+                    url: '/api/reports/equipment-usage',
+                    statusId: 'equipment-status',
+                    resultId: 'equipment-result',
+                    title: '设备使用统计'
+                }
+            ];
+            
+            console.log('开始测试所有API...');
+            
+            for (const test of tests) {
+                await fetchAPI(test.url, test.statusId, test.resultId, test.title);
+                await new Promise(resolve => setTimeout(resolve, 500)); // 延迟500ms避免过快请求
+            }
+            
+            console.log('所有API测试完成');
+        }
+        
+        function clearResults() {
+            const resultElements = document.querySelectorAll('.api-result');
+            const statusElements = document.querySelectorAll('.status');
+            
+            resultElements.forEach(el => el.textContent = '');
+            statusElements.forEach(el => {
+                el.innerHTML = '';
+                el.className = 'status';
+            });
+        }
+        
+        // 页面加载完成后自动执行测试
+        window.addEventListener('load', () => {
+            console.log('页面加载完成，开始自动测试API...');
+            testAllAPIs();
+        });
+    </script>
+</body>
+</html>
