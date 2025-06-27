@@ -1,24 +1,35 @@
 package com.smartcare.cloud.controller;
 
-import com.smartcare.cloud.dto.HealthWarningPageDTO;
-import com.smartcare.cloud.entity.HealthWarning;
-import com.smartcare.cloud.service.HealthWarningService;
-import com.smartcare.cloud.vo.ResponseResult;
-import com.github.pagehelper.PageInfo;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.github.pagehelper.PageInfo;
+import com.smartcare.cloud.dto.HealthWarningPageDTO;
+import com.smartcare.cloud.entity.HealthWarning;
+import com.smartcare.cloud.service.HealthWarningService;
+import com.smartcare.cloud.vo.ResponseResult;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * 健康预警管理控制器
@@ -47,14 +58,14 @@ public class HealthWarningController {
         log.info("分页查询健康预警列表，参数：{}", dto);
         try {
             PageInfo<HealthWarning> pageInfo = healthWarningService.getPageList(dto);
-            
+
             Map<String, Object> result = new HashMap<>();
             result.put("list", pageInfo.getList());
             result.put("total", pageInfo.getTotal());
             result.put("pageNum", pageInfo.getPageNum());
             result.put("pageSize", pageInfo.getPageSize());
             result.put("pages", pageInfo.getPages());
-            
+
             return ResponseResult.success(result);
         } catch (Exception e) {
             log.error("分页查询健康预警列表失败", e);
@@ -175,11 +186,11 @@ public class HealthWarningController {
         try {
             String handleRemark = (String) data.get("handleRemark");
             Integer status = (Integer) data.get("status");
-            
+
             // 模拟处理人信息，实际应从当前登录用户获取
             Long handlerId = 1L;
             String handlerName = "系统管理员";
-            
+
             boolean result = healthWarningService.handleWarning(id, handlerId, handlerName, handleRemark);
             if (result) {
                 return ResponseResult.success("处理健康预警成功");

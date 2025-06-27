@@ -169,19 +169,19 @@ public class HealthWarningPageDTO {
 
     @Override
     public String toString() {
-        return "HealthWarningPageDTO{" +
-                "pageNum=" + pageNum +
-                ", pageSize=" + pageSize +
-                ", elderlyId=" + elderlyId +
-                ", elderlyName='" + elderlyName + '\'' +
-                ", warningType='" + warningType + '\'' +
-                ", warningLevel=" + warningLevel +
-                ", status=" + status +
-                ", handlerId=" + handlerId +
-                ", handlerName='" + handlerName + '\'' +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
-                ", dataSource='" + dataSource + '\'' +
-                '}';
+        return "HealthWarningPageDTO{"
+                + "pageNum=" + pageNum
+                + ", pageSize=" + pageSize
+                + ", elderlyId=" + elderlyId
+                + ", elderlyName='" + elderlyName + '\''
+                + ", warningType='" + warningType + '\''
+                + ", warningLevel=" + warningLevel
+                + ", status=" + status
+                + ", handlerId=" + handlerId
+                + ", handlerName='" + handlerName + '\''
+                + ", startTime=" + startTime
+                + ", endTime=" + endTime
+                + ", dataSource='" + dataSource + '\''
+                + '}';
     }
 }

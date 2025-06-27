@@ -138,7 +138,6 @@ public class HealthWarning {
     private String remark;
 
     // Getter and Setter methods
-
     public Long getId() {
         return id;
     }
