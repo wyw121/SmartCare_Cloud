@@ -104,13 +104,15 @@
         <el-table-column prop="guardianName" label="监护人" width="100" />
         <el-table-column prop="address" label="居住地址" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" width="160" />
-        <el-table-column label="操作" width="280" fixed="right">
+        <el-table-column label="操作" width="340" fixed="right">
           <template #default="scope">
-            <el-button size="mini" @click="handleView(scope.row)">查看</el-button>
-            <el-button size="mini" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button size="mini" type="success" @click="handleHealthRecords(scope.row)">健康档案</el-button>
-            <el-button size="mini" type="warning" @click="handleAssessmentReport(scope.row)">评估报告</el-button>
-            <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+            <div class="action-buttons">
+              <el-button text type="primary" size="small" @click="handleView(scope.row)">查看</el-button>
+              <el-button text type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+              <el-button text type="success" size="small" @click="handleHealthRecords(scope.row)">健康档案</el-button>
+              <el-button text type="warning" size="small" @click="handleAssessmentReport(scope.row)">评估报告</el-button>
+              <el-button text type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -786,6 +788,18 @@ export default {
 
 .table-card {
   margin-bottom: 20px;
+}
+
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.action-buttons .el-button {
+  margin: 0;
 }
 
 .pagination-wrapper {

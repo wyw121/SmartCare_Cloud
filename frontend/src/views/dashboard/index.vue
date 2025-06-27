@@ -10,7 +10,7 @@
 
     <!-- 统计卡片区域 -->
     <el-row :gutter="20" class="stats-row">
-      <el-col :xs="24" :sm="12" :md="6" v-for="stat in stats" :key="stat.title">
+      <el-col :xs="12" :sm="12" :md="6" :lg="6" v-for="stat in stats" :key="stat.title">
         <el-card class="stats-card" shadow="hover">
           <div class="stats-content">
             <div class="stats-icon" :style="{ backgroundColor: stat.color + '20', color: stat.color }">
@@ -35,12 +35,12 @@
 
     <!-- 图表区域 -->
     <el-row :gutter="20" class="charts-row">
-      <el-col :xs="24" :lg="16">
+      <el-col :xs="24" :sm="24" :md="24" :lg="16" :xl="16">
         <el-card class="chart-card" shadow="never">
           <template #header>
             <div class="card-header">
               <span class="card-title">健康趋势分析</span>
-              <el-button-group>
+              <el-button-group class="chart-controls">
                 <el-button size="small" :type="activeTab === '7d' ? 'primary' : ''" @click="activeTab = '7d'">7天</el-button>
                 <el-button size="small" :type="activeTab === '30d' ? 'primary' : ''" @click="activeTab = '30d'">30天</el-button>
                 <el-button size="small" :type="activeTab === '90d' ? 'primary' : ''" @click="activeTab = '90d'">90天</el-button>
@@ -48,7 +48,7 @@
             </div>
           </template>
           <div class="chart-container">
-            <v-chart :option="trendChartOption" style="height: 300px;" v-if="chartReady" />
+            <v-chart :option="trendChartOption" class="responsive-chart" v-if="chartReady" />
             <div v-else class="chart-loading">
               <el-icon style="font-size: 48px; color: #ddd;"><TrendCharts /></el-icon>
               <p>图表加载中...</p>
@@ -57,7 +57,7 @@
         </el-card>
       </el-col>
       
-      <el-col :xs="24" :lg="8">
+      <el-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
         <el-card class="chart-card" shadow="never">
           <template #header>
             <div class="card-header">
@@ -65,7 +65,7 @@
             </div>
           </template>
           <div class="chart-container">
-            <v-chart :option="pieChartOption" style="height: 300px;" v-if="chartReady" />
+            <v-chart :option="pieChartOption" class="responsive-chart" v-if="chartReady" />
             <div v-else class="chart-loading">
               <el-icon style="font-size: 48px; color: #ddd;"><PieChart /></el-icon>
               <p>图表加载中...</p>
@@ -77,7 +77,7 @@
 
     <!-- 预警信息和快速操作 -->
     <el-row :gutter="20" class="content-row">
-      <el-col :xs="24" :lg="14">
+      <el-col :xs="24" :sm="24" :md="24" :lg="14" :xl="14">
         <el-card class="warning-card" shadow="never">
           <template #header>
             <div class="card-header">
@@ -110,7 +110,7 @@
         </el-card>
       </el-col>
       
-      <el-col :xs="24" :lg="10">
+      <el-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10">
         <el-card class="action-card" shadow="never">
           <template #header>
             <div class="card-header">
@@ -138,16 +138,16 @@
 
 <script setup>
 import {
-  ArrowDown,
-  ArrowUp,
-  DocumentAdd,
-  Monitor,
-  PieChart,
-  Platform,
-  Setting,
-  TrendCharts,
-  User,
-  Warning
+    ArrowDown,
+    ArrowUp,
+    DocumentAdd,
+    Monitor,
+    PieChart,
+    Platform,
+    Setting,
+    TrendCharts,
+    User,
+    Warning
 } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
@@ -359,237 +359,493 @@ const handleAction = (action) => {
 
 // 生命周期
 onMounted(() => {
+  console.log('仪表盘组件已挂载')
+  console.log('统计数据:', stats)
+  console.log('预警列表:', warningList)
+  console.log('快速操作:', quickActions)
+  
   // 模拟图表加载延迟
   setTimeout(() => {
     chartReady.value = true
-    console.log('仪表板图表已加载')
+    console.log('仪表盘图表已加载')
   }, 1000)
-  console.log('仪表板已加载')
+  console.log('仪表盘已加载')
 })
 </script>
 
 <style lang="scss" scoped>
 .dashboard-container {
+  width: 100%;
+  min-height: 100%;
   padding: 20px;
+  background-color: #f0f2f5;
+  box-sizing: border-box;
+}
 
-  .page-header {
-    margin-bottom: 24px;
-    text-align: center;
+.page-header {
+  margin-bottom: 20px;
+  padding: 15px 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.06);
+}
 
-    .page-title {
-      margin: 0 0 8px 0;
-      font-size: 28px;
-      font-weight: 600;
-      color: var(--el-text-color-primary);
+.page-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: var(--el-text-color-regular);
+  margin-top: 4px;
+}
+
+/* 统计卡片样式 */
+.stats-row {
+  margin-bottom: 24px;
+
+  .stats-card {
+    border-radius: 8px;
+    margin-bottom: 16px;
+    
+    .stats-content {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
+      margin-bottom: 16px;
 
-    .page-subtitle {
-      margin: 0;
-      font-size: 14px;
-      color: var(--el-text-color-secondary);
-    }
-  }
-
-  .stats-row {
-    margin-bottom: 24px;
-
-    .stats-card {
-      border-radius: 8px;
-      
-      .stats-content {
-        display: flex;
-        align-items: center;
-        margin-bottom: 16px;
-
-        .stats-icon {
-          width: 48px;
-          height: 48px;
-          border-radius: 8px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-right: 16px;
-          font-size: 24px;
-        }
-
-        .stats-info {
-          flex: 1;
-
-          .stats-value {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--el-text-color-primary);
-            line-height: 1;
-          }
-
-          .stats-title {
-            font-size: 14px;
-            color: var(--el-text-color-regular);
-            margin-top: 4px;
-          }
-        }
-      }
-
-      .stats-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        .stats-trend {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          font-size: 12px;
-          
-          &.up {
-            color: var(--el-color-success);
-          }
-          
-          &.down {
-            color: var(--el-color-danger);
-          }
-        }
-
-        .stats-label {
-          font-size: 12px;
-          color: var(--el-text-color-placeholder);
-        }
-      }
-    }
-  }
-
-  .charts-row,
-  .content-row {
-    margin-bottom: 24px;
-
-    .chart-card,
-    .warning-card,
-    .action-card {
-      border-radius: 8px;
-
-      .card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        .card-title {
-          font-size: 16px;
-          font-weight: 600;
-          color: var(--el-text-color-primary);
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-      }
-
-      .chart-container {
-        padding: 16px 0;
-        
-        .chart-loading {
-          text-align: center;
-          padding: 60px 20px;
-          color: var(--el-text-color-placeholder);
-          
-          p {
-            margin: 12px 0 0 0;
-            font-size: 14px;
-          }
-        }
-      }
-    }
-  }
-
-  .warning-list {
-    .warning-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      padding: 16px;
-      border-radius: 8px;
-      margin-bottom: 12px;
-      border-left: 4px solid transparent;
-
-      &.warning-high {
-        background-color: rgba(245, 108, 108, 0.1);
-        border-left-color: var(--el-color-danger);
-      }
-
-      &.warning-medium {
-        background-color: rgba(230, 162, 60, 0.1);
-        border-left-color: var(--el-color-warning);
-      }
-
-      &.warning-low {
-        background-color: rgba(144, 147, 153, 0.1);
-        border-left-color: var(--el-color-info);
-      }
-
-      .warning-info {
-        flex: 1;
-
-        .warning-title {
-          font-weight: 600;
-          color: var(--el-text-color-primary);
-          margin-bottom: 4px;
-        }
-
-        .warning-content {
-          font-size: 14px;
-          color: var(--el-text-color-regular);
-        }
-      }
-
-      .warning-meta {
-        text-align: right;
-
-        .warning-time {
-          font-size: 12px;
-          color: var(--el-text-color-placeholder);
-          margin-bottom: 8px;
-        }
-      }
-    }
-  }
-
-  .action-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-
-    .action-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-      border-radius: 8px;
-      background-color: var(--el-fill-color-blank);
-      cursor: pointer;
-      transition: all 0.3s;
-
-      &:hover {
-        background-color: var(--el-fill-color-light);
-        transform: translateY(-2px);
-      }
-
-      .action-icon {
+      .stats-icon {
         width: 48px;
         height: 48px;
         border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 12px;
+        margin-right: 16px;
         font-size: 24px;
+        flex-shrink: 0;
       }
 
-      .action-name {
+      .stats-info {
+        flex: 1;
+        min-width: 0;
+
+        .stats-value {
+          font-size: 24px;
+          font-weight: 600;
+          color: var(--el-text-color-primary);
+          line-height: 1;
+          word-break: break-all;
+        }
+
+        .stats-title {
+          font-size: 14px;
+          color: var(--el-text-color-regular);
+          margin-top: 4px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+
+    .stats-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+
+      .stats-trend {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        
+        &.up {
+          color: var(--el-color-success);
+        }
+        
+        &.down {
+          color: var(--el-color-danger);
+        }
+      }
+
+      .stats-label {
+        font-size: 12px;
+        color: var(--el-text-color-placeholder);
+      }
+    }
+  }
+}
+
+/* 图表和内容区域样式 */
+.charts-row,
+.content-row {
+  margin-bottom: 32px;
+
+  &:last-child {
+    margin-bottom: 60px;
+  }
+
+  .chart-card,
+  .warning-card,
+  .action-card {
+    border-radius: 8px;
+    margin-bottom: 16px;
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+
+      .card-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--el-text-color-primary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .chart-controls {
+        flex-shrink: 0;
+      }
+    }
+
+    .chart-container {
+      padding: 16px 0;
+      
+      .responsive-chart {
+        width: 100%;
+        height: 300px;
+        min-height: 250px;
+      }
+      
+      .chart-loading {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--el-text-color-placeholder);
+        
+        p {
+          margin: 12px 0 0 0;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
+
+/* 预警信息列表样式 */
+.warning-list {
+  max-height: 400px;
+  overflow-y: auto;
+  
+  .warning-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border-left: 4px solid transparent;
+    gap: 12px;
+
+    &.warning-high {
+      background-color: rgba(245, 108, 108, 0.1);
+      border-left-color: var(--el-color-danger);
+    }
+
+    &.warning-medium {
+      background-color: rgba(230, 162, 60, 0.1);
+      border-left-color: var(--el-color-warning);
+    }
+
+    &.warning-low {
+      background-color: rgba(144, 147, 153, 0.1);
+      border-left-color: var(--el-color-info);
+    }
+
+    .warning-info {
+      flex: 1;
+      min-width: 0;
+
+      .warning-title {
+        font-weight: 600;
+        color: var(--el-text-color-primary);
+        margin-bottom: 4px;
+      }
+
+      .warning-content {
         font-size: 14px;
         color: var(--el-text-color-regular);
-        font-weight: 500;
+        word-break: break-word;
+        line-height: 1.5;
+      }
+    }
+
+    .warning-meta {
+      text-align: right;
+      flex-shrink: 0;
+
+      .warning-time {
+        font-size: 12px;
+        color: var(--el-text-color-placeholder);
+        margin-bottom: 8px;
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
+/* 快速操作网格样式 */
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+
+  .action-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: var(--el-fill-color-blank);
+    cursor: pointer;
+    transition: all 0.3s;
+    min-height: 120px;
+    justify-content: center;
+
+    &:hover {
+      background-color: var(--el-fill-color-light);
+      transform: translateY(-2px);
+    }
+
+    .action-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .action-name {
+      font-size: 14px;
+      color: var(--el-text-color-regular);
+      font-weight: 500;
+      text-align: center;
+      word-break: break-word;
+    }
+  }
+}
+
+/* 确保 Element Plus 布局组件正常工作 */
+:deep(.el-row) {
+  width: 100%;
+  margin: 0;
+}
+
+:deep(.el-col) {
+  min-height: 1px;
+}
+
+/* 强制显示右侧内容 */
+.content-row {
+  .warning-card,
+  .action-card {
+    width: 100%;
+    min-height: 400px;
+  }
+}
+
+/* 响应式断点优化 */
+@media (max-width: 1200px) {
+  .dashboard-container {
+    .charts-row {
+      .chart-container .responsive-chart {
+        height: 280px;
+      }
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .dashboard-container {
+    padding: 16px;
+    
+    .charts-row {
+      .chart-card {
+        margin-bottom: 20px;
+      }
+      
+      .chart-container .responsive-chart {
+        height: 260px;
+      }
+    }
+    
+    .content-row {
+      .warning-card,
+      .action-card {
+        margin-bottom: 20px;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 12px;
+    
+    .page-header {
+      .page-title {
+        font-size: 24px;
+        flex-direction: column;
+        gap: 4px;
+      }
+    }
+    
+    .stats-card {
+      .stats-content {
+        .stats-icon {
+          width: 40px;
+          height: 40px;
+          font-size: 20px;
+          margin-right: 12px;
+        }
+        
+        .stats-info {
+          .stats-value {
+            font-size: 20px;
+          }
+          
+          .stats-title {
+            font-size: 13px;
+          }
+        }
+      }
+      
+      .stats-footer {
+        .stats-trend,
+        .stats-label {
+          font-size: 11px;
+        }
+      }
+    }
+    
+    .charts-row {
+      .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        
+        .chart-controls {
+          align-self: stretch;
+          
+          .el-button-group {
+            width: 100%;
+            
+            .el-button {
+              flex: 1;
+            }
+          }
+        }
+      }
+      
+      .chart-container .responsive-chart {
+        height: 240px;
+      }
+    }
+    
+    .warning-list {
+      .warning-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        
+        .warning-meta {
+          text-align: left;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+      }
+    }
+    
+    .action-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      
+      .action-item {
+        padding: 16px 12px;
+        min-height: 100px;
+        
+        .action-icon {
+          width: 40px;
+          height: 40px;
+          font-size: 20px;
+          margin-bottom: 8px;
+        }
+        
+        .action-name {
+          font-size: 13px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 8px;
+    
+    .stats-row {
+      .el-col {
+        margin-bottom: 12px;
+      }
+    }
+    
+    .charts-row,
+    .content-row {
+      margin-bottom: 16px;
+      
+      .el-col {
+        margin-bottom: 16px;
+      }
+    }
+    
+    .chart-container .responsive-chart {
+      height: 200px;
+    }
+    
+    .warning-list {
+      max-height: 300px;
+    }
+    
+    .action-grid {
+      .action-item {
+        min-height: 80px;
+        padding: 12px 8px;
+        
+        .action-icon {
+          width: 32px;
+          height: 32px;
+          font-size: 16px;
+          margin-bottom: 6px;
+        }
+        
+        .action-name {
+          font-size: 12px;
+        }
       }
     }
   }

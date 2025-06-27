@@ -119,12 +119,18 @@ const handleClickOutside = () => {
   position: relative;
   display: flex;
   flex-direction: column;
-  
-  .app-wrapper.hideSidebar & {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.app-wrapper.hideSidebar {
+  .main-container {
     margin-left: var(--sidebar-width-collapsed);
   }
-  
-  .app-wrapper.mobile & {
+}
+
+.mobile {
+  .main-container {
     margin-left: 0;
   }
 }

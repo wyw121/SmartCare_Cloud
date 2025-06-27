@@ -23,12 +23,12 @@ const key = computed(() => route.path)
 
 <style lang="scss" scoped>
 .app-main {
-  min-height: calc(100vh - 50px);
-  width: 100%;
   position: relative;
-  overflow: hidden;
+  flex: 1;
+  overflow-y: auto;
   padding: 20px;
-  background-color: #f0f2f5;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .fixed-header + .app-main {

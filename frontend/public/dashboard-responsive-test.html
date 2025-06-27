@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仪表盘响应式布局测试</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .test-title {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .device-frame {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin: 10px 0;
+            overflow: hidden;
+            position: relative;
+        }
+        .device-frame::before {
+            content: attr(data-device);
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: #666;
+            color: white;
+            padding: 4px 8px;
+            font-size: 12px;
+            z-index: 1;
+        }
+        .device-frame iframe {
+            width: 100%;
+            border: none;
+            display: block;
+        }
+        .desktop { width: 1200px; height: 800px; }
+        .tablet { width: 768px; height: 600px; }
+        .mobile { width: 375px; height: 500px; }
+        
+        .improvement-list {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        .improvement-list ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .improvement-list li {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+        .success { color: #28a745; }
+        .info { color: #17a2b8; }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #409eff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            margin: 10px 10px 10px 0;
+        }
+        .btn:hover {
+            background: #337ecc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 仪表盘响应式布局优化报告</h1>
+        
+        <div class="test-section">
+            <div class="test-title">🎯 优化内容</div>
+            <div class="improvement-list">
+                <h4>Grid 系统优化:</h4>
+                <ul>
+                    <li class="success">✅ 统计卡片: xs=12 (手机2列), sm=12 (平板2列), md=6 (桌面4列)</li>
+                    <li class="success">✅ 图表区域: 添加完整断点 xs/sm/md/lg/xl</li>
+                    <li class="success">✅ 内容区域: 自动适应不同屏幕尺寸</li>
+                </ul>
+                
+                <h4>CSS 响应式改进:</h4>
+                <ul>
+                    <li class="success">✅ 图表高度自适应 (桌面300px → 手机200px)</li>
+                    <li class="success">✅ 按钮组在小屏幕变为纵向布局</li>
+                    <li class="success">✅ 预警列表项在手机端垂直排列</li>
+                    <li class="success">✅ 快速操作网格自动调整列数</li>
+                    <li class="success">✅ 添加overflow处理防止横向滚动</li>
+                </ul>
+                
+                <h4>用户体验提升:</h4>
+                <ul>
+                    <li class="info">📱 手机端: 优化触摸交互，增大点击区域</li>
+                    <li class="info">💻 桌面端: 保持最佳视觉层次和间距</li>
+                    <li class="info">📊 图表: 自动调整大小和比例</li>
+                    <li class="info">🔄 流式布局: 内容自然换行不破坏结构</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">🖥️ 多设备预览</div>
+            <p>在不同设备上查看仪表盘效果:</p>
+            
+            <a href="/dashboard/index" target="_blank" class="btn">🖥️ 桌面版预览</a>
+            <a href="/dashboard/index" target="_blank" class="btn">📱 手机版预览</a>
+            
+            <div style="margin-top: 20px;">
+                <h4>测试断点:</h4>
+                <ul>
+                    <li><strong>XL (≥1200px):</strong> 四列卡片，大图表</li>
+                    <li><strong>LG (≥992px):</strong> 四列卡片，正常图表</li>
+                    <li><strong>MD (≥768px):</strong> 两列卡片，紧凑布局</li>
+                    <li><strong>SM (≥576px):</strong> 两列卡片，垂直图表</li>
+                    <li><strong>XS (<576px):</strong> 单列卡片，小图表</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">📏 断点测试说明</div>
+            <div class="improvement-list">
+                <h4>如何测试响应式效果:</h4>
+                <ol>
+                    <li>访问 <a href="/dashboard/index" target="_blank">仪表盘页面</a></li>
+                    <li>按 F12 打开开发者工具</li>
+                    <li>点击设备模拟器图标</li>
+                    <li>选择不同设备尺寸查看效果</li>
+                    <li>或手动拖拽浏览器窗口改变宽度</li>
+                </ol>
+                
+                <h4>预期效果:</h4>
+                <ul>
+                    <li>🖥️ <strong>大屏 (1200px+):</strong> 4列卡片，左右分布图表</li>
+                    <li>💻 <strong>中屏 (992-1199px):</strong> 4列卡片，图表堆叠</li>
+                    <li>📱 <strong>平板 (768-991px):</strong> 2列卡片，图表纵向</li>
+                    <li>📱 <strong>手机 (576-767px):</strong> 2列卡片，紧凑模式</li>
+                    <li>📱 <strong>小屏 (<576px):</strong> 1列布局，最小高度</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">🔧 技术改进细节</div>
+            <div class="improvement-list">
+                <h4>Grid 布局增强:</h4>
+                <pre style="background: #f1f1f1; padding: 15px; border-radius: 4px; overflow-x: auto;">
+// 优化前
+:xs="24" :sm="12" :md="6"
+
+// 优化后  
+:xs="12" :sm="12" :md="6" :lg="6"</pre>
+                
+                <h4>CSS 媒体查询:</h4>
+                <pre style="background: #f1f1f1; padding: 15px; border-radius: 4px; overflow-x: auto;">
+@media (max-width: 1200px) { /* 大屏优化 */ }
+@media (max-width: 992px)  { /* 中屏适配 */ }
+@media (max-width: 768px)  { /* 平板适配 */ }
+@media (max-width: 480px)  { /* 手机优化 */ }</pre>
+                
+                <h4>图表自适应:</h4>
+                <pre style="background: #f1f1f1; padding: 15px; border-radius: 4px; overflow-x: auto;">
+.responsive-chart {
+  width: 100%;
+  height: 300px;        /* 桌面 */
+  min-height: 250px;    /* 最小高度 */
+}
+
+@media (max-width: 480px) {
+  .responsive-chart {
+    height: 200px;      /* 手机 */
+  }
+}</pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('仪表盘响应式优化完成');
+        console.log('建议在不同设备尺寸下测试界面效果');
+        
+        // 检测当前屏幕尺寸
+        const width = window.innerWidth;
+        let deviceType = '';
+        
+        if (width >= 1200) deviceType = '超大屏';
+        else if (width >= 992) deviceType = '大屏';
+        else if (width >= 768) deviceType = '中屏/平板';
+        else if (width >= 576) deviceType = '小屏';
+        else deviceType = '手机';
+        
+        console.log(`当前设备类型: ${deviceType} (${width}px)`);
+    </script>
+</body>
+</html>

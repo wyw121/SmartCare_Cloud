@@ -177,23 +177,30 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { 
-  DataAnalysis, Warning, Document, Bell, User, UserFilled, 
-  TrendCharts, Monitor, Refresh, Download, CircleCheck 
-} from '@element-plus/icons-vue'
-import VChart from 'vue-echarts'
-import * as echarts from 'echarts'
 import {
-  getOverviewStatistics,
-  getHealthStatusStatistics,
-  getWarningAnalysis,
-  getTrendAnalysis,
-  getMedicalServiceStatistics,
-  getCareLevelStatistics,
-  getEquipmentUsageStatistics
+    getCareLevelStatistics,
+    getEquipmentUsageStatistics,
+    getHealthStatusStatistics,
+    getMedicalServiceStatistics,
+    getOverviewStatistics,
+    getTrendAnalysis,
+    getWarningAnalysis
 } from '@/api/reports'
+import {
+    Bell,
+    CircleCheck,
+    DataAnalysis,
+    Document,
+    Download,
+    Monitor, Refresh,
+    TrendCharts,
+    User, UserFilled,
+    Warning
+} from '@element-plus/icons-vue'
+import * as echarts from 'echarts'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { onMounted, ref, watch } from 'vue'
+import VChart from 'vue-echarts'
 
 // 响应式数据
 const updateTime = ref(new Date().toLocaleString())

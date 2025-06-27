@@ -95,29 +95,13 @@
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="240" fixed="right">
           <template #default="scope">
-            <el-button type="primary" size="small" @click="handleView(scope.row)" :icon="View">
-              查看
-            </el-button>
-            <el-button 
-              type="warning" 
-              size="small" 
-              @click="handleEdit(scope.row)" 
-              :icon="Edit"
-              v-permission="'doctor:edit'"
-            >
-              编辑
-            </el-button>
-            <el-button 
-              type="danger" 
-              size="small" 
-              @click="handleDelete(scope.row)"
-              :icon="Delete"
-              v-permission="'doctor:delete'"
-            >
-              删除
-            </el-button>
+            <div class="action-buttons">
+              <el-button text type="primary" size="small" @click="handleView(scope.row)" :icon="View">查看</el-button>
+              <el-button text type="warning" size="small" @click="handleEdit(scope.row)" :icon="Edit" v-permission="'doctor:edit'">编辑</el-button>
+              <el-button text type="danger" size="small" @click="handleDelete(scope.row)" :icon="Delete" v-permission="'doctor:delete'">删除</el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -540,5 +524,23 @@ onMounted(() => {
   margin-top: 20px;
   display: flex;
   justify-content: center;
+}
+
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.action-buttons .el-button {
+  margin: 0;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 </style>
