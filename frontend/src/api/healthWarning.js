@@ -6,7 +6,7 @@ import { getMockLevelStatistics, getMockWarningPage } from './mockHealthWarning'
  */
 
 // 开发环境标识
-const isDev = process.env.NODE_ENV === 'development'
+const isDev = false; // 强制关闭开发环境Mock，使用真实后端数据
 
 /**
  * 获取预警统计数据
@@ -22,7 +22,7 @@ export function getWarningStatistics() {
     })
   }
   return request({
-    url: '/health/warnings/statistics',
+    url: '/api/health-warning/statistics/level',
     method: 'get'
   })
 }
@@ -33,9 +33,9 @@ export function getWarningStatistics() {
  */
 export function getWarningList(params) {
   return request({
-    url: '/health/warnings',
-    method: 'get',
-    params
+    url: '/api/health-warning/page',
+    method: 'post',
+    data: params
   })
 }
 
@@ -45,7 +45,7 @@ export function getWarningList(params) {
  */
 export function getWarningDetail(id) {
   return request({
-    url: `/health/warnings/${id}`,
+    url: `/api/health-warning/${id}`,
     method: 'get'
   })
 }
@@ -57,8 +57,8 @@ export function getWarningDetail(id) {
  */
 export function processWarning(id, data) {
   return request({
-    url: `/health/warnings/${id}/process`,
-    method: 'post',
+    url: `/api/health-warning/${id}/handle`,
+    method: 'put',
     data
   })
 }
@@ -70,8 +70,8 @@ export function processWarning(id, data) {
  */
 export function ignoreWarning(id, reason) {
   return request({
-    url: `/health/warnings/${id}/ignore`,
-    method: 'post',
+    url: `/api/health-warning/${id}/status/4`,
+    method: 'put',
     data: { reason }
   })
 }

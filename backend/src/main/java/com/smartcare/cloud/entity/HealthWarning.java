@@ -136,4 +136,166 @@ public class HealthWarning {
      */
     @TableField("remark")
     private String remark;
+
+    // Getter and Setter methods
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getElderlyId() {
+        return elderlyId;
+    }
+
+    public void setElderlyId(Long elderlyId) {
+        this.elderlyId = elderlyId;
+    }
+
+    public String getElderlyName() {
+        return elderlyName;
+    }
+
+    public void setElderlyName(String elderlyName) {
+        this.elderlyName = elderlyName;
+    }
+
+    public String getWarningType() {
+        return warningType;
+    }
+
+    public void setWarningType(String warningType) {
+        this.warningType = warningType;
+    }
+
+    public Integer getWarningLevel() {
+        return warningLevel;
+    }
+
+    public void setWarningLevel(Integer warningLevel) {
+        this.warningLevel = warningLevel;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getTriggerData() {
+        return triggerData;
+    }
+
+    public void setTriggerData(String triggerData) {
+        this.triggerData = triggerData;
+    }
+
+    public String getDataSource() {
+        return dataSource;
+    }
+
+    public void setDataSource(String dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Long getHandlerId() {
+        return handlerId;
+    }
+
+    public void setHandlerId(Long handlerId) {
+        this.handlerId = handlerId;
+    }
+
+    public String getHandlerName() {
+        return handlerName;
+    }
+
+    public void setHandlerName(String handlerName) {
+        this.handlerName = handlerName;
+    }
+
+    public LocalDateTime getHandleTime() {
+        return handleTime;
+    }
+
+    public void setHandleTime(LocalDateTime handleTime) {
+        this.handleTime = handleTime;
+    }
+
+    public String getHandleRemark() {
+        return handleRemark;
+    }
+
+    public void setHandleRemark(String handleRemark) {
+        this.handleRemark = handleRemark;
+    }
+
+    public Integer getIsNotifiedFamily() {
+        return isNotifiedFamily;
+    }
+
+    public void setIsNotifiedFamily(Integer isNotifiedFamily) {
+        this.isNotifiedFamily = isNotifiedFamily;
+    }
+
+    public Integer getIsNotifiedDoctor() {
+        return isNotifiedDoctor;
+    }
+
+    public void setIsNotifiedDoctor(Integer isNotifiedDoctor) {
+        this.isNotifiedDoctor = isNotifiedDoctor;
+    }
+
+    public LocalDateTime getTriggerTime() {
+        return triggerTime;
+    }
+
+    public void setTriggerTime(LocalDateTime triggerTime) {
+        this.triggerTime = triggerTime;
+    }
+
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
+    public LocalDateTime getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(LocalDateTime updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
 }

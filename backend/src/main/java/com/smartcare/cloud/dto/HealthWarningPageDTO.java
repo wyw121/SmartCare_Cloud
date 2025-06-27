@@ -69,4 +69,119 @@ public class HealthWarningPageDTO {
      * 数据来源
      */
     private String dataSource;
+
+    // Getter and Setter methods
+    public Integer getPageNum() {
+        return pageNum;
+    }
+
+    public void setPageNum(Integer pageNum) {
+        this.pageNum = pageNum;
+    }
+
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public Long getElderlyId() {
+        return elderlyId;
+    }
+
+    public void setElderlyId(Long elderlyId) {
+        this.elderlyId = elderlyId;
+    }
+
+    public String getElderlyName() {
+        return elderlyName;
+    }
+
+    public void setElderlyName(String elderlyName) {
+        this.elderlyName = elderlyName;
+    }
+
+    public String getWarningType() {
+        return warningType;
+    }
+
+    public void setWarningType(String warningType) {
+        this.warningType = warningType;
+    }
+
+    public Integer getWarningLevel() {
+        return warningLevel;
+    }
+
+    public void setWarningLevel(Integer warningLevel) {
+        this.warningLevel = warningLevel;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Long getHandlerId() {
+        return handlerId;
+    }
+
+    public void setHandlerId(Long handlerId) {
+        this.handlerId = handlerId;
+    }
+
+    public String getHandlerName() {
+        return handlerName;
+    }
+
+    public void setHandlerName(String handlerName) {
+        this.handlerName = handlerName;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public String getDataSource() {
+        return dataSource;
+    }
+
+    public void setDataSource(String dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    @Override
+    public String toString() {
+        return "HealthWarningPageDTO{" +
+                "pageNum=" + pageNum +
+                ", pageSize=" + pageSize +
+                ", elderlyId=" + elderlyId +
+                ", elderlyName='" + elderlyName + '\'' +
+                ", warningType='" + warningType + '\'' +
+                ", warningLevel=" + warningLevel +
+                ", status=" + status +
+                ", handlerId=" + handlerId +
+                ", handlerName='" + handlerName + '\'' +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", dataSource='" + dataSource + '\'' +
+                '}';
+    }
 }

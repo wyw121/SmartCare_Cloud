@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康预警数据测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .result { margin: 10px 0; padding: 15px; border-radius: 4px; background: #f5f5f5; }
+        .success { background: #e8f5e8; border-left: 4px solid #52c41a; }
+        .error { background: #ffe6e6; border-left: 4px solid #ff4d4f; }
+        button { margin: 5px; padding: 10px 20px; background: #1890ff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #40a9ff; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f5f5f5; }
+        .level-badge { padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+        .level-4 { background: #ff4d4f; color: white; }
+        .level-3 { background: #ff7a45; color: white; }
+        .level-2 { background: #faad14; color: white; }
+        .level-1 { background: #52c41a; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 健康预警数据测试页面</h1>
+        
+        <div class="test-section">
+            <h2>📊 API连接测试</h2>
+            <button onclick="testBackendConnection()">测试后端连接</button>
+            <button onclick="testProxyConnection()">测试前端代理</button>
+            <button onclick="testStatistics()">测试统计API</button>
+            <div id="connection-results"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📋 健康预警数据</h2>
+            <button onclick="loadHealthWarnings()">加载健康预警列表</button>
+            <div id="warning-data"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📈 统计数据</h2>
+            <button onclick="loadStatistics()">加载统计数据</button>
+            <div id="statistics-data"></div>
+        </div>
+    </div>
+
+    <script>
+        function addResult(containerId, title, data, isError = false) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `result ${isError ? 'error' : 'success'}`;
+            div.innerHTML = `
+                <h4>${title}</h4>
+                <pre>${typeof data === 'object' ? JSON.stringify(data, null, 2) : data}</pre>
+            `;
+            container.appendChild(div);
+        }
+        
+        async function testBackendConnection() {
+            const container = document.getElementById('connection-results');
+            container.innerHTML = '<p>正在测试后端连接...</p>';
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/health-warning/page', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pageNum: 1, pageSize: 5 })
+                });
+                const data = await response.json();
+                addResult('connection-results', '✅ 后端连接成功', `状态: ${response.status}, 数据条数: ${data.data?.list?.length || 0}`);
+            } catch (error) {
+                addResult('connection-results', '❌ 后端连接失败', error.message, true);
+            }
+        }
+        
+        async function testProxyConnection() {
+            const container = document.getElementById('connection-results');
+            
+            try {
+                const response = await fetch('/api/health-warning/page', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pageNum: 1, pageSize: 5 })
+                });
+                const data = await response.json();
+                addResult('connection-results', '✅ 前端代理成功', `状态: ${response.status}, 数据条数: ${data.data?.list?.length || 0}`);
+            } catch (error) {
+                addResult('connection-results', '❌ 前端代理失败', error.message, true);
+            }
+        }
+        
+        async function testStatistics() {
+            try {
+                const response = await fetch('/api/health-warning/statistics/level');
+                const data = await response.json();
+                addResult('connection-results', '📊 统计API测试', data);
+            } catch (error) {
+                addResult('connection-results', '❌ 统计API失败', error.message, true);
+            }
+        }
+        
+        async function loadHealthWarnings() {
+            const container = document.getElementById('warning-data');
+            container.innerHTML = '<p>正在加载健康预警数据...</p>';
+            
+            try {
+                const response = await fetch('/api/health-warning/page', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pageNum: 1, pageSize: 10 })
+                });
+                const result = await response.json();
+                
+                if (result.code === 200 && result.data?.list) {
+                    const warnings = result.data.list;
+                    let tableHTML = `
+                        <h4>✅ 成功加载 ${warnings.length} 条健康预警数据</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>老人姓名</th>
+                                    <th>预警类型</th>
+                                    <th>预警级别</th>
+                                    <th>标题</th>
+                                    <th>状态</th>
+                                    <th>触发时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+                    
+                    warnings.forEach(warning => {
+                        const levelText = ['', '低风险', '中风险', '高风险', '紧急'][warning.warningLevel] || '未知';
+                        const statusText = ['未处理', '已查看', '处理中', '已处理', '已忽略'][warning.status] || '未知';
+                        
+                        tableHTML += `
+                            <tr>
+                                <td>${warning.id}</td>
+                                <td>${warning.elderlyName}</td>
+                                <td>${warning.warningType}</td>
+                                <td><span class="level-badge level-${warning.warningLevel}">${levelText}</span></td>
+                                <td>${warning.title}</td>
+                                <td>${statusText}</td>
+                                <td>${new Date(warning.triggerTime).toLocaleString()}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    tableHTML += '</tbody></table>';
+                    container.innerHTML = tableHTML;
+                } else {
+                    container.innerHTML = `<div class="result error">❌ 数据格式错误: ${JSON.stringify(result, null, 2)}</div>`;
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="result error">❌ 加载失败: ${error.message}</div>`;
+            }
+        }
+        
+        async function loadStatistics() {
+            const container = document.getElementById('statistics-data');
+            container.innerHTML = '<p>正在加载统计数据...</p>';
+            
+            try {
+                const response = await fetch('/api/health-warning/statistics/level');
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    const stats = result.data || [];
+                    let statsHTML = `
+                        <h4>✅ 统计数据加载成功</h4>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 15px;">
+                    `;
+                    
+                    const levelNames = { 1: '低风险', 2: '中风险', 3: '高风险', 4: '紧急' };
+                    const levelColors = { 1: '#52c41a', 2: '#faad14', 3: '#ff7a45', 4: '#ff4d4f' };
+                    
+                    for (let level = 1; level <= 4; level++) {
+                        const stat = stats.find(s => s.level === level);
+                        const count = stat ? stat.count : 0;
+                        
+                        statsHTML += `
+                            <div style="padding: 20px; border-radius: 8px; background: ${levelColors[level]}; color: white; text-align: center;">
+                                <h3 style="margin: 0 0 10px 0;">${count}</h3>
+                                <p style="margin: 0;">${levelNames[level]}</p>
+                            </div>
+                        `;
+                    }
+                    
+                    statsHTML += '</div>';
+                    container.innerHTML = statsHTML;
+                } else {
+                    container.innerHTML = `<div class="result error">❌ 统计数据错误: ${JSON.stringify(result, null, 2)}</div>`;
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="result error">❌ 统计数据加载失败: ${error.message}</div>`;
+            }
+        }
+        
+        // 页面加载完成后自动测试连接
+        window.onload = function() {
+            console.log('页面加载完成，开始自动测试...');
+            testProxyConnection();
+            setTimeout(() => {
+                loadHealthWarnings();
+                loadStatistics();
+            }, 1000);
+        };
+    </script>
+</body>
+</html>

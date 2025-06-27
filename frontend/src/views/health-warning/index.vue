@@ -382,9 +382,10 @@ const getStatusText = (status) => {
 // 获取统计数据
 const getStatistics = async () => {
   try {
-    const { data } = await getWarningLevelStatistics()
-    if (data.code === 200) {
-      const stats = data.data
+    const response = await getWarningLevelStatistics()
+    
+    if (response.code === 200) {
+      const stats = response.data || []
       statistics.urgent = stats.find(item => item.level === 4)?.count || 0
       statistics.high = stats.find(item => item.level === 3)?.count || 0
       statistics.medium = stats.find(item => item.level === 2)?.count || 0
@@ -412,12 +413,13 @@ const getList = async () => {
     }
     delete params.triggerTime
     
-    const { data } = await getHealthWarningPageList(params)
-    if (data.code === 200) {
-      tableData.value = data.data.list
-      pageInfo.total = data.data.total
+    const response = await getHealthWarningPageList(params)
+    
+    if (response.code === 200) {
+      tableData.value = response.data.list || []
+      pageInfo.total = response.data.total || 0
     } else {
-      ElMessage.error(data.message || '获取预警列表失败')
+      ElMessage.error(response.message || '获取预警列表失败')
     }
   } catch (error) {
     console.error('获取预警列表失败:', error)

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API代理测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { margin: 10px 0; padding: 10px; border: 1px solid #ccc; background: #f9f9f9; }
+        .error { background: #fee; border-color: #fcc; }
+        .success { background: #efe; border-color: #cfc; }
+        button { margin: 5px; padding: 10px 15px; }
+    </style>
+</head>
+<body>
+    <h1>API代理测试页面</h1>
+    
+    <button onclick="testDirectAPI()">测试直连后端API</button>
+    <button onclick="testProxyAPI()">测试代理API</button>
+    <button onclick="testStatisticsAPI()">测试统计API</button>
+    
+    <div id="results"></div>
+
+    <script>
+        const resultsDiv = document.getElementById('results');
+        
+        function addResult(title, data, isError = false) {
+            const div = document.createElement('div');
+            div.className = `result ${isError ? 'error' : 'success'}`;
+            div.innerHTML = `<h3>${title}</h3><pre>${JSON.stringify(data, null, 2)}</pre>`;
+            resultsDiv.appendChild(div);
+        }
+        
+        async function testDirectAPI() {
+            try {
+                const response = await fetch('http://localhost:8080/api/health-warning/page?pageNum=1&pageSize=10', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                addResult('直连后端API结果', data);
+            } catch (error) {
+                addResult('直连后端API错误', error.message, true);
+            }
+        }
+        
+        async function testProxyAPI() {
+            try {
+                const response = await fetch('/api/health-warning/page', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        pageNum: 1,
+                        pageSize: 10
+                    })
+                });
+                const data = await response.json();
+                addResult('代理API结果', data);
+            } catch (error) {
+                addResult('代理API错误', error.message, true);
+            }
+        }
+        
+        async function testStatisticsAPI() {
+            try {
+                const response = await fetch('/api/health-warning/statistics/level', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                addResult('统计API结果', data);
+            } catch (error) {
+                addResult('统计API错误', error.message, true);
+            }
+        }
+    </script>
+</body>
+</html>

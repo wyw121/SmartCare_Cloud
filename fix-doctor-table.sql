@@ -1,7 +1,6 @@
 -- 医生表修复脚本
 -- 删除已存在的医生表（如果存在）
 DROP TABLE IF EXISTS `t_doctor`;
-
 -- 重新创建医生信息表
 CREATE TABLE `t_doctor` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -30,7 +29,6 @@ CREATE TABLE `t_doctor` (
   KEY `idx_title` (`title`),
   KEY `idx_phone` (`phone`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '医生信息表';
-
 -- 插入示例数据
 INSERT INTO `t_doctor` (
     `employee_number`,
@@ -44,8 +42,8 @@ INSERT INTO `t_doctor` (
     `specialization`,
     `experience_years`,
     `hospital_name`
-) VALUES 
-(
+  )
+VALUES (
     'D001',
     '刘医生',
     '男',
@@ -57,8 +55,8 @@ INSERT INTO `t_doctor` (
     '心血管疾病诊疗',
     20,
     '北京市第一人民医院'
-),
-(
+  ),
+  (
     'D002',
     '张医生',
     '女',
@@ -70,8 +68,8 @@ INSERT INTO `t_doctor` (
     '妇科常见病诊疗',
     15,
     '北京市第一人民医院'
-),
-(
+  ),
+  (
     'D003',
     '王医生',
     '男',
@@ -83,8 +81,8 @@ INSERT INTO `t_doctor` (
     '普外科手术',
     18,
     '北京市第二人民医院'
-),
-(
+  ),
+  (
     'D004',
     '李医生',
     '女',
@@ -96,8 +94,8 @@ INSERT INTO `t_doctor` (
     '儿科常见病',
     12,
     '北京市儿童医院'
-),
-(
+  ),
+  (
     'D005',
     '陈医生',
     '男',
@@ -109,8 +107,8 @@ INSERT INTO `t_doctor` (
     '骨科创伤与修复',
     25,
     '北京市骨科医院'
-),
-(
+  ),
+  (
     'D006',
     '赵医生',
     '女',
@@ -122,8 +120,8 @@ INSERT INTO `t_doctor` (
     '皮肤病诊疗',
     16,
     '北京市皮肤病医院'
-),
-(
+  ),
+  (
     'D007',
     '周医生',
     '男',
@@ -135,8 +133,8 @@ INSERT INTO `t_doctor` (
     '眼科手术',
     14,
     '北京市眼科医院'
-),
-(
+  ),
+  (
     'D008',
     '吴医生',
     '女',
@@ -148,8 +146,8 @@ INSERT INTO `t_doctor` (
     '耳鼻喉疾病',
     11,
     '北京市五官科医院'
-),
-(
+  ),
+  (
     'D009',
     '郑医生',
     '男',
@@ -161,8 +159,8 @@ INSERT INTO `t_doctor` (
     '神经系统疾病',
     28,
     '北京市神经病医院'
-),
-(
+  ),
+  (
     'D010',
     '孙医生',
     '女',
@@ -174,4 +172,4 @@ INSERT INTO `t_doctor` (
     '心血管介入治疗',
     17,
     '北京市心血管医院'
-);
+  );
