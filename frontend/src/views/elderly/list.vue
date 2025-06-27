@@ -326,10 +326,12 @@ import {
 } from '@/api/elderly'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 export default {
   name: 'ElderlyManagement',
   setup() {
+    const router = useRouter()
     const loading = ref(false)
     const submitLoading = ref(false)
     const dialogVisible = ref(false)
@@ -495,8 +497,8 @@ export default {
 
     // 查看
     const handleView = (row) => {
-      // TODO: 实现查看详情功能
-      ElMessage.info('查看功能开发中...')
+      // 跳转到老人详细档案页面
+      router.push(`/elderly/profile/${row.id}`)
     }
 
     // 删除

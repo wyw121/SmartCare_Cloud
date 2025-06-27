@@ -96,6 +96,12 @@ const routes = [
         meta: { title: '老人档案列表', icon: 'list' }
       },
       {
+        path: 'detail/:id(\\d+)',
+        name: 'ElderlyDetail',
+        component: () => import('@/views/elderly/Detail.vue'),
+        meta: { title: '老人详情', activeMenu: '/elderly/list', hidden: true }
+      },
+      {
         path: 'profile/:id(\\d+)',
         name: 'ElderlyProfile',
         component: () => import('@/views/elderly/profile.vue'),
