@@ -331,20 +331,19 @@
 
 <script>
 import {
-    batchDeleteElderly,
-    createElderly,
-    deleteElderly,
-    exportElderlyData,
-    generateAssessmentReport,
-    getCareLevelStatistics,
-    getElderlyHealthStatistics,
-    getElderlyPage,
-    updateElderly
+  batchDeleteElderly,
+  createElderly,
+  deleteElderly,
+  exportElderlyData,
+  getCareLevelStatistics,
+  getElderlyHealthStatistics,
+  getElderlyPage,
+  updateElderly
 } from '@/api/elderly'
+import AssessmentReportDialog from '@/components/elderly/AssessmentReportDialog.vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import AssessmentReportDialog from '@/components/elderly/AssessmentReportDialog.vue'
 
 export default {
   name: 'ElderlyManagement',

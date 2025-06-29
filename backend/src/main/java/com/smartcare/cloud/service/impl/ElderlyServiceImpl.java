@@ -435,16 +435,16 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
     public ResponseResult<Object> generateAssessmentReport(Long id) {
         try {
             log.info("生成健康评估报告，老人ID：{}", id);
-            
+
             // 获取老人信息
             Elderly elderly = this.getById(id);
             if (elderly == null) {
                 return ResponseResult.error("老人信息不存在");
             }
-            
+
             // 使用健康评估服务生成报告
             AssessmentReportDTO report = healthAssessmentService.generateAssessmentReport(elderly);
-            
+
             return ResponseResult.success(report);
         } catch (Exception e) {
             log.error("生成健康评估报告失败，ID：{}", id, e);

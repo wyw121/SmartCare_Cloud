@@ -294,19 +294,19 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import { ElMessage } from 'element-plus'
 import { generateAssessmentReport } from '@/api/elderly'
 import {
-  User,
-  Monitor,
-  Warning,
   Document,
-  TrendCharts,
+  Download,
   Loading,
+  Monitor,
   Printer,
-  Download
+  TrendCharts,
+  User,
+  Warning
 } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
+import { ref, watch } from 'vue'
 
 const props = defineProps({
   modelValue: {

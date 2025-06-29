@@ -58,31 +58,26 @@ public class HealthRecord implements Serializable {
      */
     // @TableField("systolic_pressure")
     // private Integer systolicPressure;
-
     /**
      * 血压-舒张压
      */
     // @TableField("diastolic_pressure")
     // private Integer diastolicPressure;
-
     /**
      * 心率 (次/分钟)
      */
     // @TableField("heart_rate")
     // private Integer heartRate;
-
     /**
      * 体温 (摄氏度)
      */
     // @TableField("body_temperature")
     // private BigDecimal bodyTemperature;
-
     /**
      * 血糖值 (mmol/L)
      */
     // @TableField("blood_glucose")
     // private BigDecimal bloodGlucose;
-
     /**
      * 体重 (kg)
      */
@@ -250,8 +245,7 @@ public class HealthRecord implements Serializable {
     public void setBloodGlucose(BigDecimal bloodGlucose) {
         this.bloodGlucose = bloodGlucose;
     }
-    */
-
+     */
     public BigDecimal getWeight() {
         return weight;
     }

@@ -1,12 +1,13 @@
 package com.smartcare.cloud.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * 健康评估报告数据传输对象
@@ -51,12 +52,13 @@ public class AssessmentReportDTO implements Serializable {
     private HealthTrend trend;
 
     // 构造函数
-    public AssessmentReportDTO() {}
+    public AssessmentReportDTO() {
+    }
 
-    public AssessmentReportDTO(Long elderlyId, String elderlyName, LocalDateTime assessmentDate, 
-                              Integer overallScore, String overallLevel, BasicInfo basicInfo,
-                              PhysiologicalAssessment physiological, List<HealthRisk> healthRisks,
-                              List<HealthRecommendation> recommendations, HealthTrend trend) {
+    public AssessmentReportDTO(Long elderlyId, String elderlyName, LocalDateTime assessmentDate,
+            Integer overallScore, String overallLevel, BasicInfo basicInfo,
+            PhysiologicalAssessment physiological, List<HealthRisk> healthRisks,
+            List<HealthRecommendation> recommendations, HealthTrend trend) {
         this.elderlyId = elderlyId;
         this.elderlyName = elderlyName;
         this.assessmentDate = assessmentDate;
@@ -70,41 +72,92 @@ public class AssessmentReportDTO implements Serializable {
     }
 
     // Getter和Setter方法
-    public Long getElderlyId() { return elderlyId; }
-    public void setElderlyId(Long elderlyId) { this.elderlyId = elderlyId; }
+    public Long getElderlyId() {
+        return elderlyId;
+    }
 
-    public String getElderlyName() { return elderlyName; }
-    public void setElderlyName(String elderlyName) { this.elderlyName = elderlyName; }
+    public void setElderlyId(Long elderlyId) {
+        this.elderlyId = elderlyId;
+    }
 
-    public LocalDateTime getAssessmentDate() { return assessmentDate; }
-    public void setAssessmentDate(LocalDateTime assessmentDate) { this.assessmentDate = assessmentDate; }
+    public String getElderlyName() {
+        return elderlyName;
+    }
 
-    public Integer getOverallScore() { return overallScore; }
-    public void setOverallScore(Integer overallScore) { this.overallScore = overallScore; }
+    public void setElderlyName(String elderlyName) {
+        this.elderlyName = elderlyName;
+    }
 
-    public String getOverallLevel() { return overallLevel; }
-    public void setOverallLevel(String overallLevel) { this.overallLevel = overallLevel; }
+    public LocalDateTime getAssessmentDate() {
+        return assessmentDate;
+    }
 
-    public BasicInfo getBasicInfo() { return basicInfo; }
-    public void setBasicInfo(BasicInfo basicInfo) { this.basicInfo = basicInfo; }
+    public void setAssessmentDate(LocalDateTime assessmentDate) {
+        this.assessmentDate = assessmentDate;
+    }
 
-    public PhysiologicalAssessment getPhysiological() { return physiological; }
-    public void setPhysiological(PhysiologicalAssessment physiological) { this.physiological = physiological; }
+    public Integer getOverallScore() {
+        return overallScore;
+    }
 
-    public List<HealthRisk> getHealthRisks() { return healthRisks; }
-    public void setHealthRisks(List<HealthRisk> healthRisks) { this.healthRisks = healthRisks; }
+    public void setOverallScore(Integer overallScore) {
+        this.overallScore = overallScore;
+    }
 
-    public List<HealthRecommendation> getRecommendations() { return recommendations; }
-    public void setRecommendations(List<HealthRecommendation> recommendations) { this.recommendations = recommendations; }
+    public String getOverallLevel() {
+        return overallLevel;
+    }
 
-    public HealthTrend getTrend() { return trend; }
-    public void setTrend(HealthTrend trend) { this.trend = trend; }
+    public void setOverallLevel(String overallLevel) {
+        this.overallLevel = overallLevel;
+    }
+
+    public BasicInfo getBasicInfo() {
+        return basicInfo;
+    }
+
+    public void setBasicInfo(BasicInfo basicInfo) {
+        this.basicInfo = basicInfo;
+    }
+
+    public PhysiologicalAssessment getPhysiological() {
+        return physiological;
+    }
+
+    public void setPhysiological(PhysiologicalAssessment physiological) {
+        this.physiological = physiological;
+    }
+
+    public List<HealthRisk> getHealthRisks() {
+        return healthRisks;
+    }
+
+    public void setHealthRisks(List<HealthRisk> healthRisks) {
+        this.healthRisks = healthRisks;
+    }
+
+    public List<HealthRecommendation> getRecommendations() {
+        return recommendations;
+    }
+
+    public void setRecommendations(List<HealthRecommendation> recommendations) {
+        this.recommendations = recommendations;
+    }
+
+    public HealthTrend getTrend() {
+        return trend;
+    }
+
+    public void setTrend(HealthTrend trend) {
+        this.trend = trend;
+    }
 
     /**
      * 基本信息
      */
     @Schema(description = "基本信息")
     public static class BasicInfo {
+
         @Schema(description = "年龄")
         private Integer age;
 
@@ -129,10 +182,11 @@ public class AssessmentReportDTO implements Serializable {
         @Schema(description = "照护等级")
         private String careLevel;
 
-        public BasicInfo() {}
+        public BasicInfo() {
+        }
 
         public BasicInfo(Integer age, String gender, BigDecimal height, BigDecimal weight,
-                        BigDecimal bmi, String bmiStatus, String healthStatus, String careLevel) {
+                BigDecimal bmi, String bmiStatus, String healthStatus, String careLevel) {
             this.age = age;
             this.gender = gender;
             this.height = height;
@@ -144,29 +198,69 @@ public class AssessmentReportDTO implements Serializable {
         }
 
         // Getter和Setter方法
-        public Integer getAge() { return age; }
-        public void setAge(Integer age) { this.age = age; }
+        public Integer getAge() {
+            return age;
+        }
 
-        public String getGender() { return gender; }
-        public void setGender(String gender) { this.gender = gender; }
+        public void setAge(Integer age) {
+            this.age = age;
+        }
 
-        public BigDecimal getHeight() { return height; }
-        public void setHeight(BigDecimal height) { this.height = height; }
+        public String getGender() {
+            return gender;
+        }
 
-        public BigDecimal getWeight() { return weight; }
-        public void setWeight(BigDecimal weight) { this.weight = weight; }
+        public void setGender(String gender) {
+            this.gender = gender;
+        }
 
-        public BigDecimal getBmi() { return bmi; }
-        public void setBmi(BigDecimal bmi) { this.bmi = bmi; }
+        public BigDecimal getHeight() {
+            return height;
+        }
 
-        public String getBmiStatus() { return bmiStatus; }
-        public void setBmiStatus(String bmiStatus) { this.bmiStatus = bmiStatus; }
+        public void setHeight(BigDecimal height) {
+            this.height = height;
+        }
 
-        public String getHealthStatus() { return healthStatus; }
-        public void setHealthStatus(String healthStatus) { this.healthStatus = healthStatus; }
+        public BigDecimal getWeight() {
+            return weight;
+        }
 
-        public String getCareLevel() { return careLevel; }
-        public void setCareLevel(String careLevel) { this.careLevel = careLevel; }
+        public void setWeight(BigDecimal weight) {
+            this.weight = weight;
+        }
+
+        public BigDecimal getBmi() {
+            return bmi;
+        }
+
+        public void setBmi(BigDecimal bmi) {
+            this.bmi = bmi;
+        }
+
+        public String getBmiStatus() {
+            return bmiStatus;
+        }
+
+        public void setBmiStatus(String bmiStatus) {
+            this.bmiStatus = bmiStatus;
+        }
+
+        public String getHealthStatus() {
+            return healthStatus;
+        }
+
+        public void setHealthStatus(String healthStatus) {
+            this.healthStatus = healthStatus;
+        }
+
+        public String getCareLevel() {
+            return careLevel;
+        }
+
+        public void setCareLevel(String careLevel) {
+            this.careLevel = careLevel;
+        }
     }
 
     /**
@@ -174,6 +268,7 @@ public class AssessmentReportDTO implements Serializable {
      */
     @Schema(description = "生理指标评估")
     public static class PhysiologicalAssessment {
+
         @Schema(description = "血压评估")
         private VitalSignAssessment bloodPressure;
 
@@ -192,11 +287,12 @@ public class AssessmentReportDTO implements Serializable {
         @Schema(description = "生理指标等级")
         private String level;
 
-        public PhysiologicalAssessment() {}
+        public PhysiologicalAssessment() {
+        }
 
         public PhysiologicalAssessment(VitalSignAssessment bloodPressure, VitalSignAssessment heartRate,
-                                     VitalSignAssessment bodyTemperature, VitalSignAssessment bloodGlucose,
-                                     Integer totalScore, String level) {
+                VitalSignAssessment bodyTemperature, VitalSignAssessment bloodGlucose,
+                Integer totalScore, String level) {
             this.bloodPressure = bloodPressure;
             this.heartRate = heartRate;
             this.bodyTemperature = bodyTemperature;
@@ -206,23 +302,53 @@ public class AssessmentReportDTO implements Serializable {
         }
 
         // Getter和Setter方法
-        public VitalSignAssessment getBloodPressure() { return bloodPressure; }
-        public void setBloodPressure(VitalSignAssessment bloodPressure) { this.bloodPressure = bloodPressure; }
+        public VitalSignAssessment getBloodPressure() {
+            return bloodPressure;
+        }
 
-        public VitalSignAssessment getHeartRate() { return heartRate; }
-        public void setHeartRate(VitalSignAssessment heartRate) { this.heartRate = heartRate; }
+        public void setBloodPressure(VitalSignAssessment bloodPressure) {
+            this.bloodPressure = bloodPressure;
+        }
 
-        public VitalSignAssessment getBodyTemperature() { return bodyTemperature; }
-        public void setBodyTemperature(VitalSignAssessment bodyTemperature) { this.bodyTemperature = bodyTemperature; }
+        public VitalSignAssessment getHeartRate() {
+            return heartRate;
+        }
 
-        public VitalSignAssessment getBloodGlucose() { return bloodGlucose; }
-        public void setBloodGlucose(VitalSignAssessment bloodGlucose) { this.bloodGlucose = bloodGlucose; }
+        public void setHeartRate(VitalSignAssessment heartRate) {
+            this.heartRate = heartRate;
+        }
 
-        public Integer getTotalScore() { return totalScore; }
-        public void setTotalScore(Integer totalScore) { this.totalScore = totalScore; }
+        public VitalSignAssessment getBodyTemperature() {
+            return bodyTemperature;
+        }
 
-        public String getLevel() { return level; }
-        public void setLevel(String level) { this.level = level; }
+        public void setBodyTemperature(VitalSignAssessment bodyTemperature) {
+            this.bodyTemperature = bodyTemperature;
+        }
+
+        public VitalSignAssessment getBloodGlucose() {
+            return bloodGlucose;
+        }
+
+        public void setBloodGlucose(VitalSignAssessment bloodGlucose) {
+            this.bloodGlucose = bloodGlucose;
+        }
+
+        public Integer getTotalScore() {
+            return totalScore;
+        }
+
+        public void setTotalScore(Integer totalScore) {
+            this.totalScore = totalScore;
+        }
+
+        public String getLevel() {
+            return level;
+        }
+
+        public void setLevel(String level) {
+            this.level = level;
+        }
     }
 
     /**
@@ -230,6 +356,7 @@ public class AssessmentReportDTO implements Serializable {
      */
     @Schema(description = "生命体征评估")
     public static class VitalSignAssessment {
+
         @Schema(description = "当前值")
         private String currentValue;
 
@@ -245,10 +372,11 @@ public class AssessmentReportDTO implements Serializable {
         @Schema(description = "评价")
         private String evaluation;
 
-        public VitalSignAssessment() {}
+        public VitalSignAssessment() {
+        }
 
         public VitalSignAssessment(String currentValue, String normalRange, String status,
-                                 Integer score, String evaluation) {
+                Integer score, String evaluation) {
             this.currentValue = currentValue;
             this.normalRange = normalRange;
             this.status = status;
@@ -257,20 +385,45 @@ public class AssessmentReportDTO implements Serializable {
         }
 
         // Getter和Setter方法
-        public String getCurrentValue() { return currentValue; }
-        public void setCurrentValue(String currentValue) { this.currentValue = currentValue; }
+        public String getCurrentValue() {
+            return currentValue;
+        }
 
-        public String getNormalRange() { return normalRange; }
-        public void setNormalRange(String normalRange) { this.normalRange = normalRange; }
+        public void setCurrentValue(String currentValue) {
+            this.currentValue = currentValue;
+        }
 
-        public String getStatus() { return status; }
-        public void setStatus(String status) { this.status = status; }
+        public String getNormalRange() {
+            return normalRange;
+        }
 
-        public Integer getScore() { return score; }
-        public void setScore(Integer score) { this.score = score; }
+        public void setNormalRange(String normalRange) {
+            this.normalRange = normalRange;
+        }
 
-        public String getEvaluation() { return evaluation; }
-        public void setEvaluation(String evaluation) { this.evaluation = evaluation; }
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
+
+        public Integer getScore() {
+            return score;
+        }
+
+        public void setScore(Integer score) {
+            this.score = score;
+        }
+
+        public String getEvaluation() {
+            return evaluation;
+        }
+
+        public void setEvaluation(String evaluation) {
+            this.evaluation = evaluation;
+        }
     }
 
     /**
@@ -278,6 +431,7 @@ public class AssessmentReportDTO implements Serializable {
      */
     @Schema(description = "健康风险")
     public static class HealthRisk {
+
         @Schema(description = "风险类型")
         private String riskType;
 
@@ -293,10 +447,11 @@ public class AssessmentReportDTO implements Serializable {
         @Schema(description = "预防措施")
         private String prevention;
 
-        public HealthRisk() {}
+        public HealthRisk() {
+        }
 
         public HealthRisk(String riskType, String riskLevel, Integer riskScore,
-                         String description, String prevention) {
+                String description, String prevention) {
             this.riskType = riskType;
             this.riskLevel = riskLevel;
             this.riskScore = riskScore;
@@ -305,20 +460,45 @@ public class AssessmentReportDTO implements Serializable {
         }
 
         // Getter和Setter方法
-        public String getRiskType() { return riskType; }
-        public void setRiskType(String riskType) { this.riskType = riskType; }
+        public String getRiskType() {
+            return riskType;
+        }
 
-        public String getRiskLevel() { return riskLevel; }
-        public void setRiskLevel(String riskLevel) { this.riskLevel = riskLevel; }
+        public void setRiskType(String riskType) {
+            this.riskType = riskType;
+        }
 
-        public Integer getRiskScore() { return riskScore; }
-        public void setRiskScore(Integer riskScore) { this.riskScore = riskScore; }
+        public String getRiskLevel() {
+            return riskLevel;
+        }
 
-        public String getDescription() { return description; }
-        public void setDescription(String description) { this.description = description; }
+        public void setRiskLevel(String riskLevel) {
+            this.riskLevel = riskLevel;
+        }
 
-        public String getPrevention() { return prevention; }
-        public void setPrevention(String prevention) { this.prevention = prevention; }
+        public Integer getRiskScore() {
+            return riskScore;
+        }
+
+        public void setRiskScore(Integer riskScore) {
+            this.riskScore = riskScore;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public String getPrevention() {
+            return prevention;
+        }
+
+        public void setPrevention(String prevention) {
+            this.prevention = prevention;
+        }
     }
 
     /**
@@ -326,6 +506,7 @@ public class AssessmentReportDTO implements Serializable {
      */
     @Schema(description = "健康建议")
     public static class HealthRecommendation {
+
         @Schema(description = "建议类型")
         private String type;
 
@@ -338,7 +519,8 @@ public class AssessmentReportDTO implements Serializable {
         @Schema(description = "执行周期")
         private String cycle;
 
-        public HealthRecommendation() {}
+        public HealthRecommendation() {
+        }
 
         public HealthRecommendation(String type, String content, String priority, String cycle) {
             this.type = type;
@@ -348,17 +530,37 @@ public class AssessmentReportDTO implements Serializable {
         }
 
         // Getter和Setter方法
-        public String getType() { return type; }
-        public void setType(String type) { this.type = type; }
+        public String getType() {
+            return type;
+        }
 
-        public String getContent() { return content; }
-        public void setContent(String content) { this.content = content; }
+        public void setType(String type) {
+            this.type = type;
+        }
 
-        public String getPriority() { return priority; }
-        public void setPriority(String priority) { this.priority = priority; }
+        public String getContent() {
+            return content;
+        }
 
-        public String getCycle() { return cycle; }
-        public void setCycle(String cycle) { this.cycle = cycle; }
+        public void setContent(String content) {
+            this.content = content;
+        }
+
+        public String getPriority() {
+            return priority;
+        }
+
+        public void setPriority(String priority) {
+            this.priority = priority;
+        }
+
+        public String getCycle() {
+            return cycle;
+        }
+
+        public void setCycle(String cycle) {
+            this.cycle = cycle;
+        }
     }
 
     /**
@@ -366,6 +568,7 @@ public class AssessmentReportDTO implements Serializable {
      */
     @Schema(description = "健康趋势")
     public static class HealthTrend {
+
         @Schema(description = "总体趋势")
         private String overallTrend;
 
@@ -384,10 +587,11 @@ public class AssessmentReportDTO implements Serializable {
         @Schema(description = "趋势分析")
         private String analysis;
 
-        public HealthTrend() {}
+        public HealthTrend() {
+        }
 
         public HealthTrend(String overallTrend, String bloodPressureTrend, String heartRateTrend,
-                          String bloodGlucoseTrend, String weightTrend, String analysis) {
+                String bloodGlucoseTrend, String weightTrend, String analysis) {
             this.overallTrend = overallTrend;
             this.bloodPressureTrend = bloodPressureTrend;
             this.heartRateTrend = heartRateTrend;
@@ -397,22 +601,52 @@ public class AssessmentReportDTO implements Serializable {
         }
 
         // Getter和Setter方法
-        public String getOverallTrend() { return overallTrend; }
-        public void setOverallTrend(String overallTrend) { this.overallTrend = overallTrend; }
+        public String getOverallTrend() {
+            return overallTrend;
+        }
 
-        public String getBloodPressureTrend() { return bloodPressureTrend; }
-        public void setBloodPressureTrend(String bloodPressureTrend) { this.bloodPressureTrend = bloodPressureTrend; }
+        public void setOverallTrend(String overallTrend) {
+            this.overallTrend = overallTrend;
+        }
 
-        public String getHeartRateTrend() { return heartRateTrend; }
-        public void setHeartRateTrend(String heartRateTrend) { this.heartRateTrend = heartRateTrend; }
+        public String getBloodPressureTrend() {
+            return bloodPressureTrend;
+        }
 
-        public String getBloodGlucoseTrend() { return bloodGlucoseTrend; }
-        public void setBloodGlucoseTrend(String bloodGlucoseTrend) { this.bloodGlucoseTrend = bloodGlucoseTrend; }
+        public void setBloodPressureTrend(String bloodPressureTrend) {
+            this.bloodPressureTrend = bloodPressureTrend;
+        }
 
-        public String getWeightTrend() { return weightTrend; }
-        public void setWeightTrend(String weightTrend) { this.weightTrend = weightTrend; }
+        public String getHeartRateTrend() {
+            return heartRateTrend;
+        }
 
-        public String getAnalysis() { return analysis; }
-        public void setAnalysis(String analysis) { this.analysis = analysis; }
+        public void setHeartRateTrend(String heartRateTrend) {
+            this.heartRateTrend = heartRateTrend;
+        }
+
+        public String getBloodGlucoseTrend() {
+            return bloodGlucoseTrend;
+        }
+
+        public void setBloodGlucoseTrend(String bloodGlucoseTrend) {
+            this.bloodGlucoseTrend = bloodGlucoseTrend;
+        }
+
+        public String getWeightTrend() {
+            return weightTrend;
+        }
+
+        public void setWeightTrend(String weightTrend) {
+            this.weightTrend = weightTrend;
+        }
+
+        public String getAnalysis() {
+            return analysis;
+        }
+
+        public void setAnalysis(String analysis) {
+            this.analysis = analysis;
+        }
     }
 }
