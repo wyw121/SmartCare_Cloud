@@ -924,3 +924,4 @@ graph LR
 <sub>© 2025 SmartCare Cloud Team. Made with ❤️ for better elderly care.</sub>
 
 </div>
+
