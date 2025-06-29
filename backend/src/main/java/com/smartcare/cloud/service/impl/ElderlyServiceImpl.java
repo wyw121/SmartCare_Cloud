@@ -18,11 +18,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smartcare.cloud.dto.AssessmentReportDTO;
 import com.smartcare.cloud.dto.ElderlyPageDTO;
 import com.smartcare.cloud.entity.Elderly;
 import com.smartcare.cloud.entity.HealthRecord;
 import com.smartcare.cloud.mapper.ElderlyMapper;
 import com.smartcare.cloud.service.ElderlyService;
+import com.smartcare.cloud.service.HealthAssessmentService;
 import com.smartcare.cloud.service.HealthRecordService;
 import com.smartcare.cloud.vo.ResponseResult;
 
@@ -40,6 +42,9 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
 
     @Autowired
     private HealthRecordService healthRecordService;
+
+    @Autowired
+    private HealthAssessmentService healthAssessmentService;
 
     /**
      * 计算年龄
@@ -429,25 +434,21 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
     @Override
     public ResponseResult<Object> generateAssessmentReport(Long id) {
         try {
+            log.info("生成健康评估报告，老人ID：{}", id);
+            
+            // 获取老人信息
             Elderly elderly = this.getById(id);
             if (elderly == null) {
                 return ResponseResult.error("老人信息不存在");
             }
-
-            Map<String, Object> report = new HashMap<>();
-            report.put("elderlyId", id);
-            report.put("elderlyName", elderly.getName());
-            report.put("assessmentDate", LocalDateTime.now());
-            report.put("healthStatus", elderly.getHealthStatus());
-            report.put("careLevel", null);
-            report.put("adlScore", null);
-            report.put("mmseScore", null);
-            report.put("recommendations", "建议定期体检，保持良好生活习惯");
-
+            
+            // 使用健康评估服务生成报告
+            AssessmentReportDTO report = healthAssessmentService.generateAssessmentReport(elderly);
+            
             return ResponseResult.success(report);
         } catch (Exception e) {
             log.error("生成健康评估报告失败，ID：{}", id, e);
-            return ResponseResult.error("生成评估报告失败");
+            return ResponseResult.error("生成评估报告失败：" + e.getMessage());
         }
     }
 

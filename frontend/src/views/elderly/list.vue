@@ -320,6 +320,12 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 评估报告弹窗 -->
+    <AssessmentReportDialog 
+      v-model="assessmentDialogVisible" 
+      :elderly-id="currentElderlyId" 
+    />
   </div>
 </template>
 
@@ -338,9 +344,13 @@ import {
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import AssessmentReportDialog from '@/components/elderly/AssessmentReportDialog.vue'
 
 export default {
   name: 'ElderlyManagement',
+  components: {
+    AssessmentReportDialog
+  },
   setup() {
     const router = useRouter()
     const loading = ref(false)
@@ -350,6 +360,10 @@ export default {
     const isEdit = ref(false)
     const formRef = ref(null)
     const selectedRows = ref([])
+
+    // 评估报告弹窗
+    const assessmentDialogVisible = ref(false)
+    const currentElderlyId = ref(null)
 
     // 搜索表单
     const searchForm = reactive({
@@ -689,19 +703,9 @@ export default {
     }
 
     // 评估报告
-    const handleAssessmentReport = async (row) => {
-      try {
-        const response = await generateAssessmentReport(row.id)
-        if (response.code === 200) {
-          ElMessageBox.alert(JSON.stringify(response.data, null, 2), `${row.name} - 健康评估报告`, {
-            confirmButtonText: '确定'
-          })
-        } else {
-          ElMessage.error('生成报告失败：' + response.message)
-        }
-      } catch (error) {
-        ElMessage.error('生成报告失败：' + error.message)
-      }
+    const handleAssessmentReport = (row) => {
+      currentElderlyId.value = row.id
+      assessmentDialogVisible.value = true
     }
 
     // 表格选择变化
@@ -794,6 +798,8 @@ export default {
       dialogTitle,
       formRef,
       selectedRows,
+      assessmentDialogVisible,
+      currentElderlyId,
       searchForm,
       pagination,
       tableData,

@@ -52,35 +52,36 @@ public class HealthRecord implements Serializable {
     @TableField("record_date")
     private LocalDateTime recordDate;
 
+    // 临时注释：等待数据库表结构修复
     /**
      * 血压-收缩压
      */
-    @TableField("systolic_pressure")
-    private Integer systolicPressure;
+    // @TableField("systolic_pressure")
+    // private Integer systolicPressure;
 
     /**
      * 血压-舒张压
      */
-    @TableField("diastolic_pressure")
-    private Integer diastolicPressure;
+    // @TableField("diastolic_pressure")
+    // private Integer diastolicPressure;
 
     /**
      * 心率 (次/分钟)
      */
-    @TableField("heart_rate")
-    private Integer heartRate;
+    // @TableField("heart_rate")
+    // private Integer heartRate;
 
     /**
      * 体温 (摄氏度)
      */
-    @TableField("body_temperature")
-    private BigDecimal bodyTemperature;
+    // @TableField("body_temperature")
+    // private BigDecimal bodyTemperature;
 
     /**
      * 血糖值 (mmol/L)
      */
-    @TableField("blood_glucose")
-    private BigDecimal bloodGlucose;
+    // @TableField("blood_glucose")
+    // private BigDecimal bloodGlucose;
 
     /**
      * 体重 (kg)
@@ -208,6 +209,8 @@ public class HealthRecord implements Serializable {
         this.recordDate = recordDate;
     }
 
+    // 临时注释：等待数据库表结构修复
+    /*
     public Integer getSystolicPressure() {
         return systolicPressure;
     }
@@ -247,6 +250,7 @@ public class HealthRecord implements Serializable {
     public void setBloodGlucose(BigDecimal bloodGlucose) {
         this.bloodGlucose = bloodGlucose;
     }
+    */
 
     public BigDecimal getWeight() {
         return weight;
