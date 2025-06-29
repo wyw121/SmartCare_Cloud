@@ -40,12 +40,13 @@ public class TestDataController {
             // 创建测试数据
             Elderly elderly1 = new Elderly();
             elderly1.setName("张国强");
-            elderly1.setGender("MALE");
+            elderly1.setGender(1); // 1-男，0-女
             elderly1.setIdCard("110101194508151234");
             elderly1.setBirthDate(LocalDate.of(1945, 8, 15));
             elderly1.setPhone("13800138001");
             elderly1.setAddress("北京市朝阳区朝阳门外大街138号");
             elderly1.setHealthStatus("HEALTHY");
+            elderly1.setCareLevel(1);
             elderly1.setCreateTime(LocalDateTime.now());
             elderly1.setUpdateTime(LocalDateTime.now());
             elderly1.setIsDeleted(0);
@@ -53,12 +54,13 @@ public class TestDataController {
 
             Elderly elderly2 = new Elderly();
             elderly2.setName("李秀英");
-            elderly2.setGender("FEMALE");
+            elderly2.setGender(0); // 1-男，0-女
             elderly2.setIdCard("110101194702231234");
             elderly2.setBirthDate(LocalDate.of(1947, 2, 23));
             elderly2.setPhone("13800138003");
             elderly2.setAddress("北京市海淀区中关村大街59号");
             elderly2.setHealthStatus("SUBHEALTH");
+            elderly2.setCareLevel(2);
             elderly2.setCreateTime(LocalDateTime.now());
             elderly2.setUpdateTime(LocalDateTime.now());
             elderly2.setIsDeleted(0);
@@ -66,12 +68,13 @@ public class TestDataController {
 
             Elderly elderly3 = new Elderly();
             elderly3.setName("王建国");
-            elderly3.setGender("MALE");
+            elderly3.setGender(1); // 1-男，0-女
             elderly3.setIdCard("110101194312101234");
             elderly3.setBirthDate(LocalDate.of(1943, 12, 10));
             elderly3.setPhone("13800138005");
             elderly3.setAddress("北京市西城区西单北大街133号");
             elderly3.setHealthStatus("SICK");
+            elderly3.setCareLevel(3);
             elderly3.setCreateTime(LocalDateTime.now());
             elderly3.setUpdateTime(LocalDateTime.now());
             elderly3.setIsDeleted(0);

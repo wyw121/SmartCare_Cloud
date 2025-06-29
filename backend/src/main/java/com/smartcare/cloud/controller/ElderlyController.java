@@ -277,4 +277,26 @@ public class ElderlyController {
         log.info("搜索老人档案，关键词：{}", keyword);
         return elderlyService.searchElderly(keyword, pageNum, pageSize);
     }
+
+    /**
+     * 健康检查接口
+     */
+    @GetMapping("/health")
+    public ResponseResult<String> healthCheck() {
+        return ResponseResult.success("服务正常运行");
+    }
+
+    /**
+     * 获取所有老人数据（用于调试）
+     */
+    @GetMapping("/all")
+    public ResponseResult<List<Elderly>> getAllElderly() {
+        try {
+            List<Elderly> elderlyList = elderlyService.list();
+            return ResponseResult.success(elderlyList);
+        } catch (Exception e) {
+            log.error("获取所有老人数据失败", e);
+            return ResponseResult.error("查询失败");
+        }
+    }
 }

@@ -20,7 +20,8 @@ public interface ElderlyMapper extends BaseMapper<Elderly> {
      * 自定义分页查询，明确指定查询字段
      */
     @Select("SELECT id, name, id_card, phone, address, gender, birth_date, health_status, "
-            + "create_time AS createTime, update_time AS updateTime, is_deleted "
+            + "care_level, "
+            + "create_time, update_time "
             + "FROM elderly WHERE is_deleted = 0 ORDER BY create_time DESC")
     Page<Elderly> selectElderlyPage(Page<Elderly> page);
 }

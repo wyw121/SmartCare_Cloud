@@ -80,10 +80,22 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
     @Override
     public ResponseResult<Elderly> getElderlyById(Long id) {
         try {
-            Elderly elderly = this.getById(id);
+            // 使用QueryWrapper查询，确保字段映射正确
+            QueryWrapper<Elderly> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("id", id);
+            queryWrapper.eq("is_deleted", 0);
+            
+            Elderly elderly = this.getOne(queryWrapper);
             if (elderly == null) {
                 return ResponseResult.error("老人信息不存在");
             }
+            
+            // 计算年龄
+            if (elderly.getBirthDate() != null) {
+                int age = java.time.Period.between(elderly.getBirthDate(), java.time.LocalDate.now()).getYears();
+                elderly.setAge(age);
+            }
+            
             return ResponseResult.success(elderly);
         } catch (Exception e) {
             log.error("根据ID查询老人信息失败，ID: {}", id, e);
@@ -226,26 +238,15 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
     @Override
     public ResponseResult<Object> getElderlyHealthRecords(Long id) {
         try {
-            // 这里应该查询健康记录表，暂时返回基本信息
-            Elderly elderly = this.getById(id);
-            if (elderly == null) {
+            // 这里应该查询健康记录表，暂时返回一个空的列表
+            // 首先验证老人是否存在，避免无效查询
+            if (this.getById(id) == null) {
                 return ResponseResult.error("老人信息不存在");
             }
 
-            Map<String, Object> healthRecords = new HashMap<>();
-            healthRecords.put("elderlyId", id);
-            healthRecords.put("elderlyName", elderly.getName());
-            // 以下字段暂时返回null，等待扩展字段添加后完善
-            healthRecords.put("bloodType", null);
-            healthRecords.put("height", null);
-            healthRecords.put("weight", null);
-            healthRecords.put("medicalHistory", null);
-            healthRecords.put("allergyHistory", null);
-            healthRecords.put("medicationHistory", null);
-            healthRecords.put("adlScore", null);
-            healthRecords.put("mmseScore", null);
+            // 返回一个空列表，以匹配前端表格对数组类型的要求
+            return ResponseResult.success(new java.util.ArrayList<>());
 
-            return ResponseResult.success(healthRecords);
         } catch (Exception e) {
             log.error("获取老人健康档案失败，ID：{}", id, e);
             return ResponseResult.error("获取健康档案失败");

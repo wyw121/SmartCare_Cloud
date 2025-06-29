@@ -10,6 +10,12 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 
+/**
+ * 老人档案实体类 - 简化版本，只包含数据库中实际存在的字段
+ *
+ * @author SmartCare Team
+ * @date 2024-01-01
+ */
 @TableName("elderly")
 public class Elderly {
 
@@ -29,24 +35,21 @@ public class Elderly {
     private String address;
 
     @TableField("gender")
-    private String gender;
+    private Integer gender; // 1-男，0-女
 
     @TableField("birth_date")
     private LocalDate birthDate;
 
-    @TableField("emergency_contact")
-    private String emergencyContact;
-
-    @TableField("emergency_phone")
-    private String emergencyPhone;
-
     @TableField("health_status")
     private String healthStatus;
 
-    @TableField(value = "created_time", fill = FieldFill.INSERT)
+    @TableField("care_level")
+    private Integer careLevel; // 照护等级:1-自理,2-半自理,3-不能自理
+
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
-    @TableField(value = "updated_time", fill = FieldFill.INSERT_UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
     @TableField("is_deleted")
@@ -54,34 +57,45 @@ public class Elderly {
     private Integer isDeleted;
 
     @TableField(exist = false)
-    private Integer age;
+    private Integer age; // 计算字段，不存储在数据库中
 
+    // Getter and Setter methods
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+    
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+    
     public String getIdCard() { return idCard; }
     public void setIdCard(String idCard) { this.idCard = idCard; }
+    
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
+    
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
-    public String getGender() { return gender; }
-    public void setGender(String gender) { this.gender = gender; }
+    
+    public Integer getGender() { return gender; }
+    public void setGender(Integer gender) { this.gender = gender; }
+    
     public LocalDate getBirthDate() { return birthDate; }
     public void setBirthDate(LocalDate birthDate) { this.birthDate = birthDate; }
-    public String getEmergencyContact() { return emergencyContact; }
-    public void setEmergencyContact(String emergencyContact) { this.emergencyContact = emergencyContact; }
-    public String getEmergencyPhone() { return emergencyPhone; }
-    public void setEmergencyPhone(String emergencyPhone) { this.emergencyPhone = emergencyPhone; }
+    
     public String getHealthStatus() { return healthStatus; }
     public void setHealthStatus(String healthStatus) { this.healthStatus = healthStatus; }
+    
+    public Integer getCareLevel() { return careLevel; }
+    public void setCareLevel(Integer careLevel) { this.careLevel = careLevel; }
+    
     public LocalDateTime getCreateTime() { return createTime; }
     public void setCreateTime(LocalDateTime createTime) { this.createTime = createTime; }
+    
     public LocalDateTime getUpdateTime() { return updateTime; }
     public void setUpdateTime(LocalDateTime updateTime) { this.updateTime = updateTime; }
+    
     public Integer getIsDeleted() { return isDeleted; }
     public void setIsDeleted(Integer isDeleted) { this.isDeleted = isDeleted; }
+    
     public Integer getAge() { return age; }
     public void setAge(Integer age) { this.age = age; }
 }

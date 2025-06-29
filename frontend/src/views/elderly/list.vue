@@ -313,16 +313,16 @@
 
 <script>
 import {
-  batchDeleteElderly,
-  createElderly,
-  deleteElderly,
-  exportElderlyData,
-  generateAssessmentReport,
-  getCareLevelStatistics,
-  getElderlyHealthRecords,
-  getElderlyHealthStatistics,
-  getElderlyPage,
-  updateElderly
+    batchDeleteElderly,
+    createElderly,
+    deleteElderly,
+    exportElderlyData,
+    generateAssessmentReport,
+    getCareLevelStatistics,
+    getElderlyHealthRecords,
+    getElderlyHealthStatistics,
+    getElderlyPage,
+    updateElderly
 } from '@/api/elderly'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
@@ -481,18 +481,14 @@ export default {
 
     // 新增
     const handleAdd = () => {
-      dialogTitle.value = '新增老人档案'
-      isEdit.value = false
-      resetFormData()
-      dialogVisible.value = true
+      // 跳转到新增老人档案页面
+      router.push('/elderly/add')
     }
 
     // 编辑
     const handleEdit = (row) => {
-      dialogTitle.value = '编辑老人档案'
-      isEdit.value = true
-      Object.assign(formData, row)
-      dialogVisible.value = true
+      // 跳转到编辑老人档案页面
+      router.push(`/elderly/edit/${row.id}`)
     }
 
     // 查看

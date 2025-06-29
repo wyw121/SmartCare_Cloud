@@ -1,5 +1,5 @@
 <template>
-  <div class="elderly-profile">
+  <div class="elderly-profile" v-loading="loading">
     <el-card class="profile-header">
       <div class="profile-info">
         <el-avatar :size="80" :src="elderlyInfo.avatar" />
@@ -70,6 +70,7 @@
 </template>
 
 <script setup>
+import { getElderlyById, getElderlyHealthRecords } from '@/api/elderly'
 import { ElMessage } from 'element-plus'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -79,6 +80,7 @@ const elderlyId = route.params.id
 
 const elderlyInfo = ref({})
 const healthRecords = ref([])
+const loading = ref(false)
 
 // 获取健康状况类型
 const getHealthStatusType = (status) => {
@@ -118,59 +120,70 @@ const getCareLevelText = (level) => {
 
 // 获取老人详情
 const getElderlyInfo = async () => {
+  if (!elderlyId) {
+    ElMessage.error('缺少老人ID参数')
+    return
+  }
+  loading.value = true
   try {
-    // 这里应该调用真实的API
-    // const { data } = await getElderlyById(elderlyId)
-    
-    // 模拟数据
-    elderlyInfo.value = {
-      name: '张三',
-      gender: 1,
-      age: 74,
-      idCard: '110101195001011234',
-      phone: '13800138001',
-      address: '北京市朝阳区某某街道1号',
-      emergencyContactName: '张小明',
-      emergencyContactPhone: '13900139001',
-      healthStatus: 'HEALTHY',
-      careLevel: 1,
-      insuranceType: '城镇职工医保',
-      medicalHistory: '高血压病史10年',
-      allergyHistory: '青霉素过敏',
-      familyDoctorName: '刘医生'
+    const response = await getElderlyById(elderlyId)
+    if (response.code === 200) {
+      elderlyInfo.value = response.data || {}
+    } else {
+      ElMessage.error(response.message || '获取老人信息失败')
     }
   } catch (error) {
     console.error('获取老人信息失败:', error)
-    ElMessage.error('获取老人信息失败')
+    // 使用mock数据作为fallback
+    const mockData = {
+      id: elderlyId,
+      name: '张明',
+      gender: 1,
+      age: 78,
+      healthStatus: 'HEALTHY',
+      careLevel: 1,
+      phone: '13800138001',
+      address: '北京市朝阳区长安街1号',
+      avatar: null
+    }
+    elderlyInfo.value = mockData
+    ElMessage.warning('API服务暂时不可用，显示模拟数据')
+  } finally {
+    loading.value = false
   }
 }
 
 // 获取健康记录
 const getHealthRecords = async () => {
+  if (!elderlyId) return
   try {
-    // 这里应该调用真实的API
-    // const { data } = await getHealthRecordsByElderlyId(elderlyId)
-    
-    // 模拟数据
-    healthRecords.value = [
-      {
-        recordDate: '2024-01-15',
-        recordType: '体检',
-        doctorName: '刘医生',
-        diagnosis: '血压偏高，建议注意饮食',
-        abnormalStatus: 1
-      },
-      {
-        recordDate: '2024-01-10',
-        recordType: '门诊',
-        doctorName: '陈医生',
-        diagnosis: '感冒，开具感冒药',
-        abnormalStatus: 0
-      }
-    ]
+    const response = await getElderlyHealthRecords(elderlyId)
+    if (response.code === 200) {
+      healthRecords.value = response.data || []
+    } else {
+      console.error('获取健康记录失败:', response.message)
+      ElMessage.warning(response.message || '获取健康记录失败')
+    }
   } catch (error) {
     console.error('获取健康记录失败:', error)
-    ElMessage.error('获取健康记录失败')
+    // 使用mock数据作为fallback
+    const mockHealthRecords = [
+      {
+        id: 1,
+        recordDate: '2024-01-15',
+        recordType: 'CHECKUP',
+        systolicPressure: 120,
+        diastolicPressure: 80,
+        heartRate: 72,
+        bodyTemperature: 36.5,
+        symptoms: '无异常症状',
+        diagnosis: '健康状况良好',
+        treatment: '继续保持健康生活方式',
+        doctorAdvice: '定期体检，注意饮食'
+      }
+    ]
+    healthRecords.value = mockHealthRecords
+    ElMessage.info('健康记录API暂不可用，显示模拟数据')
   }
 }
 

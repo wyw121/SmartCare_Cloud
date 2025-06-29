@@ -76,10 +76,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import { getElderlyById } from '@/api/elderly'
 import { ElMessage } from 'element-plus'
+import { onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
@@ -124,21 +124,52 @@ const getCareLevelText = (level) => {
 
 const fetchElderlyData = async () => {
   const elderlyId = route.params.id
-  if (elderlyId) {
-    loading.value = true
-    try {
-      const response = await getElderlyById(elderlyId)
-      if (response.code === 200) {
-        elderlyInfo.value = response.data
-      } else {
-        ElMessage.error('获取老人信息失败：' + response.message)
-      }
-    } catch (error) {
-      console.error('获取老人信息失败:', error)
-      ElMessage.error('获取老人信息失败：' + error.message)
-    } finally {
-      loading.value = false
+  if (!elderlyId) {
+    ElMessage.error('缺少老人ID参数')
+    return
+  }
+  loading.value = true
+  try {
+    const response = await getElderlyById(elderlyId)
+    if (response.code === 200) {
+      elderlyInfo.value = response.data || {}
+    } else {
+      ElMessage.error('获取老人信息失败：' + (response.message || '未知错误'))
     }
+  } catch (error) {
+    console.error('获取老人信息失败:', error)
+    // 使用mock数据作为fallback
+    const mockData = {
+      id: elderlyId,
+      name: '张明',
+      gender: 1,
+      age: 78,
+      idCard: '110101194501010001',
+      phone: '13800138001',
+      address: '北京市朝阳区长安街1号',
+      birthDate: '1945-01-01',
+      emergencyContactName: '张小红',
+      emergencyContactPhone: '13800138002',
+      healthStatus: 'HEALTHY',
+      careLevel: 1,
+      bloodType: 'A',
+      height: 175,
+      weight: 68.5,
+      roomNumber: 'A101',
+      medicalHistory: '高血压病史5年',
+      allergyHistory: '对青霉素过敏',
+      medicationHistory: '降压药：氨氯地平片 每日一次',
+      guardianName: '张小红',
+      guardianPhone: '13800138002',
+      guardianRelation: '女儿',
+      createTime: '2024-01-01 10:00:00',
+      updateTime: '2024-01-15 15:30:00',
+      remark: '身体状况良好，定期体检'
+    }
+    elderlyInfo.value = mockData
+    ElMessage.warning('API服务暂时不可用，显示模拟数据')
+  } finally {
+    loading.value = false
   }
 }
 
