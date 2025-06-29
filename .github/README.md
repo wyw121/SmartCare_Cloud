@@ -29,13 +29,13 @@ SmartCare Cloud（智慧医养大数据公共服务平台）是一个专为老�
 
 ### 🎯 核心价值
 
-| 价值点           | 描述                                       |
-| ---------------- | ------------------------------------------ |
-| 🏥**医养融合**   | 打通医疗与养老服务壁垒，提供一体化解决方案 |
-| 📱**数字化管理** | 建立完整的老人健康档案和管理体系           |
-| ⚡**实时监控**   | 24/7健康数据监控，智能预警异常情况         |
-| 📈**数据驱动**   | 基于大数据分析，优化医养资源配置           |
-| 🛡️**安全合规** | 严格遵循医疗数据安全法规要求               |
+| 价值点 | 描述 |
+|--------|------|
+| 🏥 **医养融合** | 打通医疗与养老服务壁垒，提供一体化解决方案 |
+| 📱 **数字化管理** | 建立完整的老人健康档案和管理体系 |
+| ⚡ **实时监控** | 24/7健康数据监控，智能预警异常情况 |
+| 📈 **数据驱动** | 基于大数据分析，优化医养资源配置 |
+| 🛡️ **安全合规** | 严格遵循医疗数据安全法规要求 |
 
 ## 🛠️ 技术栈
 
@@ -43,25 +43,25 @@ SmartCare Cloud（智慧医养大数据公共服务平台）是一个专为老�
 
 ### 🎯 核心技术
 
-| 层级         | 技术选型     | 版本   | 说明                 |
-| ------------ | ------------ | ------ | -------------------- |
-| **后端**     | Spring Boot  | 2.7.18 | 企业级Java应用框架   |
-| **数据层**   | MyBatis-Plus | 3.5.x  | 增强型ORM框架        |
-| **数据库**   | MySQL        | 8.0+   | 关系型数据库         |
-| **缓存**     | Redis        | 6.x+   | 内存数据库           |
-| **前端**     | Vue.js       | 3.x    | 渐进式JavaScript框架 |
-| **UI框架**   | Element Plus | 2.x    | Vue3组件库           |
-| **构建工具** | Vite         | 4.x    | 现代化构建工具       |
-| **状态管理** | Pinia        | 2.x    | Vue3状态管理         |
+| 层级 | 技术选型 | 版本 | 说明 |
+|------|----------|------|------|
+| **后端** | Spring Boot | 2.7.18 | 企业级Java应用框架 |
+| **数据层** | MyBatis-Plus | 3.5.x | 增强型ORM框架 |
+| **数据库** | MySQL | 8.0+ | 关系型数据库 |
+| **缓存** | Redis | 6.x+ | 内存数据库 |
+| **前端** | Vue.js | 3.x | 渐进式JavaScript框架 |
+| **UI框架** | Element Plus | 2.x | Vue3组件库 |
+| **构建工具** | Vite | 4.x | 现代化构建工具 |
+| **状态管理** | Pinia | 2.x | Vue3状态管理 |
 
 ### 🔧 开发工具
 
-| 工具               | 用途       | 配置状态  |
-| ------------------ | ---------- | --------- |
+| 工具 | 用途 | 配置状态 |
+|------|------|----------|
 | **GitHub Copilot** | AI代码助手 | ✅ 已配置 |
-| **Maven**          | 依赖管理   | ✅ 已配置 |
-| **Docker**         | 容器化部署 | ✅ 已配置 |
-| **Swagger**        | API文档    | ✅ 已集成 |
+| **Maven** | 依赖管理 | ✅ 已配置 |
+| **Docker** | 容器化部署 | ✅ 已配置 |
+| **Swagger** | API文档 | ✅ 已集成 |
 
 </div>
 
@@ -75,27 +75,27 @@ graph TB
         C[状态管理 Pinia]
         D[UI组件库]
     end
-  
+    
     subgraph "服务层 (Service Layer)"
         E[Spring Boot 2.7]
         F[Spring MVC]
         G[Spring Security]
         H[业务逻辑层]
     end
-  
+    
     subgraph "数据层 (Data Layer)"
         I[MyBatis-Plus]
         J[MySQL 8.0]
         K[Redis 缓存]
         L[数据访问层]
     end
-  
+    
     subgraph "外部服务 (External Services)"
         M[医疗设备API]
         N[消息推送服务]
         O[文件存储服务]
     end
-  
+    
     A --> E
     B --> F
     C --> G
@@ -107,7 +107,7 @@ graph TB
     E --> M
     E --> N
     E --> O
-  
+    
     style A fill:#4fc3f7
     style E fill:#66bb6a
     style J fill:#ff9800
@@ -122,24 +122,63 @@ graph TB
 
 </div>
 
-| 🌟 模块              | 📋 功能描述                          | 🚦 开发状态 | 🔗 相关文档                        |
-| -------------------- | ------------------------------------ | ----------- | ---------------------------------- |
-| 🏠**首页仪表板**     | 系统概览、关键指标展示、快捷操作入口 | � 开发中   | [仪表盘文档](docs/dashboard.md)    |
-| 👴**老人档案管理**   | 个人信息管理、健康档案、家庭关系维护 | � 已完成   | [档案管理文档](docs/elderly.md)    |
-| ⚠️**健康预警系统** | 实时健康监控、异常预警、处理流程跟踪 | � 开发中   | [预警系统文档](docs/warning.md)    |
-| 📋**评估报告**       | 健康评估分析、风险等级评定、康复跟踪 | � 已完成   | [评估系统文档](docs/assessment.md) |
-| 👥**重点人群管理**   | 高风险人群筛选、分级护理、特殊关注   | � 计划中   | -                                  |
-| �**统计报表**       | 数据统计分析、趋势预测、决策支持     | � 开发中   | [报表文档](docs/reports.md)        |
-| 🔧**设备管理**       | 设备台账管理、状态监控、维护记录     | � 计划中   | -                                  |
-| 👤**用户管理**       | 老人账户、医生账户、权限角色管理     | � 开发中   | [用户管理文档](docs/users.md)      |
-| 🧠**大数据分析**     | 健康趋势分析、服务效果评估、资源优化 | � 计划中   | -                                  |
-| ⚙️**个人中心**     | 个人信息维护、安全设置、操作日志     | � 计划中   | -                                  |
+| 🌟 模块 | 📋 功能描述 | 🚦 开发状态 | 🔗 相关文档 |
+|---------|-------------|-------------|-------------|
+| 🏠 **首页仪表板** | 系统概览、关键指标展示、快捷操作入口 | � 开发中 | [仪表盘文档](docs/dashboard.md) |
+| 👴 **老人档案管理** | 个人信息管理、健康档案、家庭关系维护 | � 已完成 | [档案管理文档](docs/elderly.md) |
+| ⚠️ **健康预警系统** | 实时健康监控、异常预警、处理流程跟踪 | � 开发中 | [预警系统文档](docs/warning.md) |
+| 📋 **评估报告** | 健康评估分析、风险等级评定、康复跟踪 | � 已完成 | [评估系统文档](docs/assessment.md) |
+| 👥 **重点人群管理** | 高风险人群筛选、分级护理、特殊关注 | � 计划中 | - |
+| � **统计报表** | 数据统计分析、趋势预测、决策支持 | � 开发中 | [报表文档](docs/reports.md) |
+| 🔧 **设备管理** | 设备台账管理、状态监控、维护记录 | � 计划中 | - |
+| 👤 **用户管理** | 老人账户、医生账户、权限角色管理 | � 开发中 | [用户管理文档](docs/users.md) |
+| 🧠 **大数据分析** | 健康趋势分析、服务效果评估、资源优化 | � 计划中 | - |
+| ⚙️ **个人中心** | 个人信息维护、安全设置、操作日志 | � 计划中 | - |
 
 ### 🔥 特色功能
 
 <table>
 <tr>
 <td width="50%">
+
+#### 🎯 智能健康监控
+- **实时数据采集**: 对接多种医疗设备
+- **异常智能识别**: AI算法识别健康异常
+- **多级预警机制**: 按风险等级分类预警
+- **家属即时通知**: 紧急情况自动通知
+
+</td>
+<td width="50%">
+
+#### 📊 数据可视化分析
+- **健康趋势图表**: 直观展示健康变化
+- **风险评估模型**: 科学评估健康风险
+- **个性化建议**: 基于数据的健康建议
+- **决策支持系统**: 辅助医疗决策制定
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+#### 🔒 数据安全保障
+- **多层加密存储**: 敏感数据分级加密
+- **访问权限控制**: 细粒度权限管理
+- **操作日志记录**: 完整的操作审计
+- **合规性检查**: 符合医疗数据法规
+
+</td>
+<td width="50%">
+
+#### 🚀 现代化体验
+- **响应式设计**: 适配多种设备屏幕
+- **组件化开发**: 可复用的UI组件
+- **性能优化**: 快速加载和响应
+- **国际化支持**: 多语言界面支持
+
+</td>
+</tr>
+</table>
 
 ## 📁 项目结构
 
@@ -235,24 +274,24 @@ SmartCare_Cloud/                           # 🏥 智慧医养平台根目录
 
 ### 🎯 核心目录说明
 
-| 目录          | 用途                | 重要文件                                            |
-| ------------- | ------------------- | --------------------------------------------------- |
-| **backend/**  | 后端Spring Boot应用 | `SmartCareCloudApplication.java`、`application.yml` |
-| **frontend/** | 前端Vue.js应用      | `main.js`、`package.json`、`vite.config.js`         |
-| **.github/**  | GitHub Copilot配置  | `copilot_instructions.md`、`.prompt.md`             |
-| **mysql/**    | 数据库配置          | `docker-compose.yml`                                |
+| 目录 | 用途 | 重要文件 |
+|------|------|----------|
+| **backend/** | 后端Spring Boot应用 | `SmartCareCloudApplication.java`、`application.yml` |
+| **frontend/** | 前端Vue.js应用 | `main.js`、`package.json`、`vite.config.js` |
+| **.github/** | GitHub Copilot配置 | `copilot_instructions.md`、`.prompt.md` |
+| **mysql/** | 数据库配置 | `docker-compose.yml` |
 
 ## � 快速开始
 
 ### 📋 环境要求
 
-| 环境        | 版本要求 | 说明                     |
-| ----------- | -------- | ------------------------ |
-| **Java**    | JDK 8+   | 推荐使用JDK 11或更高版本 |
-| **Node.js** | 16.x+    | 推荐使用LTS版本          |
-| **MySQL**   | 8.0+     | 确保支持UTF8MB4字符集    |
-| **Redis**   | 6.x+     | 用于缓存和会话存储       |
-| **Maven**   | 3.6+     | Java项目构建工具         |
+| 环境 | 版本要求 | 说明 |
+|------|----------|------|
+| **Java** | JDK 8+ | 推荐使用JDK 11或更高版本 |
+| **Node.js** | 16.x+ | 推荐使用LTS版本 |
+| **MySQL** | 8.0+ | 确保支持UTF8MB4字符集 |
+| **Redis** | 6.x+ | 用于缓存和会话存储 |
+| **Maven** | 3.6+ | Java项目构建工具 |
 
 ### ⚡ 一键启动
 
@@ -325,13 +364,13 @@ npm run dev
 
 ### 🌐 访问地址
 
-| 服务         | 地址                                  | 说明                |
-| ------------ | ------------------------------------- | ------------------- |
-| **前端应用** | http://localhost:3000                 | Vue.js前端界面      |
-| **后端API**  | http://localhost:8080                 | Spring Boot后端服务 |
-| **API文档**  | http://localhost:8080/swagger-ui.html | Swagger在线文档     |
-| **数据库**   | localhost:3306                        | MySQL数据库         |
-| **缓存**     | localhost:6379                        | Redis缓存服务       |
+| 服务 | 地址 | 说明 |
+|------|------|------|
+| **前端应用** | http://localhost:3000 | Vue.js前端界面 |
+| **后端API** | http://localhost:8080 | Spring Boot后端服务 |
+| **API文档** | http://localhost:8080/swagger-ui.html | Swagger在线文档 |
+| **数据库** | localhost:3306 | MySQL数据库 |
+| **缓存** | localhost:6379 | Redis缓存服务 |
 
 ### 🧪 验证安装
 
@@ -355,11 +394,11 @@ curl http://localhost:3000
 
 ### 🎮 默认账户
 
-| 账户类型       | 用户名   | 密码      | 权限         |
-| -------------- | -------- | --------- | ------------ |
-| **系统管理员** | admin    | admin123  | 全部权限     |
-| **医生账户**   | doctor01 | doctor123 | 医疗功能权限 |
-| **护理人员**   | nurse01  | nurse123  | 护理功能权限 |
+| 账户类型 | 用户名 | 密码 | 权限 |
+|----------|--------|------|------|
+| **系统管理员** | admin | admin123 | 全部权限 |
+| **医生账户** | doctor01 | doctor123 | 医疗功能权限 |
+| **护理人员** | nurse01 | nurse123 | 护理功能权限 |
 
 > ⚠️ **安全提醒**: 生产环境请立即修改默认密码!
 
@@ -372,6 +411,37 @@ curl http://localhost:3000
 <table>
 <tr>
 <td width="33%">
+
+#### 📋 指导文档
+**copilot_instructions.md**
+- 项目架构说明
+- 业务领域知识
+- 开发规范标准
+- 最佳实践指导
+
+</td>
+<td width="33%">
+
+#### 💡 开发提示
+**.prompt.md**
+- 代码生成模板
+- 常用开发场景
+- 问题解决方案
+- 效率提升技巧
+
+</td>
+<td width="33%">
+
+#### 📖 使用指引
+**.instructions.md**
+- 详细使用说明
+- 功能配置方法
+- 团队协作规范
+- 注意事项说明
+
+</td>
+</tr>
+</table>
 
 > 💡 **使用建议**: 开发前请阅读 `.github/` 目录下的配置文档，可显著提升Copilot代码生成质量
 
@@ -394,10 +464,10 @@ curl http://localhost:3000
 @Api(tags = "老人档案管理")
 @Slf4j
 public class ElderlyController {
-  
+    
     @Autowired
     private ElderlyService elderlyService;
-  
+    
     /**
      * 获取老人详细信息
      * 
@@ -428,7 +498,7 @@ public class ElderlyController {
       <h2>老人档案管理</h2>
       <p>管理和维护老人的基本信息和健康档案</p>
     </div>
-  
+    
     <!-- 主要内容 -->
     <el-card class="main-card" shadow="never">
       <!-- 内容区域 -->
@@ -477,12 +547,12 @@ onMounted(() => {
   
   .page-header {
     margin-bottom: 20px;
-  
+    
     h2 {
       color: #303133;
       margin-bottom: 8px;
     }
-  
+    
     p {
       color: #909399;
       margin: 0;
@@ -556,12 +626,12 @@ systemctl start nginx
 
 ### 🧪 测试指南
 
-| 测试类型     | 命令               | 覆盖率要求   |
-| ------------ | ------------------ | ------------ |
-| **单元测试** | `mvn test`         | ≥ 80%       |
-| **集成测试** | `mvn verify`       | ≥ 70%       |
-| **API测试**  | `npm run test:api` | ≥ 90%       |
-| **E2E测试**  | `npm run test:e2e` | 核心流程100% |
+| 测试类型 | 命令 | 覆盖率要求 |
+|----------|------|------------|
+| **单元测试** | `mvn test` | ≥ 80% |
+| **集成测试** | `mvn verify` | ≥ 70% |
+| **API测试** | `npm run test:api` | ≥ 90% |
+| **E2E测试** | `npm run test:e2e` | 核心流程100% |
 
 ### 📊 性能优化
 
@@ -571,13 +641,12 @@ systemctl start nginx
 #### 🔙 后端性能优化
 
 - **数据库优化**
-  
   - 合理使用索引
   - 避免N+1查询
   - 分页查询大数据集
   - 使用Redis缓存热点数据
+
 - **接口优化**
-  
   - 异步处理耗时操作
   - 接口响应数据压缩
   - 合理使用连接池
@@ -586,13 +655,12 @@ systemctl start nginx
 #### 🎨 前端性能优化
 
 - **加载优化**
-  
   - 组件懒加载
   - 图片懒加载
   - 路由懒加载
   - CDN静态资源
+
 - **渲染优化**
-  
   - 虚拟滚动长列表
   - 防抖节流优化
   - Keep-alive缓存
@@ -608,14 +676,14 @@ systemctl start nginx
 
 </div>
 
-| 📂 文档类型       | 📄 文档名称    | 📝 描述                      | 🔗 链接                             |
-| ----------------- | -------------- | ---------------------------- | ----------------------------------- |
-| **🏗️ 架构设计** | API接口文档    | RESTful API详细说明          | [📖 查看](docs/api.md)              |
-| **🗄️ 数据库**   | 数据库设计文档 | 表结构、关系图、索引设计     | [📖 查看](docs/database.md)         |
-| **🚀 部署运维**   | 部署指南       | 生产环境部署详细步骤         | [📖 查看](docs/deployment.md)       |
-| **📝 开发规范**   | 编码标准       | 前后端开发规范和最佳实践     | [📖 查看](docs/coding-standards.md) |
-| **🔒 安全合规**   | 安全设计       | 数据安全、隐私保护、合规要求 | [📖 查看](docs/security.md)         |
-| **🧪 测试指南**   | 测试文档       | 单元测试、集成测试、性能测试 | [📖 查看](docs/testing.md)          |
+| 📂 文档类型 | 📄 文档名称 | 📝 描述 | 🔗 链接 |
+|-------------|-------------|---------|---------|
+| **🏗️ 架构设计** | API接口文档 | RESTful API详细说明 | [📖 查看](docs/api.md) |
+| **🗄️ 数据库** | 数据库设计文档 | 表结构、关系图、索引设计 | [📖 查看](docs/database.md) |
+| **🚀 部署运维** | 部署指南 | 生产环境部署详细步骤 | [📖 查看](docs/deployment.md) |
+| **📝 开发规范** | 编码标准 | 前后端开发规范和最佳实践 | [📖 查看](docs/coding-standards.md) |
+| **🔒 安全合规** | 安全设计 | 数据安全、隐私保护、合规要求 | [📖 查看](docs/security.md) |
+| **🧪 测试指南** | 测试文档 | 单元测试、集成测试、性能测试 | [📖 查看](docs/testing.md) |
 
 ### 🎯 快速入门文档
 
@@ -623,13 +691,32 @@ systemctl start nginx
 <tr>
 <td width="50%">
 
+#### 🔰 新手指南
+- [📋 项目概览](PROJECT_OVERVIEW.md)
+- [⚡ 快速启动](QUICK_START.md)
+- [💻 工作区设置](WORKSPACE_SETUP.md)
+- [🗄️ 数据库设置](DATABASE_SETUP.md)
+
+</td>
+<td width="50%">
+
+#### 🔧 开发文档
+- [� Copilot使用指南](.github/copilot_instructions.md)
+- [💡 开发提示文档](.github/.prompt.md)
+- [📖 详细使用指引](.github/.instructions.md)
+- [🏗️ 功能模块规划](功能模块详细规划.md)
+
+</td>
+</tr>
+</table>
+
 ### 📊 API文档访问
 
-| 环境         | Swagger UI                                | API文档     |
-| ------------ | ----------------------------------------- | ----------- |
-| **开发环境** | http://localhost:8080/swagger-ui.html     | 实时API文档 |
+| 环境 | Swagger UI | API文档 |
+|------|------------|---------|
+| **开发环境** | http://localhost:8080/swagger-ui.html | 实时API文档 |
 | **测试环境** | http://test.smartcare.com/swagger-ui.html | 测试API文档 |
-| **生产环境** | http://api.smartcare.com/doc.html         | 生产API文档 |
+| **生产环境** | http://api.smartcare.com/doc.html | 生产API文档 |
 
 ## 🔒 安全与合规
 
@@ -643,16 +730,53 @@ systemctl start nginx
 <tr>
 <td width="25%">
 
+#### 🔐 数据安全
+- **敏感信息加密**: AES-256加密存储
+- **传输安全**: HTTPS/TLS1.3
+- **访问控制**: RBAC权限管理
+- **审计日志**: 完整操作记录
+
+</td>
+<td width="25%">
+
+#### 🏥 医疗合规
+- **HIPAA合规**: 符合医疗数据标准
+- **隐私保护**: 个人信息脱敏
+- **数据备份**: 定期自动备份
+- **灾难恢复**: 完整恢复方案
+
+</td>
+<td width="25%">
+
+#### 🔍 安全监控
+- **实时监控**: 异常行为检测
+- **入侵防护**: WAF防火墙
+- **漏洞扫描**: 定期安全扫描
+- **应急响应**: 安全事件处理
+
+</td>
+<td width="25%">
+
+#### 🛠️ 安全工具
+- **代码扫描**: SonarQube静态分析
+- **依赖检查**: OWASP依赖检查
+- **渗透测试**: 定期安全测试
+- **安全培训**: 团队安全意识
+
+</td>
+</tr>
+</table>
+
 ## 🚀 性能与监控
 
 ### 📈 性能指标
 
-| 指标类型         | 目标值  | 当前值 | 监控工具       |
-| ---------------- | ------- | ------ | -------------- |
-| **接口响应时间** | < 200ms | ~150ms | Prometheus     |
-| **数据库查询**   | < 100ms | ~80ms  | MySQL Slow Log |
-| **前端加载时间** | < 3s    | ~2.1s  | Lighthouse     |
-| **系统可用性**   | > 99.9% | 99.95% | Uptime监控     |
+| 指标类型 | 目标值 | 当前值 | 监控工具 |
+|----------|--------|--------|----------|
+| **接口响应时间** | < 200ms | ~150ms | Prometheus |
+| **数据库查询** | < 100ms | ~80ms | MySQL Slow Log |
+| **前端加载时间** | < 3s | ~2.1s | Lighthouse |
+| **系统可用性** | > 99.9% | 99.95% | Uptime监控 |
 
 ### 🔍 监控体系
 
@@ -663,15 +787,15 @@ graph LR
     B --> D[后端API]
     D --> E[MySQL数据库]
     D --> F[Redis缓存]
-  
+    
     G[Prometheus] --> H[Grafana仪表板]
     I[ELK日志] --> H
     J[应用监控] --> H
-  
+    
     D --> G
     E --> G
     F --> G
-  
+    
     style G fill:#ff9800
     style H fill:#4caf50
     style I fill:#2196f3
@@ -693,13 +817,42 @@ graph LR
 <tr>
 <td width="33%">
 
+#### 🔄 代码贡献
+1. **Fork项目**到你的GitHub
+2. **创建功能分支**: `git checkout -b feature/amazing-feature`
+3. **提交更改**: `git commit -m 'Add amazing feature'`
+4. **推送分支**: `git push origin feature/amazing-feature`
+5. **创建Pull Request**
+
+</td>
+<td width="33%">
+
+#### � 问题报告
+- 使用[Issue模板](https://github.com/wyw121/SmartCare_Cloud/issues/new/choose)
+- 提供详细的问题描述
+- 包含复现步骤
+- 添加相关截图或日志
+
+</td>
+<td width="33%">
+
+#### 📝 文档改进
+- 修正文档错误
+- 补充缺失内容
+- 翻译多语言版本
+- 优化用户体验
+
+</td>
+</tr>
+</table>
+
 ### 🏆 贡献者等级
 
-| 等级            | 要求       | 权限     | 奖励       |
-| --------------- | ---------- | -------- | ---------- |
-| **🌱 贡献者**   | 1+ PR合并  | 代码评审 | 贡献者徽章 |
-| **⭐ 核心成员** | 10+ PR合并 | 分支管理 | 专属头衔   |
-| **🔥 维护者**   | 50+ PR合并 | 发布管理 | 团队认证   |
+| 等级 | 要求 | 权限 | 奖励 |
+|------|------|------|------|
+| **🌱 贡献者** | 1+ PR合并 | 代码评审 | 贡献者徽章 |
+| **⭐ 核心成员** | 10+ PR合并 | 分支管理 | 专属头衔 |
+| **🔥 维护者** | 50+ PR合并 | 发布管理 | 团队认证 |
 
 ## 📞 支持
 
@@ -712,6 +865,43 @@ graph LR
 <table>
 <tr>
 <td width="25%">
+
+#### 💬 社区支持
+- [📋 GitHub Issues](https://github.com/wyw121/SmartCare_Cloud/issues)
+- [💭 GitHub Discussions](https://github.com/wyw121/SmartCare_Cloud/discussions)
+- [📱 QQ群](javascript:void(0)) - 智慧医养技术交流群
+- [💼 微信群](javascript:void(0)) - 扫码加入开发者群
+
+</td>
+<td width="25%">
+
+#### � 官方联系
+- **项目维护者**: [smartcare@example.com](mailto:smartcare@example.com)
+- **技术支持**: [support@smartcare.com](mailto:support@smartcare.com)
+- **商务合作**: [business@smartcare.com](mailto:business@smartcare.com)
+- **安全问题**: [security@smartcare.com](mailto:security@smartcare.com)
+
+</td>
+<td width="25%">
+
+#### 📚 学习资源
+- [📖 在线文档](https://docs.smartcare.com)
+- [🎥 视频教程](https://www.youtube.com/smartcare)
+- [📝 技术博客](https://blog.smartcare.com)
+- [🎓 培训课程](https://training.smartcare.com)
+
+</td>
+<td width="25%">
+
+#### 🔗 相关链接
+- [🏠 官方网站](https://www.smartcare.com)
+- [📊 项目状态](https://status.smartcare.com)
+- [🗺️ 路线图](https://roadmap.smartcare.com)
+- [📄 更新日志](CHANGELOG.md)
+
+</td>
+</tr>
+</table>
 
 ---
 
