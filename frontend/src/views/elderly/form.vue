@@ -104,10 +104,10 @@
 </template>
 
 <script setup>
+import { createElderly, getElderlyById, updateElderly } from '@/api/elderly'
 import { ElMessage } from 'element-plus'
 import { onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getElderlyById, updateElderly, createElderly } from '@/api/elderly'
 
 const route = useRoute()
 const router = useRouter()

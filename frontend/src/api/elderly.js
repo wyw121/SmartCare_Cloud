@@ -93,11 +93,13 @@ export function getElderlyHealthStatistics() {
 /**
  * 获取老人健康档案
  * @param {Number} id 老人ID
+ * @param {Object} params 查询参数
  */
-export function getElderlyHealthRecords(id) {
+export function getElderlyHealthRecords(id, params = {}) {
   return request({
     url: `/elderly/${id}/health-records`,
-    method: 'get'
+    method: 'get',
+    params
   })
 }
 
@@ -111,6 +113,40 @@ export function addHealthRecord(id, data) {
     url: `/elderly/${id}/health-records`,
     method: 'post',
     data
+  })
+}
+
+/**
+ * 更新健康记录
+ * @param {Object} data 健康记录数据
+ */
+export function updateHealthRecord(data) {
+  return request({
+    url: `/health-records/${data.id}`,
+    method: 'put',
+    data
+  })
+}
+
+/**
+ * 删除健康记录
+ * @param {Number} id 健康记录ID
+ */
+export function deleteHealthRecord(id) {
+  return request({
+    url: `/health-records/${id}`,
+    method: 'delete'
+  })
+}
+
+/**
+ * 获取健康记录详情
+ * @param {Number} id 健康记录ID
+ */
+export function getHealthRecordById(id) {
+  return request({
+    url: `/health-records/${id}`,
+    method: 'get'
   })
 }
 

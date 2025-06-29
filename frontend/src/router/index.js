@@ -120,6 +120,12 @@ const routes = [
         meta: { title: '编辑老人档案', activeMenu: '/elderly/list', hidden: true }
       },
       {
+        path: 'health-records/:id(\\d+)',
+        name: 'ElderlyHealthRecords',
+        component: () => import('@/views/elderly/health-records.vue'),
+        meta: { title: '健康档案', activeMenu: '/elderly/list', hidden: true }
+      },
+      {
         path: 'modular',
         name: 'ElderlyModular',
         component: () => import('@/views/elderly/modular.vue'),

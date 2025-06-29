@@ -86,7 +86,11 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="age" label="年龄" width="80" />
+        <el-table-column prop="age" label="年龄" width="80">
+          <template #default="scope">
+            <span>{{ calculateAge(scope.row.birthDate) }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="phone" label="联系电话" width="130" />
         <el-table-column prop="healthStatus" label="健康状态" width="100">
           <template #default="scope">
@@ -100,8 +104,16 @@
             <el-tag>{{ getCareLevelText(scope.row.careLevel) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="roomNumber" label="房间号" width="80" />
-        <el-table-column prop="guardianName" label="监护人" width="100" />
+        <el-table-column prop="roomNumber" label="房间号" width="80">
+          <template #default="scope">
+            <span>{{ scope.row.roomNumber || '未分配' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="guardianName" label="监护人" width="100">
+          <template #default="scope">
+            <span>{{ scope.row.guardianName || '未设置' }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="address" label="居住地址" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" width="160" />
         <el-table-column label="操作" width="340" fixed="right">
@@ -319,7 +331,6 @@ import {
     exportElderlyData,
     generateAssessmentReport,
     getCareLevelStatistics,
-    getElderlyHealthRecords,
     getElderlyHealthStatistics,
     getElderlyPage,
     updateElderly
@@ -438,6 +449,34 @@ export default {
       return levelMap[level] || '未知'
     }
 
+    // 计算年龄
+    const calculateAge = (birthDate) => {
+      if (!birthDate) {
+        return '未知'
+      }
+      
+      try {
+        const birth = new Date(birthDate)
+        const today = new Date()
+        
+        if (birth > today) {
+          return '未知'
+        }
+        
+        let age = today.getFullYear() - birth.getFullYear()
+        const monthDiff = today.getMonth() - birth.getMonth()
+        
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+          age--
+        }
+        
+        return age >= 0 ? age + '岁' : '未知'
+      } catch (error) {
+        console.error('计算年龄失败:', error)
+        return '未知'
+      }
+    }
+
     // 获取列表数据
     const fetchData = async () => {
       loading.value = true
@@ -455,13 +494,64 @@ export default {
           pagination.total = response.data.total
         } else {
           ElMessage.error('获取数据失败：' + response.message)
+          loadMockData()
         }
       } catch (error) {
         console.error('请求错误:', error)
-        ElMessage.error('获取数据失败：' + error.message)
+        ElMessage.warning('后端服务连接失败，显示模拟数据进行演示')
+        loadMockData()
       } finally {
         loading.value = false
       }
+    }
+
+    // 加载模拟数据（用于演示）
+    const loadMockData = () => {
+      tableData.value = [
+        {
+          id: 1,
+          name: '张明',
+          gender: 1,
+          birthDate: '1950-01-15',
+          phone: '13999999999',
+          address: '北京市朝阳区阳光街道123号',
+          healthStatus: 'HEALTHY',
+          careLevel: 1,
+          roomNumber: 'A101',
+          guardianName: '张小明',
+          guardianPhone: '13888888888',
+          createTime: '2024-01-01 10:00:00'
+        },
+        {
+          id: 2,
+          name: '李华',
+          gender: 0,
+          birthDate: '1945-03-20',
+          phone: '13777777777',
+          address: '上海市浦东新区花园路456号',
+          healthStatus: 'SUBHEALTH',
+          careLevel: 2,
+          roomNumber: 'B205',
+          guardianName: '李小华',
+          guardianPhone: '13666666666',
+          createTime: '2024-01-02 14:30:00'
+        },
+        {
+          id: 3,
+          name: '王芳',
+          gender: 0,
+          birthDate: '1955-08-10',
+          phone: '13555555555',
+          address: '广州市天河区中心大道789号',
+          healthStatus: 'SICK',
+          careLevel: 3,
+          roomNumber: 'C302',
+          guardianName: '王小方',
+          guardianPhone: '13444444444',
+          createTime: '2024-01-03 09:15:00'
+        }
+      ]
+      pagination.total = 3
     }
 
     // 搜索
@@ -594,19 +684,8 @@ export default {
     }
 
     // 健康档案
-    const handleHealthRecords = async (row) => {
-      try {
-        const response = await getElderlyHealthRecords(row.id)
-        if (response.code === 200) {
-          ElMessageBox.alert(JSON.stringify(response.data, null, 2), `${row.name} - 健康档案`, {
-            confirmButtonText: '确定'
-          })
-        } else {
-          ElMessage.error('获取健康档案失败：' + response.message)
-        }
-      } catch (error) {
-        ElMessage.error('获取健康档案失败：' + error.message)
-      }
+    const handleHealthRecords = (row) => {
+      router.push(`/elderly/health-records/${row.id}`)
     }
 
     // 评估报告
@@ -723,6 +802,7 @@ export default {
       getHealthStatusText,
       getHealthStatusType,
       getCareLevelText,
+      calculateAge,
       fetchData,
       handleSearch,
       handleReset,
