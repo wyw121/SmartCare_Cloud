@@ -299,4 +299,21 @@ public class ElderlyController {
             return ResponseResult.error("查询失败");
         }
     }
+
+    /**
+     * 测试数据库连接
+     */
+    @Operation(summary = "测试数据库连接")
+    @GetMapping("/test")
+    public ResponseResult<String> testDatabase() {
+        try {
+            log.info("测试数据库连接");
+            // 简单查询数据库
+            long count = elderlyService.count();
+            return ResponseResult.success("数据库连接正常，共有 " + count + " 条老人记录");
+        } catch (Exception e) {
+            log.error("数据库连接测试失败", e);
+            return ResponseResult.error("数据库连接失败: " + e.getMessage());
+        }
+    }
 }

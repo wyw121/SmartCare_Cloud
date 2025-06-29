@@ -17,7 +17,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
  * @author SmartCare Cloud Team
  * @since 2024-01-01
  */
-@TableName("t_health_record")
+@TableName("health_record")
 public class HealthRecord implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -166,4 +166,189 @@ public class HealthRecord implements Serializable {
     @TableLogic
     @TableField("is_deleted")
     private Integer isDeleted;
+
+    // Getter and Setter methods
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getElderlyId() {
+        return elderlyId;
+    }
+
+    public void setElderlyId(Long elderlyId) {
+        this.elderlyId = elderlyId;
+    }
+
+    public Long getDoctorId() {
+        return doctorId;
+    }
+
+    public void setDoctorId(Long doctorId) {
+        this.doctorId = doctorId;
+    }
+
+    public Integer getRecordType() {
+        return recordType;
+    }
+
+    public void setRecordType(Integer recordType) {
+        this.recordType = recordType;
+    }
+
+    public LocalDateTime getRecordDate() {
+        return recordDate;
+    }
+
+    public void setRecordDate(LocalDateTime recordDate) {
+        this.recordDate = recordDate;
+    }
+
+    public Integer getSystolicPressure() {
+        return systolicPressure;
+    }
+
+    public void setSystolicPressure(Integer systolicPressure) {
+        this.systolicPressure = systolicPressure;
+    }
+
+    public Integer getDiastolicPressure() {
+        return diastolicPressure;
+    }
+
+    public void setDiastolicPressure(Integer diastolicPressure) {
+        this.diastolicPressure = diastolicPressure;
+    }
+
+    public Integer getHeartRate() {
+        return heartRate;
+    }
+
+    public void setHeartRate(Integer heartRate) {
+        this.heartRate = heartRate;
+    }
+
+    public BigDecimal getBodyTemperature() {
+        return bodyTemperature;
+    }
+
+    public void setBodyTemperature(BigDecimal bodyTemperature) {
+        this.bodyTemperature = bodyTemperature;
+    }
+
+    public BigDecimal getBloodGlucose() {
+        return bloodGlucose;
+    }
+
+    public void setBloodGlucose(BigDecimal bloodGlucose) {
+        this.bloodGlucose = bloodGlucose;
+    }
+
+    public BigDecimal getWeight() {
+        return weight;
+    }
+
+    public void setWeight(BigDecimal weight) {
+        this.weight = weight;
+    }
+
+    public BigDecimal getHeight() {
+        return height;
+    }
+
+    public void setHeight(BigDecimal height) {
+        this.height = height;
+    }
+
+    public String getSymptoms() {
+        return symptoms;
+    }
+
+    public void setSymptoms(String symptoms) {
+        this.symptoms = symptoms;
+    }
+
+    public String getDiagnosis() {
+        return diagnosis;
+    }
+
+    public void setDiagnosis(String diagnosis) {
+        this.diagnosis = diagnosis;
+    }
+
+    public String getTreatment() {
+        return treatment;
+    }
+
+    public void setTreatment(String treatment) {
+        this.treatment = treatment;
+    }
+
+    public String getMedication() {
+        return medication;
+    }
+
+    public void setMedication(String medication) {
+        this.medication = medication;
+    }
+
+    public String getDoctorAdvice() {
+        return doctorAdvice;
+    }
+
+    public void setDoctorAdvice(String doctorAdvice) {
+        this.doctorAdvice = doctorAdvice;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
+    public Integer getIsAbnormal() {
+        return isAbnormal;
+    }
+
+    public void setIsAbnormal(Integer isAbnormal) {
+        this.isAbnormal = isAbnormal;
+    }
+
+    public Integer getUrgencyLevel() {
+        return urgencyLevel;
+    }
+
+    public void setUrgencyLevel(Integer urgencyLevel) {
+        this.urgencyLevel = urgencyLevel;
+    }
+
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
+    public LocalDateTime getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(LocalDateTime updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public Integer getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Integer isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 }

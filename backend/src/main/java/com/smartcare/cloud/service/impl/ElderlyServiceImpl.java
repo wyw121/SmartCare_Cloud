@@ -1,5 +1,6 @@
 package com.smartcare.cloud.service.impl;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -8,16 +9,21 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smartcare.cloud.dto.ElderlyPageDTO;
 import com.smartcare.cloud.entity.Elderly;
+import com.smartcare.cloud.entity.HealthRecord;
 import com.smartcare.cloud.mapper.ElderlyMapper;
 import com.smartcare.cloud.service.ElderlyService;
+import com.smartcare.cloud.service.HealthRecordService;
 import com.smartcare.cloud.vo.ResponseResult;
 
 /**
@@ -31,6 +37,35 @@ import com.smartcare.cloud.vo.ResponseResult;
 public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> implements ElderlyService {
 
     private static final Logger log = LoggerFactory.getLogger(ElderlyServiceImpl.class);
+
+    @Autowired
+    private HealthRecordService healthRecordService;
+
+    /**
+     * 计算年龄
+     */
+    private Integer calculateAge(LocalDate birthDate) {
+        if (birthDate == null) {
+            return null;
+        }
+
+        try {
+            LocalDate today = LocalDate.now();
+            if (birthDate.isAfter(today)) {
+                return null;
+            }
+
+            int age = today.getYear() - birthDate.getYear();
+            if (today.getDayOfYear() < birthDate.getDayOfYear()) {
+                age--;
+            }
+
+            return age >= 0 ? age : null;
+        } catch (Exception e) {
+            log.error("计算年龄失败", e);
+            return null;
+        }
+    }
 
     @Override
     public ResponseResult<Page<Elderly>> getElderlyPage(ElderlyPageDTO pageDTO) {
@@ -65,10 +100,20 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
             //     queryWrapper.le("age", pageDTO.getMaxAge());
             // }
             // 按创建时间倒序
-            queryWrapper.orderByDesc("created_time");
+            queryWrapper.orderByDesc("create_time");
 
-            // 使用自定义查询方法，避免字段映射问题
-            Page<Elderly> result = baseMapper.selectElderlyPage(page);
+            // 使用标准的MyBatis Plus查询，避免自定义方法问题
+            Page<Elderly> result = this.page(page, queryWrapper);
+
+            // 计算年龄并设置到结果中
+            if (result.getRecords() != null) {
+                result.getRecords().forEach(elderly -> {
+                    if (elderly.getBirthDate() != null) {
+                        elderly.setAge(calculateAge(elderly.getBirthDate()));
+                    }
+                });
+            }
+
             return ResponseResult.success(result);
 
         } catch (Exception e) {
@@ -238,14 +283,27 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
     @Override
     public ResponseResult<Object> getElderlyHealthRecords(Long id) {
         try {
-            // 这里应该查询健康记录表，暂时返回一个空的列表
-            // 首先验证老人是否存在，避免无效查询
+            // 首先验证老人是否存在
             if (this.getById(id) == null) {
                 return ResponseResult.error("老人信息不存在");
             }
 
-            // 返回一个空列表，以匹配前端表格对数组类型的要求
-            return ResponseResult.success(new java.util.ArrayList<>());
+            // 调用健康记录服务获取分页数据
+            ResponseResult<IPage<HealthRecord>> result = healthRecordService.getHealthRecordsByElderlyId(id, 1L, 10L, null);
+
+            if (result.isSuccess()) {
+                IPage<HealthRecord> page = result.getData();
+                // 转换为前端需要的格式
+                Map<String, Object> data = new HashMap<>();
+                data.put("records", page.getRecords());
+                data.put("total", page.getTotal());
+                data.put("current", page.getCurrent());
+                data.put("size", page.getSize());
+
+                return ResponseResult.success(data);
+            } else {
+                return ResponseResult.error("获取健康档案失败");
+            }
 
         } catch (Exception e) {
             log.error("获取老人健康档案失败，ID：{}", id, e);
@@ -256,9 +314,19 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
     @Override
     public ResponseResult<Void> addHealthRecord(Long id, Object healthRecord) {
         try {
-            // 这里应该添加到健康记录表，暂时更新老人基本信息
-            log.info("添加健康记录，老人ID：{}，记录：{}", id, healthRecord);
-            return ResponseResult.success();
+            // 首先验证老人是否存在
+            if (this.getById(id) == null) {
+                return ResponseResult.error("老人信息不存在");
+            }
+
+            // 将Object转换为HealthRecord
+            ObjectMapper objectMapper = new ObjectMapper();
+            HealthRecord record = objectMapper.convertValue(healthRecord, HealthRecord.class);
+            record.setElderlyId(id);
+
+            // 调用健康记录服务保存
+            return healthRecordService.addHealthRecord(record);
+
         } catch (Exception e) {
             log.error("添加健康记录失败，ID：{}", id, e);
             return ResponseResult.error("添加健康记录失败");

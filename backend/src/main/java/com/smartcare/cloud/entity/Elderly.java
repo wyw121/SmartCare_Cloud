@@ -46,6 +46,17 @@ public class Elderly {
     @TableField("care_level")
     private Integer careLevel; // 照护等级:1-自理,2-半自理,3-不能自理
 
+    // 临时注释掉新字段，等数据库确认后再启用
+    // @TableField("room_number")
+    // private String roomNumber; // 房间号
+    // @TableField("guardian_name")
+    // private String guardianName; // 监护人姓名
+    // @TableField("guardian_phone")
+    // private String guardianPhone; // 监护人电话
+    // @TableField("emergency_contact")
+    // private String emergencyContact; // 紧急联系人
+    // @TableField("emergency_phone")
+    // private String emergencyPhone; // 紧急联系人电话
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
@@ -132,6 +143,48 @@ public class Elderly {
         this.careLevel = careLevel;
     }
 
+    // 临时注释掉新字段的getter/setter方法，等数据库确认后再启用
+    /*
+    public String getRoomNumber() {
+        return roomNumber;
+    }
+
+    public void setRoomNumber(String roomNumber) {
+        this.roomNumber = roomNumber;
+    }
+
+    public String getGuardianName() {
+        return guardianName;
+    }
+
+    public void setGuardianName(String guardianName) {
+        this.guardianName = guardianName;
+    }
+
+    public String getGuardianPhone() {
+        return guardianPhone;
+    }
+
+    public void setGuardianPhone(String guardianPhone) {
+        this.guardianPhone = guardianPhone;
+    }
+
+    public String getEmergencyContact() {
+        return emergencyContact;
+    }
+
+    public void setEmergencyContact(String emergencyContact) {
+        this.emergencyContact = emergencyContact;
+    }
+
+    public String getEmergencyPhone() {
+        return emergencyPhone;
+    }
+
+    public void setEmergencyPhone(String emergencyPhone) {
+        this.emergencyPhone = emergencyPhone;
+    }
+     */
     public LocalDateTime getCreateTime() {
         return createTime;
     }

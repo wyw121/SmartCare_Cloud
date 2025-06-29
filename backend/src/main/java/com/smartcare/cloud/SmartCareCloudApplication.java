@@ -2,6 +2,7 @@ package com.smartcare.cloud;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @SpringBootApplication
 @EnableTransactionManagement
+@ComponentScan(basePackages = "com.smartcare.cloud")
 public class SmartCareCloudApplication {
 
     public static void main(String[] args) {
