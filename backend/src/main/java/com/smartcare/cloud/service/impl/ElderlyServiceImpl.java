@@ -84,18 +84,18 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
             QueryWrapper<Elderly> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("id", id);
             queryWrapper.eq("is_deleted", 0);
-            
+
             Elderly elderly = this.getOne(queryWrapper);
             if (elderly == null) {
                 return ResponseResult.error("老人信息不存在");
             }
-            
+
             // 计算年龄
             if (elderly.getBirthDate() != null) {
                 int age = java.time.Period.between(elderly.getBirthDate(), java.time.LocalDate.now()).getYears();
                 elderly.setAge(age);
             }
-            
+
             return ResponseResult.success(elderly);
         } catch (Exception e) {
             log.error("根据ID查询老人信息失败，ID: {}", id, e);

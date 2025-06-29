@@ -88,7 +88,7 @@ public class ElderlyController {
      */
     @Operation(summary = "更新老人档案")
     @PutMapping
-    public ResponseResult<Void> updateElderly(@Valid @RequestBody Elderly elderly) {
+    public ResponseResult<Void> updateElderly(@RequestBody Elderly elderly) {
         log.info("更新老人档案，ID：{}", elderly.getId());
         return elderlyService.updateElderly(elderly);
     }

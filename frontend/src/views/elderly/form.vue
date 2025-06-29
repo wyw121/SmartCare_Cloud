@@ -70,19 +70,6 @@
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="紧急联系人" prop="emergencyContactName">
-              <el-input v-model="form.emergencyContactName" placeholder="请输入紧急联系人姓名" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="联系人电话" prop="emergencyContactPhone">
-              <el-input v-model="form.emergencyContactPhone" placeholder="请输入联系人电话" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
-          <el-col :span="12">
             <el-form-item label="健康状况" prop="healthStatus">
               <el-select v-model="form.healthStatus" placeholder="请选择健康状况">
                 <el-option label="健康" value="HEALTHY" />
@@ -94,30 +81,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="医保类型" prop="insuranceType">
-              <el-input v-model="form.insuranceType" placeholder="请输入医保类型" />
-            </el-form-item>
-          </el-col>
         </el-row>
-
-        <el-form-item label="既往病史" prop="medicalHistory">
-          <el-input
-            v-model="form.medicalHistory"
-            type="textarea"
-            :rows="3"
-            placeholder="请输入既往病史"
-          />
-        </el-form-item>
-
-        <el-form-item label="过敏史" prop="allergyHistory">
-          <el-input
-            v-model="form.allergyHistory"
-            type="textarea"
-            :rows="3"
-            placeholder="请输入过敏史"
-          />
-        </el-form-item>
 
         <el-form-item label="备注" prop="remarks">
           <el-input
@@ -141,8 +105,9 @@
 
 <script setup>
 import { ElMessage } from 'element-plus'
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { getElderlyById, updateElderly, createElderly } from '@/api/elderly'
 
 const route = useRoute()
 const router = useRouter()
@@ -155,18 +120,13 @@ const elderlyId = ref(null)
 // 表单数据
 const form = reactive({
   name: '',
-  gender: 1,
+  gender: 1,  // 数字类型，1=男，0=女
   idCard: '',
   birthDate: '',
   phone: '',
   address: '',
-  emergencyContactName: '',
-  emergencyContactPhone: '',
   healthStatus: 'HEALTHY',
   careLevel: 1,
-  insuranceType: '',
-  medicalHistory: '',
-  allergyHistory: '',
   remarks: ''
 })
 
@@ -183,13 +143,6 @@ const rules = {
   phone: [
     { required: true, message: '请输入联系电话', trigger: 'blur' },
     { pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
-  ],
-  emergencyContactName: [
-    { required: true, message: '请输入紧急联系人姓名', trigger: 'blur' }
-  ],
-  emergencyContactPhone: [
-    { required: true, message: '请输入紧急联系人电话', trigger: 'blur' },
-    { pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
   ]
 }
 
@@ -202,35 +155,42 @@ onMounted(() => {
   }
 })
 
+// 监听性别字段变化（用于调试）
+watch(() => form.gender, (newValue, oldValue) => {
+  console.log('性别字段发生变化:', { oldValue, newValue })
+}, { immediate: true })
+
 // 获取老人信息
 const getElderlyInfo = async () => {
   try {
     loading.value = true
-    // 这里应该调用真实的API
-    // const { data } = await getElderlyById(elderlyId.value)
+    const response = await getElderlyById(elderlyId.value)
+    const data = response.data
     
-    // 模拟数据
-    const mockData = {
-      name: '张三',
-      gender: 1,
-      idCard: '110101195001011234',
-      birthDate: '1950-01-01',
-      phone: '13800138001',
-      address: '北京市朝阳区某某街道1号',
-      emergencyContactName: '张小明',
-      emergencyContactPhone: '13900139001',
-      healthStatus: 'HEALTHY',
-      careLevel: 1,
-      insuranceType: '城镇职工医保',
-      medicalHistory: '高血压病史10年',
-      allergyHistory: '青霉素过敏',
-      remarks: ''
-    }
+    // 调试信息：打印接收到的数据
+    console.log('接收到的老人数据:', data)
+    console.log('性别字段值:', data.gender, '类型:', typeof data.gender)
     
-    Object.assign(form, mockData)
+    // 将后端数据赋值到表单
+    Object.assign(form, {
+      name: data.name || '',
+      gender: data.gender !== undefined ? Number(data.gender) : 1,  // 确保类型为数字
+      idCard: data.idCard || '',
+      birthDate: data.birthDate || '',
+      phone: data.phone || '',
+      address: data.address || '',
+      healthStatus: data.healthStatus || 'HEALTHY',
+      careLevel: data.careLevel !== undefined ? data.careLevel : 1,
+      remarks: data.remarks || ''
+    })
+    
+    // 调试信息：打印赋值后的表单数据
+    console.log('表单gender字段:', form.gender, '类型:', typeof form.gender)
   } catch (error) {
     console.error('获取老人信息失败:', error)
     ElMessage.error('获取老人信息失败')
+    // 如果获取失败，可以选择返回到列表页面
+    // router.push('/elderly/list')
   } finally {
     loading.value = false
   }
@@ -245,11 +205,11 @@ const handleSubmit = async () => {
     
     if (isEdit.value) {
       // 更新老人信息
-      // await updateElderly({ ...form, id: elderlyId.value })
+      await updateElderly({ ...form, id: elderlyId.value })
       ElMessage.success('更新老人档案成功')
     } else {
       // 新增老人信息
-      // await addElderly(form)
+      await createElderly(form)
       ElMessage.success('新增老人档案成功')
     }
     
