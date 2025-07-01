@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康统计图表布局测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #409EFF;
+            margin-bottom: 10px;
+        }
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .chart-card {
+            border: 1px solid #e4e7ed;
+            border-radius: 8px;
+            background: white;
+            overflow: hidden;
+        }
+        .chart-header {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e4e7ed;
+            font-weight: bold;
+            color: #333;
+        }
+        .chart-content {
+            height: 350px;
+            padding: 20px;
+            position: relative;
+        }
+        .chart-mockup {
+            width: 100%;
+            height: 100%;
+            background: #f9f9f9;
+            border: 2px dashed #d9d9d9;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 6px;
+        }
+        .chart-title {
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+        .chart-legend {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+        .chart-area {
+            position: absolute;
+            top: 90px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            background: rgba(64, 158, 255, 0.1);
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #666;
+        }
+        .test-info {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #409EFF;
+        }
+        .fix-info {
+            background: #f0f9ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            border-left: 4px solid #67C23A;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 健康统计图表布局修复测试</h1>
+            <p>验证年龄段健康分布图表的标题和图例布局修复</p>
+        </div>
+
+        <div class="test-info">
+            <h3>🔧 布局修复说明</h3>
+            <ul>
+                <li><strong>问题</strong>: 年龄段健康分布图表的标题和图例重叠</li>
+                <li><strong>修复</strong>: 调整标题、图例和图表区域的位置和间距</li>
+                <li><strong>改进</strong>: 增加图表容器高度，优化所有图表的布局一致性</li>
+            </ul>
+        </div>
+
+        <div class="charts-grid">
+            <!-- 健康状态分布饼图 -->
+            <div class="chart-card">
+                <div class="chart-header">健康状态分布</div>
+                <div class="chart-content">
+                    <div class="chart-title">健康状态分布</div>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #67C23A;"></div>
+                            <span>健康</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #E6A23C;"></div>
+                            <span>亚健康</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #F56C6C;"></div>
+                            <span>疾病</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #F56C6C;"></div>
+                            <span>高风险</span>
+                        </div>
+                    </div>
+                    <div class="chart-area">
+                        <div>🥧 饼图区域<br>标题 top: 5%<br>图例 top: 15%<br>图表 center: 60%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 年龄段健康分布柱状图 -->
+            <div class="chart-card">
+                <div class="chart-header">年龄段健康分布 (已修复)</div>
+                <div class="chart-content">
+                    <div class="chart-title">年龄段健康分布</div>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #67C23A;"></div>
+                            <span>健康</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #E6A23C;"></div>
+                            <span>亚健康</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #F56C6C;"></div>
+                            <span>慢性病</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #F56C6C;"></div>
+                            <span>高风险</span>
+                        </div>
+                    </div>
+                    <div class="chart-area">
+                        <div>📊 柱状图区域<br>标题 top: 5%<br>图例 top: 15%<br>图表 top: 25%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 健康风险评估雷达图 -->
+            <div class="chart-card">
+                <div class="chart-header">健康风险评估</div>
+                <div class="chart-content">
+                    <div class="chart-title">健康风险评估</div>
+                    <div class="chart-legend" style="bottom: 40px; top: auto;">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #409EFF;"></div>
+                            <span>风险评估</span>
+                        </div>
+                    </div>
+                    <div class="chart-area">
+                        <div>🎯 雷达图区域<br>标题 top: 5%<br>图表 center: 55%<br>图例 bottom: 5%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 健康状态趋势折线图 -->
+            <div class="chart-card">
+                <div class="chart-header">健康状态趋势</div>
+                <div class="chart-content">
+                    <div class="chart-title">近6个月健康状态趋势</div>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #67C23A;"></div>
+                            <span>健康人数</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #E6A23C;"></div>
+                            <span>亚健康人数</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #F56C6C;"></div>
+                            <span>慢性病人数</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #F56C6C;"></div>
+                            <span>高风险人数</span>
+                        </div>
+                    </div>
+                    <div class="chart-area">
+                        <div>📈 折线图区域<br>标题 top: 5%<br>图例 top: 15%<br>图表 top: 25%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="fix-info">
+            <h3>✅ 布局修复完成</h3>
+            <ul>
+                <li><strong>标题位置</strong>: 统一设置为 top: 5%，确保在顶部有足够空间</li>
+                <li><strong>图例位置</strong>: 根据图表类型优化位置，避免与标题重叠</li>
+                <li><strong>图表区域</strong>: 调整 grid/center 属性，为标题和图例预留空间</li>
+                <li><strong>容器高度</strong>: 从 300px 增加到 350px，提供更多垂直空间</li>
+                <li><strong>布局一致性</strong>: 所有图表采用统一的布局规范</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <button onclick="window.location.href='http://localhost:3000/#/elderly/list'" 
+                    style="background: #409EFF; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px;">
+                🔗 查看实际效果 - 老人管理页面
+            </button>
+        </div>
+    </div>
+
+    <script>
+        console.log('健康统计图表布局修复测试页面加载完成');
+        
+        // 显示修复详情
+        function showFixDetails() {
+            alert(`布局修复详情:
+
+1. 年龄段健康分布图表:
+   - 标题: top: 5% (原来没有设置)
+   - 图例: top: 15%, left: center (原来没有设置top)
+   - 图表区域: top: 25% (原来是3%，现在为标题和图例留出空间)
+
+2. 所有图表容器:
+   - 高度: 350px (原来300px)
+   - 为标题、图例、图表提供更充足的垂直空间
+
+3. 布局一致性:
+   - 所有图表采用统一的标题和图例位置规范
+   - 确保不同类型图表的视觉一致性`);
+        }
+
+        // 页面加载后显示修复信息
+        setTimeout(showFixDetails, 2000);
+    </script>
+</body>
+</html>

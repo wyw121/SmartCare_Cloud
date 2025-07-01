@@ -52,7 +52,7 @@ import {
     batchDeleteElderly,
     deleteElderly,
     exportElderlyData,
-    getElderlyList
+    getElderlyPage
 } from '@/api/elderly'
 
 const router = useRouter()
@@ -86,7 +86,7 @@ const loadData = async () => {
       size: pagination.size
     }
     
-    const response = await getElderlyList(params)
+    const response = await getElderlyPage(params)
     tableData.value = response.data.records
     pagination.total = response.data.total
   } catch (error) {

@@ -22,6 +22,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.smartcare.cloud.dto.ElderlyPageDTO;
 import com.smartcare.cloud.entity.Elderly;
 import com.smartcare.cloud.service.ElderlyService;
+import com.smartcare.cloud.vo.HealthStatisticsVO;
+import com.smartcare.cloud.vo.HealthStatisticsVO.AgeHealthDistribution;
+import com.smartcare.cloud.vo.HealthStatisticsVO.HealthRiskAssessment;
+import com.smartcare.cloud.vo.HealthStatisticsVO.HealthStatusDistribution;
 import com.smartcare.cloud.vo.ResponseResult;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -122,16 +126,6 @@ public class ElderlyController {
     public ResponseResult<List<Elderly>> getKeyElderlyList() {
         log.info("获取重点关注老人列表");
         return elderlyService.getKeyElderlyList();
-    }
-
-    /**
-     * 获取老人健康状态统计
-     */
-    @Operation(summary = "获取老人健康状态统计")
-    @GetMapping("/health-statistics")
-    public ResponseResult<Object> getElderlyHealthStatistics() {
-        log.info("获取老人健康状态统计");
-        return elderlyService.getElderlyHealthStatistics();
     }
 
     /**
@@ -314,6 +308,62 @@ public class ElderlyController {
         } catch (Exception e) {
             log.error("数据库连接测试失败", e);
             return ResponseResult.error("数据库连接失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取健康统计数据
+     */
+    @Operation(summary = "获取健康统计数据", description = "获取老人健康状态的完整统计信息")
+    @GetMapping("/health-statistics")
+    public ResponseResult<HealthStatisticsVO> getHealthStatistics() {
+        try {
+            return elderlyService.getHealthStatistics();
+        } catch (Exception e) {
+            log.error("获取健康统计数据失败", e);
+            return ResponseResult.error("统计失败");
+        }
+    }
+
+    /**
+     * 获取健康状态分布
+     */
+    @Operation(summary = "获取健康状态分布", description = "获取老人健康状态的分布统计")
+    @GetMapping("/health-status-distribution")
+    public ResponseResult<List<HealthStatusDistribution>> getHealthStatusDistribution() {
+        try {
+            return elderlyService.getHealthStatusDistribution();
+        } catch (Exception e) {
+            log.error("获取健康状态分布失败", e);
+            return ResponseResult.error("统计失败");
+        }
+    }
+
+    /**
+     * 获取年龄段健康分布
+     */
+    @Operation(summary = "获取年龄段健康分布", description = "获取不同年龄段老人的健康状态分布")
+    @GetMapping("/age-health-distribution")
+    public ResponseResult<List<AgeHealthDistribution>> getAgeHealthDistribution() {
+        try {
+            return elderlyService.getAgeHealthDistribution();
+        } catch (Exception e) {
+            log.error("获取年龄段健康分布失败", e);
+            return ResponseResult.error("统计失败");
+        }
+    }
+
+    /**
+     * 获取健康风险评估
+     */
+    @Operation(summary = "获取健康风险评估", description = "获取老人健康风险评估数据")
+    @GetMapping("/health-risk-assessment")
+    public ResponseResult<HealthRiskAssessment> getHealthRiskAssessment() {
+        try {
+            return elderlyService.getHealthRiskAssessment();
+        } catch (Exception e) {
+            log.error("获取健康风险评估失败", e);
+            return ResponseResult.error("评估失败");
         }
     }
 }

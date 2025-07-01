@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.smartcare.cloud.dto.ElderlyPageDTO;
 import com.smartcare.cloud.entity.Elderly;
+import com.smartcare.cloud.vo.HealthStatisticsVO;
 import com.smartcare.cloud.vo.ResponseResult;
 
 /**
@@ -70,13 +71,6 @@ public interface ElderlyService extends IService<Elderly> {
      * @return 重点关注老人列表
      */
     ResponseResult<List<Elderly>> getKeyElderlyList();
-
-    /**
-     * 根据健康状态统计老人数量
-     *
-     * @return 统计结果
-     */
-    ResponseResult<Object> getElderlyHealthStatistics();
 
     /**
      * 获取老人健康档案
@@ -184,4 +178,32 @@ public interface ElderlyService extends IService<Elderly> {
      * @return 搜索结果
      */
     ResponseResult<Object> searchElderly(String keyword, Integer pageNum, Integer pageSize);
+
+    /**
+     * 获取健康统计数据
+     *
+     * @return 健康统计数据
+     */
+    ResponseResult<HealthStatisticsVO> getHealthStatistics();
+
+    /**
+     * 获取健康状态分布
+     *
+     * @return 健康状态分布数据
+     */
+    ResponseResult<List<HealthStatisticsVO.HealthStatusDistribution>> getHealthStatusDistribution();
+
+    /**
+     * 获取年龄段健康分布
+     *
+     * @return 年龄段健康分布数据
+     */
+    ResponseResult<List<HealthStatisticsVO.AgeHealthDistribution>> getAgeHealthDistribution();
+
+    /**
+     * 获取健康风险评估
+     *
+     * @return 健康风险评估数据
+     */
+    ResponseResult<HealthStatisticsVO.HealthRiskAssessment> getHealthRiskAssessment();
 }

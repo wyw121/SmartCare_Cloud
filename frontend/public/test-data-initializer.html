@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试数据初始化</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #409eff;
+            text-align: center;
+        }
+        button {
+            background: #409eff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background: #66b1ff;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #409eff;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            border-left-color: #67c23a;
+            background: #f0f9ff;
+            color: #67c23a;
+        }
+        .error {
+            border-left-color: #f56c6c;
+            background: #fef0f0;
+            color: #f56c6c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 智慧医养平台 - 测试数据初始化</h1>
+        
+        <button onclick="initializeTestData()">初始化多样化测试数据</button>
+        <button onclick="verifyData()">验证数据</button>
+        <button onclick="clearLogs()">清空日志</button>
+        
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080';
+        
+        // 测试数据
+        const testElderlyData = [
+            // 60-70岁年龄段
+            {
+                name: '张三',
+                gender: '男',
+                birthDate: '1955-03-15',
+                phone: '13800138001',
+                address: '北京市朝阳区',
+                healthStatus: 'NORMAL',
+                careLevel: 1,
+                emergencyContact: '张小明',
+                emergencyPhone: '13900139001'
+            },
+            {
+                name: '李四',
+                gender: '女',
+                birthDate: '1958-07-20',
+                phone: '13800138002',
+                address: '北京市海淀区',
+                healthStatus: 'ATTENTION',
+                careLevel: 1,
+                emergencyContact: '李小红',
+                emergencyPhone: '13900139002'
+            },
+            {
+                name: '王五',
+                gender: '男',
+                birthDate: '1960-12-05',
+                phone: '13800138003',
+                address: '北京市西城区',
+                healthStatus: 'WARNING',
+                careLevel: 2,
+                emergencyContact: '王小军',
+                emergencyPhone: '13900139003'
+            },
+            {
+                name: '赵六',
+                gender: '女',
+                birthDate: '1962-04-18',
+                phone: '13800138004',
+                address: '北京市东城区',
+                healthStatus: '健康',
+                careLevel: 1,
+                emergencyContact: '赵小华',
+                emergencyPhone: '13900139004'
+            },
+            {
+                name: '孙七',
+                gender: '男',
+                birthDate: '1959-09-25',
+                phone: '13800138005',
+                address: '北京市丰台区',
+                healthStatus: '亚健康',
+                careLevel: 1,
+                emergencyContact: '孙小刚',
+                emergencyPhone: '13900139005'
+            },
+            {
+                name: '周八',
+                gender: '女',
+                birthDate: '1961-11-30',
+                phone: '13800138006',
+                address: '北京市石景山区',
+                healthStatus: '慢性病',
+                careLevel: 2,
+                emergencyContact: '周小丽',
+                emergencyPhone: '13900139006'
+            },
+            
+            // 70-80岁年龄段
+            {
+                name: '陈一',
+                gender: '男',
+                birthDate: '1945-01-10',
+                phone: '13800138009',
+                address: '北京市顺义区',
+                healthStatus: 'NORMAL',
+                careLevel: 1,
+                emergencyContact: '陈小伟',
+                emergencyPhone: '13900139009'
+            },
+            {
+                name: '林二',
+                gender: '女',
+                birthDate: '1948-05-22',
+                phone: '13800138010',
+                address: '北京市昌平区',
+                healthStatus: 'ATTENTION',
+                careLevel: 2,
+                emergencyContact: '林小芳',
+                emergencyPhone: '13900139010'
+            },
+            {
+                name: '黄三',
+                gender: '男',
+                birthDate: '1950-08-15',
+                phone: '13800138011',
+                address: '北京市大兴区',
+                healthStatus: 'WARNING',
+                careLevel: 2,
+                emergencyContact: '黄小勇',
+                emergencyPhone: '13900139011'
+            },
+            {
+                name: '刘四',
+                gender: '女',
+                birthDate: '1952-12-03',
+                phone: '13800138012',
+                address: '北京市门头沟区',
+                healthStatus: '健康',
+                careLevel: 1,
+                emergencyContact: '刘小玲',
+                emergencyPhone: '13900139012'
+            },
+            {
+                name: '杨五',
+                gender: '男',
+                birthDate: '1946-03-28',
+                phone: '13800138013',
+                address: '北京市平谷区',
+                healthStatus: '高血压',
+                careLevel: 2,
+                emergencyContact: '杨小军',
+                emergencyPhone: '13900139013'
+            },
+            
+            // 80-90岁年龄段
+            {
+                name: '梁九',
+                gender: '男',
+                birthDate: '1935-02-28',
+                phone: '13800138017',
+                address: '上海市黄浦区',
+                healthStatus: 'NORMAL',
+                careLevel: 2,
+                emergencyContact: '梁小强',
+                emergencyPhone: '13900139017'
+            },
+            {
+                name: '蔡十',
+                gender: '女',
+                birthDate: '1938-06-14',
+                phone: '13800138018',
+                address: '上海市徐汇区',
+                healthStatus: 'WARNING',
+                careLevel: 3,
+                emergencyContact: '蔡小敏',
+                emergencyPhone: '13900139018'
+            },
+            {
+                name: '宋一',
+                gender: '男',
+                birthDate: '1940-09-08',
+                phone: '13800138019',
+                address: '上海市长宁区',
+                healthStatus: '慢性病',
+                careLevel: 3,
+                emergencyContact: '宋小刚',
+                emergencyPhone: '13900139019'
+            },
+            
+            // 90岁以上年龄段
+            {
+                name: '朱七',
+                gender: '男',
+                birthDate: '1925-07-12',
+                phone: '13800138025',
+                address: '广州市天河区',
+                healthStatus: '亚健康',
+                careLevel: 3,
+                emergencyContact: '朱小军',
+                emergencyPhone: '13900139025'
+            },
+            {
+                name: '马八',
+                gender: '女',
+                birthDate: '1928-10-30',
+                phone: '13800138026',
+                address: '广州市越秀区',
+                healthStatus: 'WARNING',
+                careLevel: 3,
+                emergencyContact: '马小玲',
+                emergencyPhone: '13900139026'
+            }
+        ];
+
+        async function initializeTestData() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.textContent = '开始初始化测试数据...\n\n';
+            
+            let successCount = 0;
+            let errorCount = 0;
+            
+            for (let i = 0; i < testElderlyData.length; i++) {
+                const elderly = testElderlyData[i];
+                try {
+                    const response = await fetch(`${API_BASE}/elderly`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(elderly)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        successCount++;
+                        resultDiv.textContent += `✅ ${elderly.name} (${elderly.healthStatus}) - 添加成功\n`;
+                    } else {
+                        errorCount++;
+                        resultDiv.textContent += `❌ ${elderly.name} - 添加失败: ${result.message}\n`;
+                    }
+                } catch (error) {
+                    errorCount++;
+                    resultDiv.textContent += `❌ ${elderly.name} - 网络错误: ${error.message}\n`;
+                }
+                
+                // 更新进度
+                resultDiv.textContent += `进度: ${i + 1}/${testElderlyData.length}\n\n`;
+                
+                // 滚动到底部
+                resultDiv.scrollTop = resultDiv.scrollHeight;
+                
+                // 稍作延迟避免请求过快
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+            
+            resultDiv.textContent += `\n📊 初始化完成！\n`;
+            resultDiv.textContent += `✅ 成功: ${successCount}条\n`;
+            resultDiv.textContent += `❌ 失败: ${errorCount}条\n`;
+            
+            if (errorCount === 0) {
+                resultDiv.className = 'result success';
+            } else {
+                resultDiv.className = 'result error';
+            }
+        }
+
+        async function verifyData() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.textContent = '正在验证数据...\n\n';
+            
+            try {
+                // 获取老人数据
+                const elderlyResponse = await fetch(`${API_BASE}/elderly/page`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        pageNum: 1,
+                        pageSize: 100
+                    })
+                });
+                
+                const elderlyData = await elderlyResponse.json();
+                
+                if (!elderlyData.success) {
+                    throw new Error('获取老人数据失败');
+                }
+                
+                // 获取健康统计
+                const statsResponse = await fetch(`${API_BASE}/elderly/health-statistics`);
+                const statsData = await statsResponse.json();
+                
+                if (!statsData.success) {
+                    throw new Error('获取健康统计失败');
+                }
+                
+                let output = '📊 数据验证结果:\n\n';
+                output += `总人数: ${elderlyData.data.total}\n`;
+                output += `统计总数: ${statsData.data.summary.totalCount}\n`;
+                output += `数据一致性: ${elderlyData.data.total === statsData.data.summary.totalCount ? '✅' : '❌'}\n\n`;
+                
+                // 健康状态分布
+                output += '🏥 健康状态分布:\n';
+                statsData.data.healthStatusDistribution.forEach(item => {
+                    output += `  ${item.status}: ${item.count}人 (${item.percentage}%)\n`;
+                });
+                
+                // 年龄段分布
+                output += '\n👥 年龄段健康分布:\n';
+                statsData.data.ageHealthDistribution.forEach(item => {
+                    const total = item.healthy + item.subHealth + item.chronic + item.risk;
+                    output += `  ${item.ageRange}: 总计${total}人\n`;
+                    output += `    健康: ${item.healthy}人\n`;
+                    output += `    亚健康: ${item.subHealth}人\n`;
+                    output += `    慢性病: ${item.chronic}人\n`;
+                    output += `    高风险: ${item.risk}人\n`;
+                });
+                
+                // 检查是否解决了"只显示健康人数"的问题
+                const hasVariedDistribution = statsData.data.ageHealthDistribution.some(item => 
+                    item.subHealth > 0 || item.chronic > 0 || item.risk > 0
+                );
+                
+                output += `\n🎯 问题修复验证:\n`;
+                output += `年龄段分布多样性: ${hasVariedDistribution ? '✅ 已修复' : '❌ 仍有问题'}\n`;
+                
+                resultDiv.textContent = output;
+                resultDiv.className = hasVariedDistribution ? 'result success' : 'result error';
+                
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ 验证失败: ${error.message}`;
+            }
+        }
+
+        function clearLogs() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'none';
+            resultDiv.textContent = '';
+        }
+
+        // 页面加载完成
+        window.onload = function() {
+            console.log('测试数据初始化页面已加载');
+        };
+    </script>
+</body>
+</html>

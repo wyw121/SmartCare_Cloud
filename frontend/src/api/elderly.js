@@ -265,6 +265,46 @@ export function getAgeDistribution() {
 }
 
 /**
+ * 获取健康状态分布统计
+ */
+export function getHealthStatusDistribution() {
+  return request({
+    url: '/elderly/health-status-distribution',
+    method: 'get'
+  })
+}
+
+/**
+ * 获取年龄段健康分布统计
+ */
+export function getAgeHealthDistribution() {
+  return request({
+    url: '/elderly/age-health-distribution',
+    method: 'get'
+  })
+}
+
+/**
+ * 获取健康风险评估统计
+ */
+export function getHealthRiskAssessment() {
+  return request({
+    url: '/elderly/health-risk-assessment',
+    method: 'get'
+  })
+}
+
+/**
+ * 获取完整健康统计数据
+ */
+export function getHealthStatistics() {
+  return request({
+    url: '/elderly/health-statistics',
+    method: 'get'
+  })
+}
+
+/**
  * 搜索老人档案（支持模糊搜索）
  * @param {String} keyword 搜索关键词
  * @param {Number} pageNum 页码

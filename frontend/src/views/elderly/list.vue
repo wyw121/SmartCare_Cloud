@@ -11,13 +11,28 @@
     <el-card class="search-card">
       <el-form :inline="true" :model="searchForm" class="search-form">
         <el-form-item label="姓名">
-          <el-input v-model="searchForm.name" placeholder="请输入姓名" clearable />
+          <el-input 
+            v-model="searchForm.name" 
+            placeholder="请输入姓名" 
+            clearable 
+            style="width: 180px;"
+          />
         </el-form-item>
         <el-form-item label="身份证号">
-          <el-input v-model="searchForm.idCard" placeholder="请输入身份证号" clearable />
+          <el-input 
+            v-model="searchForm.idCard" 
+            placeholder="请输入身份证号" 
+            clearable 
+            style="width: 200px;"
+          />
         </el-form-item>
         <el-form-item label="健康状态">
-          <el-select v-model="searchForm.healthStatus" placeholder="请选择健康状态" clearable>
+          <el-select 
+            v-model="searchForm.healthStatus" 
+            placeholder="请选择健康状态" 
+            clearable
+            style="width: 150px;"
+          >
             <el-option label="健康" value="HEALTHY" />
             <el-option label="亚健康" value="SUBHEALTH" />
             <el-option label="疾病" value="SICK" />
@@ -326,21 +341,31 @@
       v-model="assessmentDialogVisible" 
       :elderly-id="currentElderlyId" 
     />
+    
+    <!-- 健康统计弹窗 -->
+    <HealthStatisticsDialog 
+      v-model="healthStatisticsDialogVisible" 
+    />
+    
+    <!-- 照护统计弹窗 -->
+    <CareStatisticsDialog 
+      v-model="careStatisticsDialogVisible" 
+    />
   </div>
 </template>
 
 <script>
 import {
-  batchDeleteElderly,
-  createElderly,
-  deleteElderly,
-  exportElderlyData,
-  getCareLevelStatistics,
-  getElderlyHealthStatistics,
-  getElderlyPage,
-  updateElderly
+    batchDeleteElderly,
+    createElderly,
+    deleteElderly,
+    exportElderlyData,
+    getElderlyPage,
+    updateElderly
 } from '@/api/elderly'
+import CareStatisticsDialog from '@/components/CareStatisticsDialog.vue'
 import AssessmentReportDialog from '@/components/elderly/AssessmentReportDialog.vue'
+import HealthStatisticsDialog from '@/components/HealthStatisticsDialog.vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -348,7 +373,9 @@ import { useRouter } from 'vue-router'
 export default {
   name: 'ElderlyManagement',
   components: {
-    AssessmentReportDialog
+    AssessmentReportDialog,
+    HealthStatisticsDialog,
+    CareStatisticsDialog
   },
   setup() {
     const router = useRouter()
@@ -363,6 +390,12 @@ export default {
     // 评估报告弹窗
     const assessmentDialogVisible = ref(false)
     const currentElderlyId = ref(null)
+    
+    // 健康统计弹窗
+    const healthStatisticsDialogVisible = ref(false)
+    
+    // 照护统计弹窗
+    const careStatisticsDialogVisible = ref(false)
 
     // 搜索表单
     const searchForm = reactive({
@@ -665,35 +698,13 @@ export default {
     }
 
     // 健康统计
-    const handleHealthStatistics = async () => {
-      try {
-        const response = await getElderlyHealthStatistics()
-        if (response.code === 200) {
-          ElMessageBox.alert(JSON.stringify(response.data, null, 2), '健康状态统计', {
-            confirmButtonText: '确定'
-          })
-        } else {
-          ElMessage.error('获取统计失败：' + response.message)
-        }
-      } catch (error) {
-        ElMessage.error('获取统计失败：' + error.message)
-      }
+    const handleHealthStatistics = () => {
+      healthStatisticsDialogVisible.value = true
     }
 
     // 照护统计
     const handleCareLevelStats = async () => {
-      try {
-        const response = await getCareLevelStatistics()
-        if (response.code === 200) {
-          ElMessageBox.alert(JSON.stringify(response.data, null, 2), '照护等级统计', {
-            confirmButtonText: '确定'
-          })
-        } else {
-          ElMessage.error('获取统计失败：' + response.message)
-        }
-      } catch (error) {
-        ElMessage.error('获取统计失败：' + error.message)
-      }
+      careStatisticsDialogVisible.value = true
     }
 
     // 健康档案
@@ -799,6 +810,8 @@ export default {
       selectedRows,
       assessmentDialogVisible,
       currentElderlyId,
+      healthStatisticsDialogVisible,
+      careStatisticsDialogVisible,
       searchForm,
       pagination,
       tableData,
@@ -858,6 +871,25 @@ export default {
 
 .search-form {
   margin-bottom: 0;
+}
+
+.search-form .el-form-item {
+  margin-right: 20px;
+  margin-bottom: 16px;
+}
+
+.search-form .el-form-item__label {
+  width: auto;
+  margin-right: 8px;
+}
+
+/* 健康状态选择器样式优化 */
+.search-form .el-select {
+  min-width: 150px;
+}
+
+.search-form .el-select .el-input__inner {
+  text-align: left;
 }
 
 .toolbar-card {
