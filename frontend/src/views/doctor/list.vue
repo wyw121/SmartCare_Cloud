@@ -47,26 +47,38 @@
 
     <!-- 操作按钮 -->
     <el-card class="operation-card">
-      <el-row>
-        <el-col :span="24">
-          <el-button type="primary" @click="handleAdd" :icon="Plus" v-permission="'doctor:add'">新增医生</el-button>
-          <el-button 
-            type="danger" 
-            @click="handleBatchDelete" 
-            :disabled="multipleSelection.length === 0"
-            :icon="Delete"
-            v-permission="'doctor:delete'"
-          >
-            批量删除
-          </el-button>
-          <el-button type="success" @click="handleExport" :icon="Download" v-permission="'doctor:export'">导出数据</el-button>
-          
-          <!-- 角色信息显示 -->
-          <div class="role-info">
-            <el-tag type="info" size="small">当前角色：{{ currentUserRole }}</el-tag>
-          </div>
-        </el-col>
-      </el-row>
+      <div class="toolbar">
+        <el-button type="primary" @click="handleAdd" v-permission="'doctor:add'">
+          <el-icon><Plus /></el-icon>
+          新增医生
+        </el-button>
+        <el-button 
+          type="danger" 
+          @click="handleBatchDelete" 
+          :disabled="multipleSelection.length === 0"
+          v-permission="'doctor:delete'"
+        >
+          <el-icon><Delete /></el-icon>
+          批量删除
+        </el-button>
+        <el-button type="success" @click="handleExport" v-permission="'doctor:export'">
+          <el-icon><Download /></el-icon>
+          导出数据
+        </el-button>
+        <el-button type="warning" @click="handleImport" v-permission="'doctor:import'">
+          <el-icon><Upload /></el-icon>
+          导入数据
+        </el-button>
+        <el-button type="info" @click="handleStatistics" v-permission="'doctor:statistics'">
+          <el-icon><DataAnalysis /></el-icon>
+          医生统计
+        </el-button>
+        
+        <!-- 角色信息显示 -->
+        <div class="role-info">
+          <el-tag type="info" size="small">当前角色：{{ currentUserRole }}</el-tag>
+        </div>
+      </div>
     </el-card>
 
     <!-- 数据表格 -->
@@ -78,46 +90,71 @@
         border
         stripe
         style="width: 100%"
+        :header-cell-style="{ backgroundColor: '#f8f9fa', color: '#495057', fontWeight: '600' }"
       >
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="employeeNumber" label="工号" min-width="120" />
-        <el-table-column prop="name" label="姓名" min-width="100" />
-        <el-table-column prop="gender" label="性别" width="80" />
-        <el-table-column prop="phone" label="联系电话" min-width="120" />
-        <el-table-column prop="department" label="科室" min-width="100" />
-        <el-table-column prop="title" label="职称" min-width="120" />
-        <el-table-column prop="specialization" label="专长" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="employeeNumber" label="工号" width="120" />
+        <el-table-column prop="name" label="姓名" width="100" />
+        <el-table-column prop="gender" label="性别" width="80" class-name="hidden-sm-and-down" />
+        <el-table-column prop="phone" label="联系电话" width="130" />
+        <el-table-column prop="department" label="科室" width="100" class-name="hidden-sm-and-down" />
+        <el-table-column prop="title" label="职称" width="120" />
+        <el-table-column prop="specialization" label="专长" min-width="150" show-overflow-tooltip class-name="hidden-sm-and-down" />
         <el-table-column prop="status" label="状态" width="80">
           <template #default="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">
+            <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'" size="small">
               {{ scope.row.status === 1 ? '在职' : '离职' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column prop="createTime" label="创建时间" width="160" class-name="hidden-sm-and-down" />
+        <el-table-column label="操作" width="350" fixed="right" align="center">
           <template #default="scope">
-            <el-button type="primary" size="small" @click="handleView(scope.row)" :icon="View">
-              查看
-            </el-button>
-            <el-button 
-              type="warning" 
-              size="small" 
-              @click="handleEdit(scope.row)" 
-              :icon="Edit"
-              v-permission="'doctor:edit'"
-            >
-              编辑
-            </el-button>
-            <el-button 
-              type="danger" 
-              size="small" 
-              @click="handleDelete(scope.row)"
-              :icon="Delete"
-              v-permission="'doctor:delete'"
-            >
-              删除
-            </el-button>
+            <div class="action-buttons">
+              <el-button 
+                text 
+                type="primary" 
+                size="small" 
+                @click="handleView(scope.row)"
+                class="action-btn"
+              >
+                <el-icon><View /></el-icon>
+                查看
+              </el-button>
+              <el-button 
+                text 
+                type="success" 
+                size="small" 
+                @click="handleEdit(scope.row)" 
+                v-permission="'doctor:edit'"
+                class="action-btn"
+              >
+                <el-icon><Edit /></el-icon>
+                编辑
+              </el-button>
+              <el-button 
+                text 
+                type="warning" 
+                size="small" 
+                @click="handleViewSchedule(scope.row)"
+                v-permission="'doctor:schedule'"
+                class="action-btn"
+              >
+                <el-icon><Calendar /></el-icon>
+                排班
+              </el-button>
+              <el-button 
+                text 
+                type="danger" 
+                size="small" 
+                @click="handleDelete(scope.row)"
+                v-permission="'doctor:delete'"
+                class="action-btn"
+              >
+                <el-icon><Delete /></el-icon>
+                删除
+              </el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -242,14 +279,14 @@
 
 <script setup>
 import {
-  addDoctor,
-  deleteDoctor,
-  deleteDoctorBatch,
-  getDoctorPageList,
-  updateDoctor
+    addDoctor,
+    deleteDoctor,
+    deleteDoctorBatch,
+    getDoctorPageList,
+    updateDoctor
 } from '@/api/doctor'
 import { useUserStore } from '@/store/user'
-import { Delete, Download, Edit, Plus, Refresh, Search, View } from '@element-plus/icons-vue'
+import { Calendar, DataAnalysis, Delete, Download, Edit, Plus, Refresh, Search, Upload, View } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { computed, onMounted, reactive, ref } from 'vue'
 
@@ -383,6 +420,14 @@ const handleView = (row) => {
   ElMessage.info('查看功能待实现')
 }
 
+// 排班管理
+const handleViewSchedule = (row) => {
+  // 可以跳转到医生排班管理页面或打开排班对话框
+  ElMessage.info(`${row.name} 医生的排班管理功能待实现`)
+  // 将来可以实现：
+  // this.$router.push({ name: 'DoctorSchedule', params: { doctorId: row.id } })
+}
+
 // 删除
 const handleDelete = async (row) => {
   try {
@@ -437,10 +482,27 @@ const handleBatchDelete = async () => {
   }
 }
 
-// 导出
+// 导出数据
 const handleExport = () => {
-  // 导出功能待实现
-  ElMessage.info('导出功能待实现')
+  ElMessage.info('导出数据功能待实现')
+  // 将来可以实现：
+  // exportDoctorData().then(response => {
+  //   // 处理导出逻辑
+  // })
+}
+
+// 导入数据
+const handleImport = () => {
+  ElMessage.info('导入数据功能待实现')
+  // 将来可以实现：
+  // 打开文件选择对话框，处理批量导入
+}
+
+// 医生统计
+const handleStatistics = () => {
+  ElMessage.info('医生统计功能待实现')
+  // 将来可以实现：
+  // this.$router.push({ name: 'DoctorStatistics' })
 }
 
 // 多选
@@ -536,9 +598,221 @@ onMounted(() => {
   display: inline-block;
 }
 
+/* 工具栏样式 */
+.toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
 .pagination-container {
   margin-top: 20px;
   display: flex;
   justify-content: center;
+}
+
+/* 按钮风格设计规范 - 操作列按钮样式 */
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  padding: 8px 4px;
+  min-height: 32px;
+}
+
+.action-buttons .el-button.action-btn {
+  margin: 0;
+  padding: 6px 8px;
+  font-size: 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  min-width: 65px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.action-buttons .el-button.action-btn .el-icon {
+  font-size: 14px;
+}
+
+.action-buttons .el-button.action-btn:active {
+  transform: scale(0.95);
+}
+
+/* 文本按钮悬停效果优化 */
+.action-buttons .el-button.is-text:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 不同类型按钮的悬停颜色 - 根据设计规范优化 */
+.action-buttons .el-button.is-text.el-button--primary:hover {
+  background-color: rgba(64, 158, 255, 0.1);
+  color: #409eff;
+  border-color: rgba(64, 158, 255, 0.3);
+}
+
+.action-buttons .el-button.is-text.el-button--success:hover {
+  background-color: rgba(103, 194, 58, 0.1);
+  color: #67c23a;
+  border-color: rgba(103, 194, 58, 0.3);
+}
+
+.action-buttons .el-button.is-text.el-button--warning:hover {
+  background-color: rgba(230, 162, 60, 0.1);
+  color: #e6a23c;
+  border-color: rgba(230, 162, 60, 0.3);
+}
+
+.action-buttons .el-button.is-text.el-button--danger:hover {
+  background-color: rgba(245, 108, 108, 0.1);
+  color: #f56c6c;
+  border-color: rgba(245, 108, 108, 0.3);
+}
+
+/* 禁用状态样式 */
+.action-buttons .el-button.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.action-buttons .el-button.is-disabled:hover {
+  transform: none !important;
+  background-color: transparent !important;
+}
+
+/* 表格整体样式优化 */
+:deep(.el-table) {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+:deep(.el-table th) {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+:deep(.el-table td) {
+  border-bottom: 1px solid #f1f3f4;
+}
+
+:deep(.el-table tr:hover > td) {
+  background-color: #f8f9fa;
+}
+
+/* 表格固定列样式优化 */
+:deep(.el-table .el-table-fixed-column--right) {
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.08);
+  border-left: 1px solid #ebeef5;
+  background-color: #fff;
+}
+
+/* 操作列标题样式 */
+:deep(.el-table th.el-table-fixed-column--right) {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+:deep(.el-table th.el-table-fixed-column--right .cell) {
+  color: #303133;
+  text-align: center;
+}
+
+/* 操作列内容对齐 */
+:deep(.el-table td.el-table-fixed-column--right .cell) {
+  padding: 0 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 状态标签优化 */
+:deep(.el-tag) {
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 12px;
+}
+
+/* 响应式设计优化 */
+@media (max-width: 1200px) {
+  .action-buttons {
+    gap: 4px;
+  }
+  
+  .action-buttons .el-button.action-btn {
+    min-width: 60px;
+    padding: 5px 6px;
+    font-size: 11px;
+  }
+  
+  .action-buttons .el-button.action-btn .el-icon {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding: 4px 2px;
+  }
+  
+  .action-buttons .el-button.action-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 8px 12px;
+    font-size: 14px;
+    min-height: 40px;
+  }
+  
+  /* 隐藏部分列在移动端 */
+  :deep(.el-table .hidden-sm-and-down) {
+    display: none;
+  }
+}
+
+/* 搜索表单响应式优化 */
+.search-card .el-form.el-form--inline .el-form-item {
+  margin-right: 16px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+  .search-card .el-form.el-form--inline .el-form-item {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 12px;
+  }
+  
+  .search-card .el-form.el-form--inline .el-form-item .el-input,
+  .search-card .el-form.el-form--inline .el-form-item .el-select {
+    width: 100%;
+  }
+}
+
+/* 工具栏响应式优化 */
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .toolbar .el-button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .role-info {
+    margin-left: 0;
+    margin-top: 8px;
+    text-align: center;
+  }
 }
 </style>
