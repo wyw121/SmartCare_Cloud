@@ -31,19 +31,19 @@ public class HealthWarningPageDTO {
     private String elderlyName;
 
     /**
-     * 预警类型
+     * 预警类型（支持多选，逗号分隔）
      */
     private String warningType;
 
     /**
-     * 预警级别 (1-低风险, 2-中风险, 3-高风险, 4-紧急)
+     * 预警级别 (1-低风险, 2-中风险, 3-高风险, 4-紧急)（支持多选，逗号分隔）
      */
-    private Integer warningLevel;
+    private String warningLevel;
 
     /**
-     * 预警状态 (0-未处理, 1-已查看, 2-处理中, 3-已处理, 4-已忽略)
+     * 预警状态 (0-未处理, 1-已查看, 2-处理中, 3-已处理, 4-已忽略)（支持多选，逗号分隔）
      */
-    private Integer status;
+    private String status;
 
     /**
      * 处理人ID
@@ -111,19 +111,19 @@ public class HealthWarningPageDTO {
         this.warningType = warningType;
     }
 
-    public Integer getWarningLevel() {
+    public String getWarningLevel() {
         return warningLevel;
     }
 
-    public void setWarningLevel(Integer warningLevel) {
+    public void setWarningLevel(String warningLevel) {
         this.warningLevel = warningLevel;
     }
 
-    public Integer getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -175,8 +175,8 @@ public class HealthWarningPageDTO {
                 + ", elderlyId=" + elderlyId
                 + ", elderlyName='" + elderlyName + '\''
                 + ", warningType='" + warningType + '\''
-                + ", warningLevel=" + warningLevel
-                + ", status=" + status
+                + ", warningLevel='" + warningLevel + '\''
+                + ", status='" + status + '\''
                 + ", handlerId=" + handlerId
                 + ", handlerName='" + handlerName + '\''
                 + ", startTime=" + startTime

@@ -51,19 +51,60 @@ public class HealthWarningServiceImpl extends ServiceImpl<HealthWarningMapper, H
             queryWrapper.like(HealthWarning::getElderlyName, dto.getElderlyName());
         }
 
-        // 预警类型
+        // 预警类型（支持多选）
         if (StringUtils.hasText(dto.getWarningType())) {
-            queryWrapper.eq(HealthWarning::getWarningType, dto.getWarningType());
+            String[] warningTypes = dto.getWarningType().split(",");
+            if (warningTypes.length == 1) {
+                queryWrapper.eq(HealthWarning::getWarningType, warningTypes[0].trim());
+            } else {
+                queryWrapper.in(HealthWarning::getWarningType, (Object[]) warningTypes);
+            }
         }
 
-        // 预警级别
-        if (dto.getWarningLevel() != null) {
-            queryWrapper.eq(HealthWarning::getWarningLevel, dto.getWarningLevel());
+        // 预警级别（支持多选）
+        if (StringUtils.hasText(dto.getWarningLevel())) {
+            String[] warningLevels = dto.getWarningLevel().split(",");
+            if (warningLevels.length == 1) {
+                try {
+                    Integer level = Integer.parseInt(warningLevels[0].trim());
+                    queryWrapper.eq(HealthWarning::getWarningLevel, level);
+                } catch (NumberFormatException e) {
+                    log.warn("预警级别格式错误: {}", warningLevels[0]);
+                }
+            } else {
+                Integer[] levels = new Integer[warningLevels.length];
+                for (int i = 0; i < warningLevels.length; i++) {
+                    try {
+                        levels[i] = Integer.parseInt(warningLevels[i].trim());
+                    } catch (NumberFormatException e) {
+                        log.warn("预警级别格式错误: {}", warningLevels[i]);
+                    }
+                }
+                queryWrapper.in(HealthWarning::getWarningLevel, (Object[]) levels);
+            }
         }
 
-        // 状态
-        if (dto.getStatus() != null) {
-            queryWrapper.eq(HealthWarning::getStatus, dto.getStatus());
+        // 状态（支持多选）
+        if (StringUtils.hasText(dto.getStatus())) {
+            String[] statuses = dto.getStatus().split(",");
+            if (statuses.length == 1) {
+                try {
+                    Integer status = Integer.parseInt(statuses[0].trim());
+                    queryWrapper.eq(HealthWarning::getStatus, status);
+                } catch (NumberFormatException e) {
+                    log.warn("状态格式错误: {}", statuses[0]);
+                }
+            } else {
+                Integer[] statusArray = new Integer[statuses.length];
+                for (int i = 0; i < statuses.length; i++) {
+                    try {
+                        statusArray[i] = Integer.parseInt(statuses[i].trim());
+                    } catch (NumberFormatException e) {
+                        log.warn("状态格式错误: {}", statuses[i]);
+                    }
+                }
+                queryWrapper.in(HealthWarning::getStatus, (Object[]) statusArray);
+            }
         }
 
         // 处理人ID

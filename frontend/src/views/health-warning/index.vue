@@ -447,24 +447,43 @@ const getList = async () => {
     }
     delete params.triggerTime
     
-    // 处理多选参数
-    if (Array.isArray(params.warningType) && params.warningType.length > 0) {
-      params.warningType = params.warningType.join(',')
-    } else if (!params.warningType) {
+    // 处理多选参数 - 优化空数组处理
+    if (Array.isArray(params.warningType)) {
+      if (params.warningType.length > 0) {
+        params.warningType = params.warningType.join(',')
+      } else {
+        delete params.warningType
+      }
+    } else if (!params.warningType || params.warningType === '') {
       delete params.warningType
     }
     
-    if (Array.isArray(params.warningLevel) && params.warningLevel.length > 0) {
-      params.warningLevel = params.warningLevel.join(',')
-    } else if (!params.warningLevel) {
+    if (Array.isArray(params.warningLevel)) {
+      if (params.warningLevel.length > 0) {
+        params.warningLevel = params.warningLevel.join(',')
+      } else {
+        delete params.warningLevel
+      }
+    } else if (!params.warningLevel || params.warningLevel === '') {
       delete params.warningLevel
     }
     
-    if (Array.isArray(params.status) && params.status.length > 0) {
-      params.status = params.status.join(',')
-    } else if (!params.status) {
+    if (Array.isArray(params.status)) {
+      if (params.status.length > 0) {
+        params.status = params.status.join(',')
+      } else {
+        delete params.status
+      }
+    } else if (!params.status || params.status === '') {
       delete params.status
     }
+    
+    // 清理空字符串参数
+    if (!params.elderlyName || params.elderlyName.trim() === '') {
+      delete params.elderlyName
+    }
+    
+    console.log('发送的请求参数:', params)
     
     const response = await getHealthWarningPageList(params)
     
