@@ -87,3 +87,11 @@ export function updateDoctorStatus(id, status) {
     method: 'put'
   })
 }
+
+// 获取医生个人统计数据
+export function getDoctorStatistics(doctorId) {
+  return request({
+    url: `/api/doctor/${doctorId}/statistics`,
+    method: 'get'
+  })
+}
