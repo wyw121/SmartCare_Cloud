@@ -42,12 +42,25 @@
 
     <!-- 搜索表单 -->
     <el-card class="search-card">
-      <el-form :model="searchForm" ref="searchFormRef" :inline="true" label-width="80px">
-        <el-form-item label="老人姓名" prop="elderlyName">
-          <el-input v-model="searchForm.elderlyName" placeholder="请输入老人姓名" clearable />
+      <el-form :model="searchForm" ref="searchFormRef" :inline="true" label-width="70px" class="compact-search-form">
+        <el-form-item label="姓名" prop="elderlyName">
+          <el-input 
+            v-model="searchForm.elderlyName" 
+            placeholder="老人姓名" 
+            clearable 
+            style="width: 130px"
+          />
         </el-form-item>
-        <el-form-item label="预警类型" prop="warningType">
-          <el-select v-model="searchForm.warningType" placeholder="请选择预警类型" clearable>
+        <el-form-item label="类型" prop="warningType">
+          <el-select 
+            v-model="searchForm.warningType" 
+            placeholder="预警类型" 
+            clearable
+            multiple
+            collapse-tags
+            collapse-tags-tooltip
+            style="width: 150px"
+          >
             <el-option label="血压异常" value="血压异常" />
             <el-option label="血糖异常" value="血糖异常" />
             <el-option label="心率异常" value="心率异常" />
@@ -58,16 +71,32 @@
             <el-option label="其他异常" value="其他异常" />
           </el-select>
         </el-form-item>
-        <el-form-item label="预警级别" prop="warningLevel">
-          <el-select v-model="searchForm.warningLevel" placeholder="请选择预警级别" clearable>
+        <el-form-item label="级别" prop="warningLevel">
+          <el-select 
+            v-model="searchForm.warningLevel" 
+            placeholder="预警级别" 
+            clearable
+            multiple
+            collapse-tags
+            collapse-tags-tooltip
+            style="width: 130px"
+          >
             <el-option label="低风险" :value="1" />
             <el-option label="中风险" :value="2" />
             <el-option label="高风险" :value="3" />
             <el-option label="紧急" :value="4" />
           </el-select>
         </el-form-item>
-        <el-form-item label="处理状态" prop="status">
-          <el-select v-model="searchForm.status" placeholder="请选择处理状态" clearable>
+        <el-form-item label="状态" prop="status">
+          <el-select 
+            v-model="searchForm.status" 
+            placeholder="处理状态" 
+            clearable
+            multiple
+            collapse-tags
+            collapse-tags-tooltip
+            style="width: 120px"
+          >
             <el-option label="未处理" :value="0" />
             <el-option label="已查看" :value="1" />
             <el-option label="处理中" :value="2" />
@@ -75,19 +104,24 @@
             <el-option label="已忽略" :value="4" />
           </el-select>
         </el-form-item>
-        <el-form-item label="触发时间" prop="triggerTime">
+        <el-form-item label="时间" prop="triggerTime">
           <el-date-picker
             v-model="searchForm.triggerTime"
             type="datetimerange"
-            start-placeholder="开始时间"
-            end-placeholder="结束时间"
-            format="YYYY-MM-DD HH:mm:ss"
+            start-placeholder="开始"
+            end-placeholder="结束"
+            format="MM-DD HH:mm"
             value-format="YYYY-MM-DD HH:mm:ss"
+            style="width: 280px"
           />
         </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch" :icon="Search">搜索</el-button>
-          <el-button @click="handleReset" :icon="Refresh">重置</el-button>
+        <el-form-item class="search-buttons">
+          <el-button type="primary" @click="handleSearch" :icon="Search" size="default">
+            搜索
+          </el-button>
+          <el-button @click="handleReset" :icon="Refresh" size="default">
+            重置
+          </el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -261,23 +295,23 @@
 
 <script setup>
 import {
-  deleteHealthWarning,
-  deleteHealthWarningBatch,
-  getHealthWarningPageList,
-  getWarningLevelStatistics,
-  handleHealthWarning,
-  updateHealthWarningStatus
+    deleteHealthWarning,
+    deleteHealthWarningBatch,
+    getHealthWarningPageList,
+    getWarningLevelStatistics,
+    handleHealthWarning,
+    updateHealthWarningStatus
 } from '@/api/healthWarning'
 import {
-  Check,
-  CircleCheck,
-  Close, Delete,
-  Download,
-  InfoFilled,
-  Refresh,
-  Search,
-  View,
-  Warning
+    Check,
+    CircleCheck,
+    Close, Delete,
+    Download,
+    InfoFilled,
+    Refresh,
+    Search,
+    View,
+    Warning
 } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
@@ -303,9 +337,9 @@ const statistics = reactive({
 // 搜索表单
 const searchForm = reactive({
   elderlyName: '',
-  warningType: '',
-  warningLevel: '',
-  status: '',
+  warningType: [],
+  warningLevel: [],
+  status: [],
   triggerTime: []
 })
 
@@ -412,6 +446,25 @@ const getList = async () => {
       params.endTime = searchForm.triggerTime[1]
     }
     delete params.triggerTime
+    
+    // 处理多选参数
+    if (Array.isArray(params.warningType) && params.warningType.length > 0) {
+      params.warningType = params.warningType.join(',')
+    } else if (!params.warningType) {
+      delete params.warningType
+    }
+    
+    if (Array.isArray(params.warningLevel) && params.warningLevel.length > 0) {
+      params.warningLevel = params.warningLevel.join(',')
+    } else if (!params.warningLevel) {
+      delete params.warningLevel
+    }
+    
+    if (Array.isArray(params.status) && params.status.length > 0) {
+      params.status = params.status.join(',')
+    } else if (!params.status) {
+      delete params.status
+    }
     
     const response = await getHealthWarningPageList(params)
     
@@ -690,5 +743,84 @@ onMounted(() => {
   margin: 0;
   line-height: 1.6;
   color: #606266;
+}
+
+/* 紧凑搜索表单样式 */
+.compact-search-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
+.compact-search-form .el-form-item {
+  margin-bottom: 0;
+  margin-right: 0;
+}
+
+.compact-search-form .el-form-item__label {
+  max-width: 60px;
+  font-size: 14px;
+  font-weight: normal;
+  padding-right: 8px;
+}
+
+.compact-search-form .el-form-item__content {
+  margin-left: 0 !important;
+}
+
+/* 多选下拉框样式优化 */
+.compact-search-form .el-select {
+  min-width: 120px;
+}
+
+.compact-search-form .el-select .el-select__tags {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.compact-search-form .el-select .el-tag {
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 搜索按钮组样式 */
+.search-buttons {
+  margin-left: auto;
+}
+
+.search-buttons .el-form-item__content {
+  display: flex;
+  gap: 8px;
+}
+
+/* 响应式布局 */
+@media (max-width: 1400px) {
+  .compact-search-form {
+    flex-wrap: wrap;
+  }
+  
+  .compact-search-form .el-form-item {
+    margin-bottom: 12px;
+  }
+  
+  .search-buttons {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .compact-search-form .el-form-item {
+    width: 100%;
+  }
+  
+  .compact-search-form .el-input,
+  .compact-search-form .el-select,
+  .compact-search-form .el-date-picker {
+    width: 100% !important;
+  }
 }
 </style>
