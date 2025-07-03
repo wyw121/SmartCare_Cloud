@@ -32,6 +32,7 @@ public class HealthWarningPageDTO {
 
     /**
      * 预警类型（支持多选，逗号分隔）
+     * 如：血压异常,血糖异常,心率异常
      */
     private String warningType;
 
