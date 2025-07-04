@@ -176,37 +176,59 @@
         </el-table-column>
         <el-table-column prop="handlerName" label="处理人" width="100" />
         <el-table-column prop="triggerTime" label="触发时间" width="180" />
-        <el-table-column label="操作" width="250" fixed="right">
+        <el-table-column label="操作" width="320" fixed="right" align="center">
           <template #default="scope">
-            <el-button type="primary" size="small" @click="handleView(scope.row)" :icon="View">
-              查看
-            </el-button>
-            <el-button 
-              v-if="scope.row.status === 0 || scope.row.status === 1"
-              type="success" 
-              size="small" 
-              @click="handleProcess(scope.row)"
-              :icon="Check"
-            >
-              处理
-            </el-button>
-            <el-button 
-              v-if="scope.row.status === 0"
-              type="warning" 
-              size="small" 
-              @click="handleIgnore(scope.row)"
-              :icon="Close"
-            >
-              忽略
-            </el-button>
-            <el-button 
-              type="danger" 
-              size="small" 
-              @click="handleDelete(scope.row)"
-              :icon="Delete"
-            >
-              删除
-            </el-button>
+            <div class="action-buttons-grid">
+              <!-- 第一列：查看（始终存在） -->
+              <div class="action-slot">
+                <el-button 
+                  text 
+                  type="primary" 
+                  size="small" 
+                  @click="handleView(scope.row)"
+                >
+                  查看
+                </el-button>
+              </div>
+              
+              <!-- 第二列：处理（条件显示） -->
+              <div class="action-slot">
+                <el-button 
+                  v-if="scope.row.status === 0 || scope.row.status === 1"
+                  text 
+                  type="success" 
+                  size="small" 
+                  @click="handleProcess(scope.row)"
+                >
+                  处理
+                </el-button>
+              </div>
+              
+              <!-- 第三列：忽略（条件显示） -->
+              <div class="action-slot">
+                <el-button 
+                  v-if="scope.row.status === 0"
+                  text 
+                  type="warning" 
+                  size="small" 
+                  @click="handleIgnore(scope.row)"
+                >
+                  忽略
+                </el-button>
+              </div>
+              
+              <!-- 第四列：删除（始终存在） -->
+              <div class="action-slot">
+                <el-button 
+                  text 
+                  type="danger" 
+                  size="small" 
+                  @click="handleDelete(scope.row)"
+                >
+                  删除
+                </el-button>
+              </div>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -840,6 +862,254 @@ onMounted(() => {
   .compact-search-form .el-select,
   .compact-search-form .el-date-picker {
     width: 100% !important;
+  }
+}
+
+/* 表格操作按钮网格布局 */
+.action-buttons-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr; /* 四列等宽布局 */
+  gap: 4px;
+  align-items: center;
+  padding: 4px 0;
+  min-height: 32px;
+}
+
+/* 按钮插槽容器 */
+.action-slot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 32px;
+}
+
+/* 网格布局中的按钮样式 */
+.action-buttons-grid .el-button {
+  margin: 0;
+  padding: 3px 6px;
+  font-size: 12px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  min-width: 50px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  
+  /* 提升点击体验 */
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+/* 保持原有的悬停效果 */
+.action-buttons-grid .el-button.is-text {
+  &:hover {
+    background-color: rgba(64, 158, 255, 0.1);
+    transform: translateY(-1px);
+  }
+  
+  /* 不同类型的悬停效果 */
+  &.el-button--primary:hover {
+    background-color: rgba(64, 158, 255, 0.1);
+    color: #409eff;
+  }
+  
+  &.el-button--success:hover {
+    background-color: rgba(103, 194, 58, 0.1);
+    color: #67c23a;
+  }
+  
+  &.el-button--warning:hover {
+    background-color: rgba(230, 162, 60, 0.1);
+    color: #e6a23c;
+  }
+  
+  &.el-button--danger:hover {
+    background-color: rgba(245, 108, 108, 0.1);
+    color: #f56c6c;
+  }
+}
+
+/* 保持原有的按钮样式（用于其他地方） */
+.action-buttons {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  padding: 4px 0;
+  min-height: 32px;
+}
+
+/* 按钮基础样式重置 */
+.action-buttons .el-button {
+  margin: 0;
+  padding: 3px 6px;
+  font-size: 12px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  min-width: 50px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  
+  /* 提升点击体验 */
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+/* 文本按钮悬停效果 */
+.action-buttons .el-button.is-text {
+  &:hover {
+    background-color: rgba(64, 158, 255, 0.1);
+    transform: translateY(-1px);
+  }
+  
+  /* 不同类型的悬停效果 */
+  &.el-button--primary:hover {
+    background-color: rgba(64, 158, 255, 0.1);
+    color: #409eff;
+  }
+  
+  &.el-button--success:hover {
+    background-color: rgba(103, 194, 58, 0.1);
+    color: #67c23a;
+  }
+  
+  &.el-button--warning:hover {
+    background-color: rgba(230, 162, 60, 0.1);
+    color: #e6a23c;
+  }
+  
+  &.el-button--danger:hover {
+    background-color: rgba(245, 108, 108, 0.1);
+    color: #f56c6c;
+  }
+}
+
+/* 禁用状态 */
+.action-buttons .el-button.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  
+  &:hover {
+    transform: none !important;
+    background-color: transparent !important;
+  }
+}
+
+/* 表格固定列样式优化 */
+.el-table {
+  .el-table-fixed-column--right {
+    box-shadow: -1px 0 8px rgba(0, 0, 0, 0.1);
+    border-left: 1px solid #ebeef5;
+  }
+  
+  /* 操作列标题样式 */
+  th.el-table-fixed-column--right {
+    background-color: #fafafa;
+    font-weight: 600;
+    
+    .cell {
+      color: #303133;
+    }
+  }
+  
+  /* 操作列内容对齐 */
+  td.el-table-fixed-column--right {
+    .cell {
+      padding: 0 8px;
+    }
+  }
+}
+
+/* 平板适配 (768px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .action-buttons {
+    gap: 4px;
+  }
+  
+  .action-buttons .el-button {
+    padding: 3px 6px;
+    font-size: 12px;
+    min-width: 48px;
+  }
+  
+  /* 网格布局适配 */
+  .action-buttons-grid {
+    gap: 3px;
+  }
+  
+  .action-buttons-grid .el-button {
+    padding: 3px 5px;
+    font-size: 11px;
+    min-width: 45px;
+  }
+}
+
+/* 移动端适配 (≤768px) */
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 2px;
+    justify-content: center;
+  }
+  
+  .action-buttons .el-button {
+    padding: 4px 6px;
+    font-size: 11px;
+    min-width: 40px;
+    min-height: 32px;
+  }
+  
+  /* 网格布局移动端适配 */
+  .action-buttons-grid {
+    grid-template-columns: 1fr 1fr; /* 移动端改为两列 */
+    grid-template-rows: 1fr 1fr; /* 两行 */
+    gap: 2px;
+  }
+  
+  .action-buttons-grid .el-button {
+    padding: 4px 5px;
+    font-size: 10px;
+    min-width: 35px;
+  }
+  
+  /* 调整表格操作列宽度 */
+  .el-table .el-table__cell:last-child {
+    min-width: 180px; /* 移动端缩小宽度 */
+  }
+}
+
+/* 小屏幕设备适配 (≤480px) */
+@media (max-width: 480px) {
+  .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+  }
+  
+  .action-buttons .el-button {
+    width: 100%;
+    justify-content: center;
+    font-size: 14px;
+    padding: 8px 12px;
+    min-height: 36px;
+  }
+  
+  /* 网格布局小屏幕适配 */
+  .action-buttons-grid {
+    grid-template-columns: 1fr; /* 小屏幕单列 */
+    grid-template-rows: repeat(4, 1fr); /* 四行 */
+    gap: 2px;
+  }
+  
+  .action-buttons-grid .el-button {
+    width: 100%;
+    justify-content: center;
+    font-size: 13px;
+    padding: 6px 10px;
+    min-height: 32px;
   }
 }
 </style>

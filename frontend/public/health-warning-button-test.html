@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>健康预警 - 按钮样式优化测试</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .test-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      border: 1px solid #e8e8e8;
+      border-radius: 6px;
+    }
+    
+    .test-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #303133;
+    }
+    
+    /* 模拟表格操作按钮样式 */
+    .action-buttons {
+      display: flex;
+      flex-wrap: nowrap; /* 防止换行 */
+      align-items: center;
+      gap: 6px; /* 减少间距 */
+      justify-content: center;
+      padding: 4px 0;
+      min-height: 32px;
+      border: 1px dashed #e8e8e8; /* 添加边框以便观察 */
+    }
+
+    .action-buttons .btn {
+      margin: 0;
+      padding: 3px 6px; /* 减少内边距 */
+      font-size: 12px;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      min-width: 50px; /* 减少最小宽度 */
+      white-space: nowrap;
+      border: none;
+      cursor: pointer;
+      background: transparent;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0; /* 防止按钮压缩 */
+    }
+
+    .action-buttons .btn:active {
+      transform: scale(0.95);
+    }
+
+    .action-buttons .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .action-buttons .btn-primary {
+      color: #409eff;
+    }
+
+    .action-buttons .btn-primary:hover {
+      background-color: rgba(64, 158, 255, 0.1);
+      color: #409eff;
+    }
+
+    .action-buttons .btn-success {
+      color: #67c23a;
+    }
+
+    .action-buttons .btn-success:hover {
+      background-color: rgba(103, 194, 58, 0.1);
+      color: #67c23a;
+    }
+
+    .action-buttons .btn-warning {
+      color: #e6a23c;
+    }
+
+    .action-buttons .btn-warning:hover {
+      background-color: rgba(230, 162, 60, 0.1);
+      color: #e6a23c;
+    }
+
+    .action-buttons .btn-danger {
+      color: #f56c6c;
+    }
+
+    .action-buttons .btn-danger:hover {
+      background-color: rgba(245, 108, 108, 0.1);
+      color: #f56c6c;
+    }
+
+    /* 响应式测试 */
+    @media (max-width: 1024px) and (min-width: 769px) {
+      .action-buttons {
+        gap: 4px; /* 进一步缩小间距 */
+      }
+      
+      .action-buttons .btn {
+        padding: 3px 6px;
+        font-size: 12px;
+        min-width: 48px; /* 减少最小宽度 */
+      }
+    }
+
+    @media (max-width: 768px) {
+      .action-buttons {
+        flex-direction: row; /* 保持水平排列 */
+        flex-wrap: wrap; /* 必要时允许换行 */
+        gap: 2px; /* 最小间距 */
+        justify-content: center;
+      }
+      
+      .action-buttons .btn {
+        padding: 4px 6px;
+        font-size: 11px;
+        min-width: 40px;
+        min-height: 32px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .action-buttons {
+        flex-direction: column; /* 小屏幕垂直排列 */
+        align-items: stretch;
+        gap: 2px;
+      }
+      
+      .action-buttons .btn {
+        width: 100%;
+        justify-content: center;
+        font-size: 14px;
+        padding: 8px 12px;
+        min-height: 36px;
+      }
+    }
+
+    /* 模拟表格环境 */
+    .table-mock {
+      border: 1px solid #ebeef5;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .table-header {
+      background-color: #fafafa;
+      padding: 12px;
+      font-weight: 600;
+      border-bottom: 1px solid #ebeef5;
+      text-align: center;
+    }
+
+    .table-cell {
+      padding: 12px;
+      border-bottom: 1px solid #ebeef5;
+      text-align: center;
+    }
+
+    .table-cell:last-child {
+      border-bottom: none;
+    }
+
+    .status-tag {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .status-urgent {
+      background-color: rgba(245, 108, 108, 0.1);
+      color: #f56c6c;
+    }
+
+    .status-processed {
+      background-color: rgba(103, 194, 58, 0.1);
+      color: #67c23a;
+    }
+
+    .status-pending {
+      background-color: rgba(230, 162, 60, 0.1);
+      color: #e6a23c;
+    }
+
+    .info-panel {
+      background-color: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .info-panel h3 {
+      margin: 0 0 10px 0;
+      color: #0ea5e9;
+    }
+
+    .info-panel p {
+      margin: 5px 0;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>健康预警 - 按钮样式优化测试</h1>
+    
+    <div class="info-panel">
+      <h3>🎯 布局优化说明</h3>
+      <p>✅ 设置 flex-wrap: nowrap 防止按钮换行</p>
+      <p>✅ 减少按钮间距到6px，确保一行显示</p>
+      <p>✅ 优化按钮内边距和最小宽度</p>
+      <p>✅ 操作列宽度增加到320px</p>
+      <p>✅ 添加 flex-shrink: 0 防止按钮压缩</p>
+      <p>✅ 响应式设计适配不同设备</p>
+    </div>
+
+    <div class="test-section">
+      <div class="test-title">单行按钮布局测试（宽度320px）</div>
+      <div class="table-mock" style="width: 320px; margin: 0 auto;">
+        <div class="table-header">操作列 (320px)</div>
+        <div class="table-cell">
+          <div class="action-buttons">
+            <button class="btn btn-primary">查看</button>
+            <button class="btn btn-success">处理</button>
+            <button class="btn btn-warning">忽略</button>
+            <button class="btn btn-danger">删除</button>
+          </div>
+        </div>
+        <div class="table-cell">
+          <div class="action-buttons">
+            <button class="btn btn-primary">查看</button>
+            <button class="btn btn-danger">删除</button>
+          </div>
+        </div>
+        <div class="table-cell">
+          <div class="action-buttons">
+            <button class="btn btn-primary">查看</button>
+            <button class="btn btn-success">处理</button>
+            <button class="btn btn-danger">删除</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <div class="test-title">桌面端效果（宽度 > 1024px）</div>
+      <div class="table-mock">
+        <div class="table-header">操作列</div>
+        <div class="table-cell">
+          <div class="action-buttons">
+            <button class="btn btn-primary">查看</button>
+            <button class="btn btn-success">处理</button>
+            <button class="btn btn-warning">忽略</button>
+            <button class="btn btn-danger">删除</button>
+          </div>
+        </div>
+        <div class="table-cell">
+          <div class="action-buttons">
+            <button class="btn btn-primary">查看</button>
+            <button class="btn btn-danger">删除</button>
+          </div>
+        </div>
+        <div class="table-cell">
+          <div class="action-buttons">
+            <button class="btn btn-primary">查看</button>
+            <button class="btn btn-success">处理</button>
+            <button class="btn btn-danger">删除</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <div class="test-title">健康预警数据示例</div>
+      <div class="table-mock">
+        <div class="table-header">预警信息 | 状态 | 操作</div>
+        <div class="table-cell">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <strong>张三 - 血压异常</strong><br>
+              <small>收缩压180mmHg，舒张压95mmHg</small>
+            </div>
+            <div>
+              <span class="status-tag status-urgent">紧急</span>
+            </div>
+            <div class="action-buttons">
+              <button class="btn btn-primary">查看</button>
+              <button class="btn btn-success">处理</button>
+              <button class="btn btn-warning">忽略</button>
+              <button class="btn btn-danger">删除</button>
+            </div>
+          </div>
+        </div>
+        <div class="table-cell">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <strong>李四 - 长期不活动</strong><br>
+              <small>连续3天未检测到活动</small>
+            </div>
+            <div>
+              <span class="status-tag status-processed">已处理</span>
+            </div>
+            <div class="action-buttons">
+              <button class="btn btn-primary">查看</button>
+              <button class="btn btn-danger">删除</button>
+            </div>
+          </div>
+        </div>
+        <div class="table-cell">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <strong>王五 - 药物未按时服用</strong><br>
+              <small>降压药已延迟4小时未服用</small>
+            </div>
+            <div>
+              <span class="status-tag status-pending">待处理</span>
+            </div>
+            <div class="action-buttons">
+              <button class="btn btn-primary">查看</button>
+              <button class="btn btn-success">处理</button>
+              <button class="btn btn-danger">删除</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <div class="test-title">响应式测试说明</div>
+      <p><strong>测试方法：</strong></p>
+      <ul>
+        <li>调整浏览器宽度查看不同断点的样式变化</li>
+        <li>1024px以下：按钮间距缩小为6px</li>
+        <li>768px以下：按钮垂直排列，适合移动设备</li>
+        <li>480px以下：按钮字体增大到16px，提升可点击性</li>
+      </ul>
+      <p><strong>颜色规范：</strong></p>
+      <ul>
+        <li>主要操作（查看）：#409eff（蓝色）</li>
+        <li>成功操作（处理）：#67c23a（绿色）</li>
+        <li>警告操作（忽略）：#e6a23c（橙色）</li>
+        <li>危险操作（删除）：#f56c6c（红色）</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // 添加交互效果演示
+    document.querySelectorAll('.btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const originalText = this.textContent;
+        this.textContent = '点击了！';
+        setTimeout(() => {
+          this.textContent = originalText;
+        }, 1000);
+      });
+    });
+
+    // 响应式测试提示
+    function checkViewport() {
+      const width = window.innerWidth;
+      const indicator = document.querySelector('.viewport-indicator') || document.createElement('div');
+      indicator.className = 'viewport-indicator';
+      indicator.style.cssText = `
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: #409eff;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        z-index: 9999;
+      `;
+      
+      if (width > 1024) {
+        indicator.textContent = '桌面端 (>1024px)';
+      } else if (width > 768) {
+        indicator.textContent = '平板端 (768-1024px)';
+      } else if (width > 480) {
+        indicator.textContent = '移动端 (480-768px)';
+      } else {
+        indicator.textContent = '小屏幕 (<480px)';
+      }
+      
+      if (!document.querySelector('.viewport-indicator')) {
+        document.body.appendChild(indicator);
+      }
+    }
+
+    window.addEventListener('resize', checkViewport);
+    checkViewport();
+  </script>
+</body>
+</html>
