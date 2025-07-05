@@ -18,6 +18,42 @@ export const auth = {
     })
   },
 
+  // 用户注册
+  register(data) {
+    return request({
+      url: '/auth/register',
+      method: 'post',
+      data
+    })
+  },
+
+  // 检查用户名是否可用
+  checkUsername(username) {
+    return request({
+      url: '/auth/check-username',
+      method: 'get',
+      params: { username }
+    })
+  },
+
+  // 检查手机号是否可用
+  checkPhone(phone) {
+    return request({
+      url: '/auth/check-phone',
+      method: 'get',
+      params: { phone }
+    })
+  },
+
+  // 检查邮箱是否可用
+  checkEmail(email) {
+    return request({
+      url: '/auth/check-email',
+      method: 'get',
+      params: { email }
+    })
+  },
+
   // 用户登出
   logout() {
     return request({

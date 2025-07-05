@@ -34,7 +34,7 @@ public class UserRegisterDTO {
     @Schema(description = "真实姓名", required = true)
     @NotBlank(message = "真实姓名不能为空")
     @Size(max = 50, message = "姓名长度不能超过50个字符")
-    private String name;
+    private String realName;
 
     @Schema(description = "性别：1-男，0-女")
     private Integer gender;
@@ -110,12 +110,12 @@ public class UserRegisterDTO {
         this.confirmPassword = confirmPassword;
     }
 
-    public String getName() {
-        return name;
+    public String getRealName() {
+        return realName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 
     public Integer getGender() {

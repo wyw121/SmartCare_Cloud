@@ -1,29 +1,29 @@
 package com.smartcare.cloud.service.impl;
 
-import com.smartcare.cloud.entity.User;
-import com.smartcare.cloud.entity.Role;
-import com.smartcare.cloud.mapper.UserMapper;
-import com.smartcare.cloud.mapper.RoleMapper;
-import com.smartcare.cloud.service.UserAuthService;
-import com.smartcare.cloud.dto.UserLoginDTO;
-import com.smartcare.cloud.dto.UserRegisterDTO;
-import com.smartcare.cloud.vo.LoginVO;
-import com.smartcare.cloud.vo.UserRegisterVO;
-import com.smartcare.cloud.vo.UserInfoVO;
-import com.smartcare.cloud.util.JwtUtil;
-import com.smartcare.cloud.util.PasswordUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.smartcare.cloud.dto.UserLoginDTO;
+import com.smartcare.cloud.dto.UserRegisterDTO;
+import com.smartcare.cloud.entity.User;
+import com.smartcare.cloud.mapper.RoleMapper;
+import com.smartcare.cloud.mapper.UserMapper;
+import com.smartcare.cloud.service.UserAuthService;
+import com.smartcare.cloud.util.JwtUtil;
+import com.smartcare.cloud.util.PasswordUtil;
+import com.smartcare.cloud.vo.LoginVO;
+import com.smartcare.cloud.vo.UserInfoVO;
+import com.smartcare.cloud.vo.UserRegisterVO;
 
 /**
  * 用户认证服务实现类
@@ -50,8 +50,8 @@ public class UserAuthServiceImpl extends ServiceImpl<UserMapper, User> implement
     @Transactional
     public LoginVO login(UserLoginDTO loginDTO) {
         // 参数校验
-        if (loginDTO == null || !StringUtils.hasText(loginDTO.getUsername()) 
-            || !StringUtils.hasText(loginDTO.getPassword())) {
+        if (loginDTO == null || !StringUtils.hasText(loginDTO.getUsername())
+                || !StringUtils.hasText(loginDTO.getPassword())) {
             throw new RuntimeException("用户名或密码不能为空");
         }
 
@@ -74,15 +74,14 @@ public class UserAuthServiceImpl extends ServiceImpl<UserMapper, User> implement
         // 生成JWT Token
         String token = jwtUtil.generateToken(user.getId(), user.getUsername(), user.getRoleCode());
 
-        // 更新登录信息
-        updateLoginInfo(user.getId(), null);
-
+        // 更新登录信息 - 临时禁用，字段不存在
+        // updateLoginInfo(user.getId(), null);
         // 构建返回对象
         LoginVO loginVO = new LoginVO();
         loginVO.setToken(token);
         loginVO.setTokenType("Bearer");
         loginVO.setExpiresIn(7200L); // 2小时
-        
+
         // 用户信息
         UserInfoVO userInfo = new UserInfoVO();
         userInfo.setId(user.getId());
@@ -94,7 +93,7 @@ public class UserAuthServiceImpl extends ServiceImpl<UserMapper, User> implement
         userInfo.setRoleName(user.getRoleName());
         userInfo.setAvatar(user.getAvatar());
         userInfo.setDepartment(user.getDepartment());
-        
+
         loginVO.setUserInfo(userInfo);
 
         return loginVO;
@@ -104,10 +103,10 @@ public class UserAuthServiceImpl extends ServiceImpl<UserMapper, User> implement
     @Transactional
     public UserRegisterVO register(UserRegisterDTO registerDTO) {
         // 参数校验
-        if (registerDTO == null || !StringUtils.hasText(registerDTO.getUsername()) 
-            || !StringUtils.hasText(registerDTO.getPassword()) 
-            || !StringUtils.hasText(registerDTO.getName())
-            || !StringUtils.hasText(registerDTO.getRoleCode())) {
+        if (registerDTO == null || !StringUtils.hasText(registerDTO.getUsername())
+                || !StringUtils.hasText(registerDTO.getPassword())
+                || !StringUtils.hasText(registerDTO.getRealName())
+                || !StringUtils.hasText(registerDTO.getRoleCode())) {
             throw new RuntimeException("必填信息不能为空");
         }
 
@@ -130,7 +129,7 @@ public class UserAuthServiceImpl extends ServiceImpl<UserMapper, User> implement
         User user = new User();
         user.setUsername(registerDTO.getUsername());
         user.setPassword(passwordUtil.encode(registerDTO.getPassword()));
-        user.setRealName(registerDTO.getName());
+        user.setRealName(registerDTO.getRealName());
         user.setGender(registerDTO.getGender());
         user.setPhone(registerDTO.getPhone());
         user.setEmail(registerDTO.getEmail());
@@ -138,14 +137,26 @@ public class UserAuthServiceImpl extends ServiceImpl<UserMapper, User> implement
         user.setDepartment(registerDTO.getDepartment());
         user.setDescription(registerDTO.getDescription());
         user.setStatus(1);
-        user.setLoginCount(0);
+        // user.setLoginCount(0); // 暂时注释掉，表中没有该字段
         user.setIsDeleted(0);
 
         // 设置角色名称
-        Role role = roleMapper.selectByRoleCode(registerDTO.getRoleCode());
-        if (role != null) {
-            user.setRoleName(role.getRoleName());
+        String roleName;
+        switch (registerDTO.getRoleCode()) {
+            case "admin":
+                roleName = "系统管理员";
+                break;
+            case "doctor":
+                roleName = "医生";
+                break;
+            case "family":
+                roleName = "家属";
+                break;
+            default:
+                roleName = "普通用户";
+                break;
         }
+        user.setRoleName(roleName);
 
         // 根据角色设置专属字段
         if ("doctor".equals(registerDTO.getRoleCode())) {
@@ -159,7 +170,7 @@ public class UserAuthServiceImpl extends ServiceImpl<UserMapper, User> implement
         }
 
         // 保存用户
-        userMapper.insert(user);
+        userMapper.insertUser(user);
 
         // 构建返回对象
         UserRegisterVO registerVO = new UserRegisterVO();
@@ -233,12 +244,12 @@ public class UserAuthServiceImpl extends ServiceImpl<UserMapper, User> implement
         if (userId == null || status == null) {
             return false;
         }
-        
+
         User user = new User();
         user.setId(userId);
         user.setStatus(status);
         user.setUpdateTime(LocalDateTime.now());
-        
+
         return userMapper.updateById(user) > 0;
     }
 
@@ -248,15 +259,15 @@ public class UserAuthServiceImpl extends ServiceImpl<UserMapper, User> implement
         if (userId == null) {
             return false;
         }
-        
+
         String defaultPassword = "123456";
         String encodedPassword = passwordUtil.encode(defaultPassword);
-        
+
         User user = new User();
         user.setId(userId);
         user.setPassword(encodedPassword);
         user.setUpdateTime(LocalDateTime.now());
-        
+
         return userMapper.updateById(user) > 0;
     }
 
@@ -265,7 +276,7 @@ public class UserAuthServiceImpl extends ServiceImpl<UserMapper, User> implement
         if (userId == null) {
             return Arrays.asList();
         }
-        
+
         User user = userMapper.selectUserPermissions(userId);
         if (user != null && user.getPermissions() != null) {
             return user.getPermissions().stream()
@@ -329,7 +340,7 @@ public class UserAuthServiceImpl extends ServiceImpl<UserMapper, User> implement
         if (userId == null || !StringUtils.hasText(permissionCode)) {
             return false;
         }
-        
+
         List<String> permissions = getUserPermissions(userId);
         return permissions.contains(permissionCode);
     }
@@ -337,9 +348,12 @@ public class UserAuthServiceImpl extends ServiceImpl<UserMapper, User> implement
     @Override
     @Transactional
     public void updateLoginInfo(Long userId, String loginIp) {
+        // 临时禁用，字段不存在
+        /*
         if (userId != null) {
             userMapper.updateLoginInfo(userId, LocalDateTime.now(), loginIp);
         }
+         */
     }
 
     @Override

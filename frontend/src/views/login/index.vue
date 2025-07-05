@@ -126,6 +126,13 @@
             {{ loading ? '登录中...' : '登录' }}
           </el-button>
         </el-form-item>
+        
+        <el-form-item>
+          <div class="auth-links">
+            <span>还没有账号？</span>
+            <el-link type="primary" @click="goToRegister">立即注册</el-link>
+          </div>
+        </el-form-item>
       </el-form>
       
       <div class="login-footer">
@@ -274,6 +281,14 @@ const fillForm = (role) => {
 const toggleDevMode = () => {
   isDev.value = !isDev.value
   ElMessage.info(isDev.value ? '已显示开发模式' : '已隐藏开发模式')
+}
+
+/**
+ * 跳转到注册页面
+ */
+const goToRegister = () => {
+  console.log('准备跳转到注册页面')
+  router.push('/register')
 }
 </script>
 
@@ -496,6 +511,17 @@ const toggleDevMode = () => {
   height: 45px;
   font-size: 16px;
   border-radius: 6px;
+}
+
+.auth-links {
+  text-align: center;
+  margin-top: 10px;
+  
+  span {
+    color: #666;
+    font-size: 14px;
+    margin-right: 8px;
+  }
 }
 
 .login-footer {

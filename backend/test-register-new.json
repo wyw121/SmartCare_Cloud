@@ -1,0 +1,9 @@
+{
+  "username": "testuser001",
+  "password": "123456",
+  "confirmPassword": "123456",
+  "email": "test001@example.com",
+  "phone": "13800138001",
+  "realName": "TestUser001",
+  "roleCode": "family"
+}

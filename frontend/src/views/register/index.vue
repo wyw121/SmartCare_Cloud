@@ -286,7 +286,7 @@
 </template>
 
 <script setup>
-import { checkEmail, checkPhone, checkUsername, register } from '@/api/auth'
+import { auth } from '@/api'
 import {
     Avatar, Check, Close, Loading, Lock, Message,
     OfficeBuilding, Phone, Setting, User
@@ -444,7 +444,7 @@ const checkUsername = async () => {
   
   usernameChecking.value = true
   try {
-    const response = await checkUsername(registerForm.username)
+    const response = await auth.checkUsername(registerForm.username)
     if (response.code === 200) {
       usernameStatus.value = response.data ? 'success' : 'error'
     }
@@ -466,7 +466,7 @@ const checkPhone = async () => {
   
   phoneChecking.value = true
   try {
-    const response = await checkPhone(registerForm.phone)
+    const response = await auth.checkPhone(registerForm.phone)
     if (response.code === 200) {
       phoneStatus.value = response.data ? 'success' : 'error'
     }
@@ -493,7 +493,7 @@ const checkEmail = async () => {
   
   emailChecking.value = true
   try {
-    const response = await checkEmail(registerForm.email)
+    const response = await auth.checkEmail(registerForm.email)
     if (response.code === 200) {
       emailStatus.value = response.data ? 'success' : 'error'
     }
@@ -576,7 +576,33 @@ const handleRegister = async () => {
     
     registerLoading.value = true
     
-    const response = await register(registerForm)
+    // 构建注册数据
+    const registerData = {
+      username: registerForm.username,
+      password: registerForm.password,
+      realName: registerForm.name,
+      gender: registerForm.gender,
+      phone: registerForm.phone,
+      email: registerForm.email,
+      department: registerForm.department,
+      roleCode: registerForm.roleCode,
+      description: registerForm.description
+    }
+    
+    // 根据角色添加专属字段
+    if (registerForm.roleCode === 'doctor') {
+      registerData.doctorTitle = registerForm.doctorTitle
+      registerData.doctorSpeciality = registerForm.doctorSpeciality
+      registerData.doctorLicenseNumber = registerForm.doctorLicenseNumber
+      registerData.doctorExperienceYears = registerForm.doctorExperienceYears
+    } else if (registerForm.roleCode === 'family') {
+      registerData.familyRelationship = registerForm.familyRelationship
+      registerData.familyElderlyIds = registerForm.familyElderlyIds
+    }
+    
+    console.log('注册数据:', registerData)
+    
+    const response = await auth.register(registerData)
     
     if (response.code === 200) {
       ElMessage.success('注册成功！请使用新账号登录')

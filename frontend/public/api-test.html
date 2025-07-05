@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧医养平台 - API测试工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .success-btn {
+            background-color: #28a745;
+        }
+        .success-btn:hover {
+            background-color: #218838;
+        }
+        .danger-btn {
+            background-color: #dc3545;
+        }
+        .danger-btn:hover {
+            background-color: #c82333;
+        }
+        .response {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .status-box {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status-online {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-offline {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 智慧医养平台 - API测试工具</h1>
+        
+        <!-- 连接状态 -->
+        <div class="test-section">
+            <h3>🌐 连接状态检查</h3>
+            <button onclick="checkBackendHealth()">检查后端服务</button>
+            <button onclick="checkFrontendHealth()">检查前端服务</button>
+            <div id="statusDisplay">
+                <p>后端状态: <span id="backendStatus" class="status-box status-offline">未知</span></p>
+                <p>前端状态: <span id="frontendStatus" class="status-box status-offline">未知</span></p>
+            </div>
+        </div>
+
+        <!-- 用户注册测试 -->
+        <div class="test-section">
+            <h3>👤 用户注册测试</h3>
+            <button class="success-btn" onclick="testRegister('admin')">测试管理员注册</button>
+            <button class="success-btn" onclick="testRegister('doctor')">测试医生注册</button>
+            <button class="success-btn" onclick="testRegister('family')">测试家属注册</button>
+            <div id="registerResponse" class="response" style="display: none;"></div>
+        </div>
+
+        <!-- 用户名检查测试 -->
+        <div class="test-section">
+            <h3>✅ 用户名检查测试</h3>
+            <button onclick="checkUsername('admin')">检查 admin</button>
+            <button onclick="checkUsername('testuser_' + Date.now())">检查随机用户名</button>
+            <div id="usernameResponse" class="response" style="display: none;"></div>
+        </div>
+
+        <!-- 用户登录测试 -->
+        <div class="test-section">
+            <h3>🔐 用户登录测试</h3>
+            <button onclick="testLogin('admin', '123456')">快速登录 admin</button>
+            <button onclick="testLogin('doctor', '123456')">快速登录 doctor</button>
+            <button onclick="testLogin('family', '123456')">快速登录 family</button>
+            <div id="loginResponse" class="response" style="display: none;"></div>
+        </div>
+
+        <!-- 数据库测试 -->
+        <div class="test-section">
+            <h3>🗄️ 数据库测试</h3>
+            <button onclick="testDatabase()">测试数据库连接</button>
+            <button onclick="checkTables()">检查数据表结构</button>
+            <div id="databaseResponse" class="response" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api';
+        const FRONTEND_BASE = 'http://localhost:3001';
+
+        // 检查后端健康状态
+        async function checkBackendHealth() {
+            try {
+                const response = await fetch(`${API_BASE}/auth/health`);
+                const result = await response.json();
+                
+                if (response.ok && result.code === 200) {
+                    updateStatus('backend', true, '在线');
+                    showResponse('backendResponse', `✅ 后端服务正常\n${JSON.stringify(result, null, 2)}`, 'success');
+                } else {
+                    updateStatus('backend', false, '异常');
+                    showResponse('backendResponse', `❌ 后端服务异常\n${JSON.stringify(result, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                updateStatus('backend', false, '离线');
+                console.error('后端健康检查失败:', error);
+            }
+        }
+
+        // 检查前端健康状态
+        async function checkFrontendHealth() {
+            try {
+                const response = await fetch(`${FRONTEND_BASE}/`);
+                if (response.ok) {
+                    updateStatus('frontend', true, '在线');
+                } else {
+                    updateStatus('frontend', false, '异常');
+                }
+            } catch (error) {
+                updateStatus('frontend', false, '离线');
+                console.error('前端健康检查失败:', error);
+            }
+        }
+
+        // 更新状态显示
+        function updateStatus(service, isOnline, text) {
+            const statusElement = document.getElementById(`${service}Status`);
+            statusElement.textContent = text;
+            statusElement.className = `status-box ${isOnline ? 'status-online' : 'status-offline'}`;
+        }
+
+        // 测试用户注册
+        async function testRegister(role) {
+            const testData = {
+                admin: {
+                    username: `admin_test_${Date.now()}`,
+                    password: '123456',
+                    realName: '测试管理员',
+                    phone: `138${String(Date.now()).slice(-8)}`,
+                    email: `admin_test_${Date.now()}@smartcare.com`,
+                    gender: 1,
+                    department: '系统管理部',
+                    roleCode: 'admin',
+                    description: '管理员测试账号'
+                },
+                doctor: {
+                    username: `doctor_test_${Date.now()}`,
+                    password: '123456',
+                    realName: '测试医生',
+                    phone: `139${String(Date.now()).slice(-8)}`,
+                    email: `doctor_test_${Date.now()}@smartcare.com`,
+                    gender: 1,
+                    department: '内科',
+                    roleCode: 'doctor',
+                    doctorTitle: '主治医师',
+                    doctorSpeciality: '内科疾病诊断和治疗',
+                    doctorLicenseNumber: `TEST${Date.now()}`,
+                    doctorExperienceYears: 5,
+                    description: '医生测试账号'
+                },
+                family: {
+                    username: `family_test_${Date.now()}`,
+                    password: '123456',
+                    realName: '测试家属',
+                    phone: `137${String(Date.now()).slice(-8)}`,
+                    email: `family_test_${Date.now()}@smartcare.com`,
+                    gender: 0,
+                    roleCode: 'family',
+                    familyRelationship: '子女',
+                    familyElderlyIds: '1,2',
+                    description: '家属测试账号'
+                }
+            };
+
+            const registerData = testData[role];
+            if (!registerData) {
+                showResponse('registerResponse', `❌ 未知角色: ${role}`, 'error');
+                return;
+            }
+
+            showResponse('registerResponse', `🔄 正在注册 ${role} 用户...`, 'info');
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(registerData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.code === 200) {
+                    showResponse('registerResponse', `✅ ${role} 注册成功！\n用户名: ${registerData.username}\n密码: ${registerData.password}\n\n完整响应:\n${JSON.stringify(result, null, 2)}`, 'success');
+                } else {
+                    showResponse('registerResponse', `❌ ${role} 注册失败: ${result.message || '未知错误'}\n\n完整响应:\n${JSON.stringify(result, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResponse('registerResponse', `❌ 注册请求失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 检查用户名
+        async function checkUsername(username) {
+            showResponse('usernameResponse', `🔄 正在检查用户名: ${username}`, 'info');
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/check-username?username=${encodeURIComponent(username)}`);
+                const result = await response.json();
+
+                if (response.ok && result.code === 200) {
+                    const available = result.data;
+                    showResponse('usernameResponse', `${available ? '✅' : '❌'} 用户名 "${username}" ${available ? '可用' : '已存在'}\n\n完整响应:\n${JSON.stringify(result, null, 2)}`, available ? 'success' : 'error');
+                } else {
+                    showResponse('usernameResponse', `❌ 检查失败: ${result.message || '未知错误'}\n\n完整响应:\n${JSON.stringify(result, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResponse('usernameResponse', `❌ 检查请求失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 测试用户登录
+        async function testLogin(username, password) {
+            showResponse('loginResponse', `🔄 正在登录: ${username}`, 'info');
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.code === 200) {
+                    showResponse('loginResponse', `✅ 登录成功！\n用户: ${result.data.userInfo.name}\n角色: ${result.data.userInfo.roleName}\n令牌: ${result.data.token.substring(0, 50)}...\n\n完整响应:\n${JSON.stringify(result, null, 2)}`, 'success');
+                } else {
+                    showResponse('loginResponse', `❌ 登录失败: ${result.message || '未知错误'}\n\n完整响应:\n${JSON.stringify(result, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResponse('loginResponse', `❌ 登录请求失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 测试数据库
+        async function testDatabase() {
+            showResponse('databaseResponse', '🔄 正在测试数据库连接...', 'info');
+
+            try {
+                const response = await fetch(`${API_BASE.replace('/api', '')}/test/database/connection`);
+                const result = await response.json();
+
+                if (response.ok && result.code === 200) {
+                    showResponse('databaseResponse', `✅ 数据库连接正常\n${JSON.stringify(result, null, 2)}`, 'success');
+                } else {
+                    showResponse('databaseResponse', `❌ 数据库连接失败: ${result.message || '未知错误'}`, 'error');
+                }
+            } catch (error) {
+                showResponse('databaseResponse', `❌ 数据库测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 检查数据表
+        async function checkTables() {
+            showResponse('databaseResponse', '🔄 正在检查数据表结构...', 'info');
+
+            try {
+                const response = await fetch(`${API_BASE.replace('/api', '')}/test/database/tables`);
+                const result = await response.json();
+
+                if (response.ok && result.code === 200) {
+                    showResponse('databaseResponse', `✅ 数据表检查完成\n${JSON.stringify(result, null, 2)}`, 'success');
+                } else {
+                    showResponse('databaseResponse', `❌ 数据表检查失败: ${result.message || '未知错误'}`, 'error');
+                }
+            } catch (error) {
+                showResponse('databaseResponse', `❌ 数据表检查失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 显示响应结果
+        function showResponse(elementId, message, type) {
+            const responseDiv = document.getElementById(elementId);
+            responseDiv.textContent = message;
+            responseDiv.className = `response ${type}`;
+            responseDiv.style.display = 'block';
+        }
+
+        // 页面加载时自动检查状态
+        window.addEventListener('load', () => {
+            checkBackendHealth();
+            checkFrontendHealth();
+        });
+    </script>
+</body>
+</html>

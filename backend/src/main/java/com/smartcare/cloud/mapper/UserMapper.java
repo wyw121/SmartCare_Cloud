@@ -1,6 +1,5 @@
 package com.smartcare.cloud.mapper;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -68,17 +67,18 @@ public interface UserMapper extends BaseMapper<User> {
     List<User> selectByRoleCode(@Param("roleCode") String roleCode);
 
     /**
-     * 更新用户登录信息
+     * 更新用户登录信息 - 临时禁用，字段不存在
      *
      * @param userId 用户ID
      * @param loginTime 登录时间
      * @param loginIp 登录IP
      * @return 影响行数
      */
+    /*
     int updateLoginInfo(@Param("userId") Long userId,
             @Param("loginTime") LocalDateTime loginTime,
             @Param("loginIp") String loginIp);
-
+     */
     /**
      * 检查用户名是否存在
      *
@@ -129,4 +129,11 @@ public interface UserMapper extends BaseMapper<User> {
     Integer countByRoleCode(@Param("roleCode") String roleCode,
             @Param("status") Integer status);
 
+    /**
+     * 自定义插入用户，避免包含不存在的字段
+     *
+     * @param user 用户信息
+     * @return 影响行数
+     */
+    int insertUser(User user);
 }

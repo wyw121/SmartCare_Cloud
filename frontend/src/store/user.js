@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { auth } from '@/api'
 
 // 预定义的三类角色数据 - 智慧医养平台RBAC
 const ROLE_DATA = {
@@ -128,7 +129,28 @@ export const useUserStore = defineStore('user', {
     // 登录
     async login(loginForm) {
       try {
-        // 模拟登录验证
+        // 先尝试真实API登录
+        const response = await auth.login(loginForm)
+        
+        if (response.code === 200) {
+          const { token, userInfo } = response.data
+          
+          this.token = token
+          this.userInfo = userInfo
+          this.permissions = userInfo.permissions || []
+          
+          // 存储到本地
+          localStorage.setItem('token', token)
+          localStorage.setItem('userInfo', JSON.stringify(userInfo))
+          
+          return response
+        } else {
+          throw new Error(response.message || '登录失败')
+        }
+      } catch (error) {
+        console.error('真实API登录失败，尝试模拟登录:', error)
+        
+        // API失败时，回退到模拟登录
         const roleData = Object.values(ROLE_DATA).find(
           user => user.username === loginForm.username && user.password === loginForm.password
         )
@@ -149,8 +171,6 @@ export const useUserStore = defineStore('user', {
         localStorage.setItem('userInfo', JSON.stringify(roleData))
         
         return { data: { token, userInfo: roleData } }
-      } catch (error) {
-        throw error
       }
     },
 
@@ -170,7 +190,23 @@ export const useUserStore = defineStore('user', {
     // 获取用户信息
     async getUserInfo() {
       try {
-        // 开发阶段返回当前用户信息
+        // 尝试调用真实API获取用户信息
+        const response = await auth.getUserInfo()
+        
+        if (response.code === 200) {
+          const { userInfo, roles, permissions } = response.data
+          this.userInfo = userInfo
+          this.roles = roles || []
+          this.permissions = permissions || []
+          localStorage.setItem('userInfo', JSON.stringify(userInfo))
+          return response
+        } else {
+          throw new Error(response.message || '获取用户信息失败')
+        }
+      } catch (error) {
+        console.error('真实API获取用户信息失败，使用本地缓存:', error)
+        
+        // API失败时，返回本地存储的用户信息
         if (this.userInfo && this.userInfo.id) {
           return { 
             data: { 
@@ -181,30 +217,27 @@ export const useUserStore = defineStore('user', {
           }
         }
         
-        // 生产环境下调用真实API
-        // const response = await api.user.getInfo()
-        // const { userInfo, roles, permissions } = response.data
-        // this.userInfo = userInfo
-        // this.roles = roles  
-        // this.permissions = permissions
-        // localStorage.setItem('userInfo', JSON.stringify(userInfo))
-        // return response
-        
         throw new Error('用户信息获取失败')
-      } catch (error) {
-        throw error
       }
     },
 
     // 登出
-    logout() {
-      this.token = ''
-      this.userInfo = {}
-      this.roles = []
-      this.permissions = []
-      
-      localStorage.removeItem('token')
-      localStorage.removeItem('userInfo')
+    async logout() {
+      try {
+        // 调用真实API登出
+        await auth.logout()
+      } catch (error) {
+        console.error('API登出失败:', error)
+      } finally {
+        // 无论API是否成功，都清理本地数据
+        this.token = ''
+        this.userInfo = {}
+        this.roles = []
+        this.permissions = []
+        
+        localStorage.removeItem('token')
+        localStorage.removeItem('userInfo')
+      }
     },
 
     // 重置状态

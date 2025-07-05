@@ -99,15 +99,15 @@ public class User {
     private Integer status;
 
     @Schema(description = "登录次数")
-    @TableField("login_count")
+    @TableField(value = "login_count", exist = false, select = false)
     private Integer loginCount;
 
     @Schema(description = "最后登录时间")
-    @TableField("last_login_time")
+    @TableField(value = "last_login_time", exist = false, select = false)
     private LocalDateTime lastLoginTime;
 
     @Schema(description = "最后登录IP")
-    @TableField("last_login_ip")
+    @TableField(value = "last_login_ip", exist = false, select = false)
     private String lastLoginIp;
 
     @Schema(description = "备注描述")

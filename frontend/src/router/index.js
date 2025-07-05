@@ -55,6 +55,12 @@ const routes = [
     meta: { title: '登录', hidden: true }
   },
   {
+    path: '/register',
+    name: 'Register',
+    component: () => import('@/views/register/index.vue'),
+    meta: { title: '注册', hidden: true }
+  },
+  {
     path: '/',
     redirect: '/home'
   },
