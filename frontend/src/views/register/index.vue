@@ -288,8 +288,8 @@
 <script setup>
 import { auth } from '@/api'
 import {
-    Avatar, Check, Close, Loading, Lock, Message,
-    OfficeBuilding, Phone, Setting, User
+  Avatar, Check, Close, Loading, Lock, Message,
+  OfficeBuilding, Phone, Setting, User
 } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { reactive, ref } from 'vue'

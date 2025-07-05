@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * 系统用户实体类
+ * 系统用户实体类 - 基于实际数据库表结构
  * 支持三类角色：管理员(admin)、医生(doctor)、家属(family)
  *
  * @author SmartCare Team
@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @Schema(description = "系统用户实体")
 @TableName("sys_user")
-public class User {
+public class UserSimple {
 
     @Schema(description = "用户ID")
     @TableId(value = "id", type = IdType.AUTO)
@@ -100,7 +100,7 @@ public class User {
     private List<Permission> permissions;
 
     // 构造方法
-    public User() {}
+    public UserSimple() {}
 
     // Getter和Setter方法
     public Long getId() {
@@ -249,7 +249,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "UserSimple{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", realName='" + realName + '\'' +

@@ -91,8 +91,7 @@ public class UserAuthServiceImpl extends ServiceImpl<UserMapper, User> implement
         userInfo.setPhone(user.getPhone());
         userInfo.setRoleCode(user.getRoleCode());
         userInfo.setRoleName(user.getRoleName());
-        userInfo.setAvatar(user.getAvatar());
-        userInfo.setDepartment(user.getDepartment());
+        // 移除不存在的字段：avatar, department
 
         loginVO.setUserInfo(userInfo);
 
@@ -132,13 +131,12 @@ public class UserAuthServiceImpl extends ServiceImpl<UserMapper, User> implement
         user.setRealName(registerDTO.getRealName());
         user.setGender(registerDTO.getGender());
         user.setPhone(registerDTO.getPhone());
-        
+
         // 修复：将空字符串转换为null，避免数据库唯一约束冲突
         user.setEmail(StringUtils.hasText(registerDTO.getEmail()) ? registerDTO.getEmail() : null);
-        
+
         user.setRoleCode(registerDTO.getRoleCode());
-        user.setDepartment(registerDTO.getDepartment());
-        user.setDescription(registerDTO.getDescription());
+        // 移除不存在的字段：department, description
         user.setStatus(1);
         // user.setLoginCount(0); // 暂时注释掉，表中没有该字段
         user.setIsDeleted(0);
@@ -165,11 +163,10 @@ public class UserAuthServiceImpl extends ServiceImpl<UserMapper, User> implement
         if ("doctor".equals(registerDTO.getRoleCode())) {
             user.setDoctorTitle(registerDTO.getDoctorTitle());
             user.setDoctorSpeciality(registerDTO.getDoctorSpeciality());
-            user.setDoctorLicenseNumber(registerDTO.getDoctorLicenseNumber());
-            user.setDoctorExperienceYears(registerDTO.getDoctorExperienceYears());
+            // 移除不存在的字段：doctorLicenseNumber, doctorExperienceYears
         } else if ("family".equals(registerDTO.getRoleCode())) {
             user.setFamilyRelationship(registerDTO.getFamilyRelationship());
-            user.setFamilyElderlyIds(registerDTO.getFamilyElderlyIds());
+            // 移除不存在的字段：familyElderlyIds
         }
 
         // 保存用户

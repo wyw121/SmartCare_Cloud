@@ -10,22 +10,14 @@
     <result column="email" property="email" />
     <result column="phone" property="phone" />
     <result column="gender" property="gender" />
-    <result column="avatar" property="avatar" />
-    <result column="department" property="department" />
     <result column="role_code" property="roleCode" />
     <result column="role_name" property="roleName" />
     <result column="doctor_title" property="doctorTitle" />
     <result column="doctor_speciality" property="doctorSpeciality" />
-    <result column="doctor_license_number" property="doctorLicenseNumber" />
-    <result column="doctor_experience_years" property="doctorExperienceYears" />
     <result column="family_relationship" property="familyRelationship" />
-    <result column="family_elderly_ids" property="familyElderlyIds" />
     <result column="status" property="status" />
-    <result column="description" property="description" />
     <result column="create_time" property="createTime" />
     <result column="update_time" property="updateTime" />
-    <result column="create_by" property="createBy" />
-    <result column="update_by" property="updateBy" />
     <result column="is_deleted" property="isDeleted" />
   </resultMap>
 
@@ -51,10 +43,9 @@
     </collection>
   </resultMap>
 
-  <sql id="Base_Column_List"> id, username, password, real_name, email, phone, gender, avatar,
-    department, role_code, role_name, doctor_title, doctor_speciality, doctor_license_number,
-    doctor_experience_years, family_relationship, family_elderly_ids, status, description,
-    create_time, update_time, create_by, update_by, is_deleted </sql>
+  <sql id="Base_Column_List"> id, username, password, real_name, email, phone, gender,
+    role_code, role_name, doctor_title, doctor_speciality, family_relationship, status,
+    create_time, update_time, is_deleted </sql>
 
   <!-- 根据用户名查询用户 -->
   <select id="selectByUsername" resultMap="BaseResultMap"> SELECT <include refid="Base_Column_List" />
@@ -70,10 +61,9 @@
 
   <!-- 查询用户及其角色信息 -->
   <select id="selectUserWithRoles" resultMap="UserWithRolesMap"> SELECT u.id, u.username,
-    u.real_name, u.email, u.phone, u.gender, u.avatar, u.department, u.role_code, u.role_name,
-    u.doctor_title, u.doctor_speciality, u.doctor_license_number, u.doctor_experience_years,
-    u.family_relationship, u.family_elderly_ids, u.status, u.description, u.create_time,
-    u.update_time, r.id as role_id, r.role_name as role_name, r.role_code as role_code,
+    u.real_name, u.email, u.phone, u.gender, u.role_code, u.role_name,
+    u.doctor_title, u.doctor_speciality, u.family_relationship, u.status, 
+    u.create_time, u.update_time, r.id as role_id, r.role_name as role_name, r.role_code as role_code,
     r.description as role_description, r.status as role_status FROM sys_user u LEFT JOIN
     sys_user_role ur ON u.id = ur.user_id LEFT JOIN sys_role r ON ur.role_id = r.id WHERE u.id =
     #{userId} AND u.is_deleted = 0 </select>

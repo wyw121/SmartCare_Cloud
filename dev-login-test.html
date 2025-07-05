@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>开发模式登录测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            color: #333;
+            margin-top: 0;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .success {
+            color: #28a745;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .error {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .user-info {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 开发模式登录测试</h1>
+        <p>测试开发环境下的快速登录账号是否能够正常登录并获取正确的权限。</p>
+        
+        <div class="test-section">
+            <h3>1. 系统管理员账号测试</h3>
+            <button onclick="testLogin('admin', '123456')">登录 admin</button>
+            <div id="admin-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>2. 医生账号测试</h3>
+            <button onclick="testLogin('doctor', '123456')">登录 doctor</button>
+            <div id="doctor-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>3. 家属账号测试</h3>
+            <button onclick="testLogin('family', '123456')">登录 family</button>
+            <div id="family-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>4. 权限验证测试</h3>
+            <button onclick="testPermissions()">测试权限数据加载</button>
+            <div id="permissions-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>5. 用户信息验证</h3>
+            <button onclick="testUserInfo()">获取用户信息</button>
+            <div id="userinfo-result"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentToken = null;
+        let currentUser = null;
+        
+        async function testLogin(username, password) {
+            const resultDiv = document.getElementById(`${username}-result`);
+            resultDiv.innerHTML = '<div>正在登录...</div>';
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    currentToken = data.data.token;
+                    currentUser = data.data.user;
+                    
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ 登录成功！<br>
+                            <strong>用户信息:</strong><br>
+                            用户名: ${currentUser.username}<br>
+                            姓名: ${currentUser.realName}<br>
+                            角色: ${currentUser.role}<br>
+                            权限: ${currentUser.permissions ? currentUser.permissions.join(', ') : '未获取到权限信息'}<br>
+                            Token: ${currentToken.substring(0, 50)}...
+                        </div>
+                        <div class="user-info">
+                            <strong>完整响应:</strong>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            ❌ 登录失败: ${data.message || '未知错误'}
+                        </div>
+                        <div class="user-info">
+                            <strong>错误响应:</strong>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ 请求失败: ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        async function testPermissions() {
+            const resultDiv = document.getElementById('permissions-result');
+            
+            if (!currentToken) {
+                resultDiv.innerHTML = '<div class="error">❌ 请先登录任意账号</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div>正在测试权限和数据加载...</div>';
+            
+            try {
+                // 测试多个需要权限的接口
+                const tests = [
+                    { name: '老人列表', url: '/api/elderly/list', params: 'page=1&size=10' },
+                    { name: '健康预警', url: '/api/health/warnings', params: 'page=1&size=10' },
+                    { name: '用户信息', url: '/api/auth/userinfo', params: '' },
+                    { name: '统计数据', url: '/api/statistics/dashboard', params: '' }
+                ];
+                
+                let results = [];
+                
+                for (const test of tests) {
+                    try {
+                        const url = `http://localhost:8080${test.url}${test.params ? '?' + test.params : ''}`;
+                        const response = await fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${currentToken}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (response.ok && data.success) {
+                            results.push(`✅ ${test.name}: 成功 (${data.data ? Object.keys(data.data).length : 0} 项数据)`);
+                        } else {
+                            results.push(`❌ ${test.name}: 失败 - ${data.message || '未知错误'}`);
+                        }
+                    } catch (error) {
+                        results.push(`❌ ${test.name}: 请求异常 - ${error.message}`);
+                    }
+                }
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <strong>权限测试结果:</strong><br>
+                        ${results.join('<br>')}
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ 权限测试失败: ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        async function testUserInfo() {
+            const resultDiv = document.getElementById('userinfo-result');
+            
+            if (!currentToken) {
+                resultDiv.innerHTML = '<div class="error">❌ 请先登录任意账号</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div>正在获取用户信息...</div>';
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/userinfo', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ 用户信息获取成功！
+                        </div>
+                        <div class="user-info">
+                            <strong>用户信息:</strong>
+                            <pre>${JSON.stringify(data.data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            ❌ 用户信息获取失败: ${data.message || '未知错误'}
+                        </div>
+                        <div class="user-info">
+                            <strong>错误响应:</strong>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ 请求失败: ${error.message}
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
