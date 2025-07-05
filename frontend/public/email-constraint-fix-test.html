@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册邮箱约束修复测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #f56c6c, #e53935);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .content {
+            padding: 40px;
+        }
+        .fix-banner {
+            background: #f0f9ff;
+            border: 2px solid #0891b2;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #0891b2;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .test-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        .test-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        .test-button {
+            background: #409eff;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .test-button:hover {
+            background: #337ecc;
+            transform: translateY(-2px);
+        }
+        .test-button.success {
+            background: #67c23a;
+        }
+        .test-button.success:hover {
+            background: #5daf34;
+        }
+        .test-button.danger {
+            background: #f56c6c;
+        }
+        .test-button.danger:hover {
+            background: #e53935;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .result.success {
+            background: #f0f9ff;
+            border: 1px solid #0891b2;
+            color: #0891b2;
+        }
+        .result.error {
+            background: #fef2f2;
+            border: 1px solid #dc2626;
+            color: #dc2626;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        .code-block .comment {
+            color: #68d391;
+        }
+        .code-block .keyword {
+            color: #63b3ed;
+        }
+        .code-block .string {
+            color: #f6ad55;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 邮箱约束修复测试</h1>
+            <p>解决数据库邮箱唯一约束冲突问题</p>
+        </div>
+        
+        <div class="content">
+            <div class="fix-banner">
+                <div style="font-size: 2em; margin-bottom: 10px;">✅</div>
+                <div>邮箱唯一约束冲突问题已修复！</div>
+                <div style="font-size: 0.9em; margin-top: 10px;">空字符串现在会被正确处理为null值</div>
+            </div>
+            
+            <div class="test-grid">
+                <div class="test-card">
+                    <h3>🧪 问题重现测试</h3>
+                    <p>测试修复前的问题：多个用户不填写邮箱时的约束冲突</p>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>用户名1:</label>
+                            <input type="text" id="username1" value="testuser1" placeholder="第一个用户">
+                        </div>
+                        <div class="form-group">
+                            <label>用户名2:</label>
+                            <input type="text" id="username2" value="testuser2" placeholder="第二个用户">
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <button class="test-button success" onclick="testMultipleUsersWithoutEmail()">
+                            测试无邮箱用户注册
+                        </button>
+                    </div>
+                    <div id="multiple-users-result" class="result" style="display: none;"></div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>📊 单用户注册测试</h3>
+                    <p>测试各种邮箱情况下的注册功能</p>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>用户名:</label>
+                            <input type="text" id="singleUsername" placeholder="输入用户名">
+                        </div>
+                        <div class="form-group">
+                            <label>邮箱:</label>
+                            <input type="email" id="singleEmail" placeholder="输入邮箱(可选)">
+                        </div>
+                        <div class="form-group">
+                            <label>角色:</label>
+                            <select id="singleRole">
+                                <option value="admin">管理员</option>
+                                <option value="doctor">医生</option>
+                                <option value="family">家属</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <button class="test-button" onclick="testSingleUserRegister()">
+                            测试单用户注册
+                        </button>
+                        <button class="test-button success" onclick="testWithEmptyEmail()">
+                            测试空邮箱注册
+                        </button>
+                    </div>
+                    <div id="single-user-result" class="result" style="display: none;"></div>
+                </div>
+            </div>
+            
+            <div class="test-card">
+                <h3>🔍 修复详情</h3>
+                <p><strong>问题原因：</strong> 数据库邮箱字段设置了唯一约束，当多个用户不填写邮箱时，空字符串被视为重复值</p>
+                <p><strong>修复方案：</strong> 前端和后端都将空字符串转换为null值，避免约束冲突</p>
+                
+                <div class="code-block">
+<span class="comment">// 后端修复 - UserAuthServiceImpl.java</span>
+<span class="keyword">user</span>.setEmail(StringUtils.hasText(registerDTO.getEmail()) ? 
+    registerDTO.getEmail() : <span class="keyword">null</span>);
+
+<span class="comment">// 前端修复 - register/index.vue</span>
+email: registerForm.email || <span class="keyword">null</span>,
+department: registerForm.department || <span class="keyword">null</span>,
+description: registerForm.description || <span class="keyword">null</span>
+                </div>
+            </div>
+            
+            <div class="test-card">
+                <h3>🌐 批量测试</h3>
+                <p>快速测试多个用户注册场景</p>
+                <div style="text-align: center;">
+                    <button class="test-button" onclick="runBatchTest()">运行批量测试</button>
+                    <button class="test-button danger" onclick="clearAllResults()">清空所有结果</button>
+                </div>
+                <div id="batch-test-result" class="result" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE_URL = 'http://localhost:8080/api';
+        
+        // 生成随机用户数据
+        function generateUserData(username, email = null, role = 'admin') {
+            return {
+                username: username,
+                password: '123456',
+                confirmPassword: '123456',
+                realName: `用户${username}`,
+                gender: 1,
+                phone: `138${Math.floor(Math.random() * 100000000).toString().padStart(8, '0')}`,
+                email: email,
+                roleCode: role
+            };
+        }
+        
+        // 测试注册API
+        async function testRegister(userData) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                const data = await response.json();
+                return { success: response.ok, data, status: response.status };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+        
+        // 测试多个用户不填写邮箱的情况
+        async function testMultipleUsersWithoutEmail() {
+            const resultDiv = document.getElementById('multiple-users-result');
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = '测试中...';
+            resultDiv.className = 'result';
+            
+            const username1 = document.getElementById('username1').value || 'testuser1';
+            const username2 = document.getElementById('username2').value || 'testuser2';
+            
+            let results = [];
+            
+            // 测试第一个用户（无邮箱）
+            const user1Data = generateUserData(username1, null, 'admin');
+            const result1 = await testRegister(user1Data);
+            results.push(`用户1 (${username1}): ${result1.success ? '✅ 成功' : '❌ 失败'}`);
+            if (!result1.success) {
+                results.push(`错误: ${result1.error || result1.data?.message || '未知错误'}`);
+            }
+            
+            // 测试第二个用户（也无邮箱）
+            const user2Data = generateUserData(username2, null, 'doctor');
+            const result2 = await testRegister(user2Data);
+            results.push(`用户2 (${username2}): ${result2.success ? '✅ 成功' : '❌ 失败'}`);
+            if (!result2.success) {
+                results.push(`错误: ${result2.error || result2.data?.message || '未知错误'}`);
+            }
+            
+            // 显示结果
+            if (result1.success && result2.success) {
+                resultDiv.className = 'result success';
+                results.unshift('🎉 测试通过！两个用户都成功注册，邮箱约束冲突已解决！');
+            } else {
+                resultDiv.className = 'result error';
+                results.unshift('❌ 测试失败，仍存在问题');
+            }
+            
+            resultDiv.textContent = results.join('\n');
+        }
+        
+        // 测试单用户注册
+        async function testSingleUserRegister() {
+            const resultDiv = document.getElementById('single-user-result');
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = '注册中...';
+            resultDiv.className = 'result';
+            
+            const username = document.getElementById('singleUsername').value;
+            const email = document.getElementById('singleEmail').value;
+            const role = document.getElementById('singleRole').value;
+            
+            if (!username) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ 请输入用户名';
+                return;
+            }
+            
+            const userData = generateUserData(username, email || null, role);
+            const result = await testRegister(userData);
+            
+            if (result.success) {
+                resultDiv.className = 'result success';
+                resultDiv.textContent = `✅ 注册成功！\n用户名: ${username}\n邮箱: ${email || '(未填写)'}\n角色: ${role}\n响应: ${JSON.stringify(result.data, null, 2)}`;
+            } else {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ 注册失败\n错误: ${result.error || result.data?.message || '未知错误'}\n状态码: ${result.status || 'N/A'}`;
+            }
+        }
+        
+        // 测试空邮箱注册
+        async function testWithEmptyEmail() {
+            const timestamp = Date.now();
+            document.getElementById('singleUsername').value = `empty_email_${timestamp}`;
+            document.getElementById('singleEmail').value = '';
+            document.getElementById('singleRole').value = 'family';
+            
+            await testSingleUserRegister();
+        }
+        
+        // 运行批量测试
+        async function runBatchTest() {
+            const resultDiv = document.getElementById('batch-test-result');
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = '运行批量测试...';
+            resultDiv.className = 'result';
+            
+            const testCases = [
+                { name: '有邮箱管理员', username: 'admin_with_email', email: 'admin@test.com', role: 'admin' },
+                { name: '无邮箱管理员', username: 'admin_no_email', email: null, role: 'admin' },
+                { name: '有邮箱医生', username: 'doctor_with_email', email: 'doctor@test.com', role: 'doctor' },
+                { name: '无邮箱医生', username: 'doctor_no_email', email: null, role: 'doctor' },
+                { name: '有邮箱家属', username: 'family_with_email', email: 'family@test.com', role: 'family' },
+                { name: '无邮箱家属', username: 'family_no_email', email: null, role: 'family' }
+            ];
+            
+            let results = ['📊 批量测试结果:', ''];
+            let successCount = 0;
+            
+            for (const testCase of testCases) {
+                const timestamp = Date.now();
+                const userData = generateUserData(
+                    `${testCase.username}_${timestamp}`, 
+                    testCase.email, 
+                    testCase.role
+                );
+                
+                const result = await testRegister(userData);
+                
+                if (result.success) {
+                    results.push(`✅ ${testCase.name}: 成功`);
+                    successCount++;
+                } else {
+                    results.push(`❌ ${testCase.name}: 失败 - ${result.error || result.data?.message || '未知错误'}`);
+                }
+            }
+            
+            results.push('');
+            results.push(`📈 测试总结: ${successCount}/${testCases.length} 个测试通过`);
+            
+            if (successCount === testCases.length) {
+                resultDiv.className = 'result success';
+                results.push('🎉 所有测试通过！邮箱约束问题已完全解决！');
+            } else {
+                resultDiv.className = 'result error';
+                results.push('⚠️ 部分测试失败，请检查具体错误信息');
+            }
+            
+            resultDiv.textContent = results.join('\n');
+        }
+        
+        // 清空所有结果
+        function clearAllResults() {
+            document.querySelectorAll('.result').forEach(div => {
+                div.style.display = 'none';
+                div.textContent = '';
+            });
+        }
+        
+        // 页面加载时设置默认值
+        window.addEventListener('load', function() {
+            const timestamp = Date.now();
+            document.getElementById('username1').value = `user1_${timestamp}`;
+            document.getElementById('username2').value = `user2_${timestamp}`;
+            document.getElementById('singleUsername').value = `single_${timestamp}`;
+            
+            console.log('邮箱约束修复测试页面已加载');
+        });
+    </script>
+</body>
+</html>

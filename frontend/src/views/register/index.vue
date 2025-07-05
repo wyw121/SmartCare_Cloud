@@ -580,13 +580,14 @@ const handleRegister = async () => {
     const registerData = {
       username: registerForm.username,
       password: registerForm.password,
-      realName: registerForm.name,
+      confirmPassword: registerForm.confirmPassword,
+      realName: registerForm.name, // 修复：后端期望的字段名是realName
       gender: registerForm.gender,
       phone: registerForm.phone,
-      email: registerForm.email,
-      department: registerForm.department,
+      email: registerForm.email || null, // 修复：空字符串转换为null，避免数据库唯一约束冲突
+      department: registerForm.department || null,
       roleCode: registerForm.roleCode,
-      description: registerForm.description
+      description: registerForm.description || null
     }
     
     // 根据角色添加专属字段
@@ -616,7 +617,31 @@ const handleRegister = async () => {
     }
   } catch (error) {
     console.error('注册失败:', error)
-    ElMessage.error(error.message || '注册失败，请重试')
+    
+    // 详细的错误处理
+    let errorMessage = '注册失败，请重试'
+    
+    if (error.response) {
+      // 服务器响应错误
+      const status = error.response.status
+      const data = error.response.data
+      
+      if (status === 400) {
+        errorMessage = data.message || '请求参数错误，请检查输入信息'
+      } else if (status === 500) {
+        errorMessage = '服务器内部错误，请联系管理员'
+      } else {
+        errorMessage = data.message || `服务器错误 (${status})`
+      }
+    } else if (error.request) {
+      // 网络错误
+      errorMessage = '网络连接失败，请检查网络设置'
+    } else {
+      // 其他错误
+      errorMessage = error.message || '未知错误'
+    }
+    
+    ElMessage.error(errorMessage)
   } finally {
     registerLoading.value = false
   }

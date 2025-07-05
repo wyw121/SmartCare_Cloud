@@ -132,7 +132,10 @@ public class UserAuthServiceImpl extends ServiceImpl<UserMapper, User> implement
         user.setRealName(registerDTO.getRealName());
         user.setGender(registerDTO.getGender());
         user.setPhone(registerDTO.getPhone());
-        user.setEmail(registerDTO.getEmail());
+        
+        // 修复：将空字符串转换为null，避免数据库唯一约束冲突
+        user.setEmail(StringUtils.hasText(registerDTO.getEmail()) ? registerDTO.getEmail() : null);
+        
         user.setRoleCode(registerDTO.getRoleCode());
         user.setDepartment(registerDTO.getDepartment());
         user.setDescription(registerDTO.getDescription());
