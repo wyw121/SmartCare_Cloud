@@ -17,6 +17,9 @@ import io.jsonwebtoken.security.Keys;
 
 /**
  * JWT工具类
+ * 
+ * 修复了HS512算法的密钥长度安全问题
+ * 确保密钥长度至少512位以符合RFC 7518规范
  *
  * @author SmartCare Team
  * @since 2024-01-01
@@ -24,7 +27,7 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret:smartcare-cloud-jwt-secret-key-2024}")
+    @Value("${jwt.secret:smartcare-cloud-jwt-secret-key-2024-secure-enough-for-hs512-algorithm}")
     private String secret;
 
     @Value("${jwt.expiration:7200}") // 默认2小时
@@ -32,6 +35,9 @@ public class JwtUtil {
 
     @Value("${jwt.issuer:smartcare-cloud}")
     private String issuer;
+
+    // 缓存安全密钥，避免重复生成
+    private SecretKey cachedSecretKey;
 
     /**
      * 生成JWT token
@@ -73,12 +79,31 @@ public class JwtUtil {
 
     /**
      * 获取签名密钥
+     * 
+     * 修复：确保HS512算法的密钥长度至少512位
+     * 按照RFC 7518规范要求生成安全密钥
      *
      * @return 签名密钥
      */
     private SecretKey getSigningKey() {
-        byte[] keyBytes = secret.getBytes();
-        return Keys.hmacShaKeyFor(keyBytes);
+        if (cachedSecretKey == null) {
+            // 检查配置的secret是否足够长（至少64字节=512位）
+            byte[] keyBytes = secret.getBytes();
+            
+            if (keyBytes.length >= 64) {
+                // 如果配置的密钥足够长，直接使用
+                cachedSecretKey = Keys.hmacShaKeyFor(keyBytes);
+            } else {
+                // 如果配置的密钥太短，生成一个安全的密钥
+                // 使用推荐的方法生成HS512算法的安全密钥
+                cachedSecretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+                
+                // 记录警告信息（生产环境应该使用日志框架）
+                System.out.println("警告: 配置的JWT密钥长度不足(" + keyBytes.length + "字节)，" +
+                    "已自动生成安全密钥。建议在配置文件中设置至少64字节的密钥。");
+            }
+        }
+        return cachedSecretKey;
     }
 
     /**

@@ -92,6 +92,17 @@ springfox:
       v3:
         path: /v3/api-docs
 
+# JWT配置
+jwt:
+  # 安全密钥 - 至少64字节(512位)以满足HS512算法要求
+  secret: smartcare-cloud-jwt-secret-key-2024-secure-enough-for-hs512-algorithm-minimum-64-bytes-required
+  # Token过期时间(秒) - 默认2小时
+  expiration: 7200
+  # 签发者
+  issuer: smartcare-cloud
+  # 刷新Token过期时间(秒) - 默认7天
+  refresh-expiration: 604800
+
 ---
 # 开发环境配置
 spring:
