@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartcare.cloud.mapper.RoleMapper">
+
+  <resultMap id="BaseResultMap" type="com.smartcare.cloud.entity.Role">
+    <id column="id" property="id" />
+    <result column="role_name" property="roleName" />
+    <result column="role_code" property="roleCode" />
+    <result column="description" property="description" />
+    <result column="status" property="status" />
+    <result column="sort_order" property="sortOrder" />
+    <result column="remark" property="remark" />
+    <result column="create_time" property="createTime" />
+    <result column="update_time" property="updateTime" />
+    <result column="create_by" property="createBy" />
+    <result column="update_by" property="updateBy" />
+    <result column="is_deleted" property="isDeleted" />
+  </resultMap>
+
+  <resultMap id="RoleWithPermissionsMap" type="com.smartcare.cloud.entity.Role"
+    extends="BaseResultMap">
+    <collection property="permissions" ofType="com.smartcare.cloud.entity.Permission">
+      <id column="permission_id" property="id" />
+      <result column="permission_name" property="permissionName" />
+      <result column="permission_code" property="permissionCode" />
+      <result column="permission_type" property="permissionType" />
+      <result column="permission_path" property="permissionPath" />
+      <result column="parent_id" property="parentId" />
+      <result column="icon" property="icon" />
+      <result column="permission_description" property="description" />
+      <result column="permission_status" property="status" />
+      <result column="permission_sort_order" property="sortOrder" />
+    </collection>
+  </resultMap>
+
+  <sql id="Base_Column_List"> id, role_name, role_code, description, status, sort_order, remark,
+    create_time, update_time, create_by, update_by, is_deleted </sql>
+
+  <!-- 根据角色编码查询角色 -->
+  <select id="selectByRoleCode" resultMap="BaseResultMap"> SELECT <include refid="Base_Column_List" />
+    FROM sys_role WHERE role_code = #{roleCode} AND is_deleted = 0 </select>
+
+  <!-- 查询角色及其权限 -->
+  <select id="selectRoleWithPermissions" resultMap="RoleWithPermissionsMap"> SELECT r.id,
+    r.role_name, r.role_code, r.description, r.status, r.sort_order, r.remark, r.create_time,
+    r.update_time, p.id as permission_id, p.permission_name, p.permission_code, p.permission_type,
+    p.permission_path, p.parent_id, p.icon, p.description as permission_description, p.status as
+    permission_status, p.sort_order as permission_sort_order FROM sys_role r LEFT JOIN
+    sys_role_permission rp ON r.id = rp.role_id LEFT JOIN sys_permission p ON rp.permission_id =
+    p.id WHERE r.id = #{roleId} AND r.is_deleted = 0 ORDER BY p.sort_order ASC </select>
+
+  <!-- 查询用户的角色列表 -->
+  <select id="selectUserRoles" resultMap="BaseResultMap"> SELECT r.id, r.role_name, r.role_code,
+    r.description, r.status, r.sort_order, r.remark, r.create_time, r.update_time FROM sys_role r
+    INNER JOIN sys_user_role ur ON r.id = ur.role_id WHERE ur.user_id = #{userId} AND r.is_deleted =
+    0 AND r.status = 1 ORDER BY r.sort_order ASC </select>
+
+  <!-- 查询启用的角色列表 -->
+  <select id="selectActiveRoles" resultMap="BaseResultMap"> SELECT <include refid="Base_Column_List" />
+    FROM sys_role WHERE status = 1 AND is_deleted = 0 ORDER BY sort_order ASC </select>
+
+  <!-- 根据角色编码列表查询角色 -->
+  <select id="selectByRoleCodes" resultMap="BaseResultMap"> SELECT <include refid="Base_Column_List" />
+    FROM sys_role WHERE role_code IN <foreach collection="roleCodes" item="roleCode" open="("
+      close=")" separator=","> #{roleCode} </foreach> AND is_deleted = 0 ORDER BY sort_order ASC </select>
+
+  <!-- 检查角色编码是否存在 -->
+  <select id="checkRoleCodeExists" resultType="java.lang.Boolean"> SELECT COUNT(1) > 0 FROM sys_role
+    WHERE role_code = #{roleCode} AND is_deleted = 0 </select>
+
+  <!-- 统计角色下的用户数量 -->
+  <select id="countUsersByRoleId" resultType="java.lang.Integer"> SELECT COUNT(1) FROM sys_user_role
+    ur INNER JOIN sys_user u ON ur.user_id = u.id WHERE ur.role_id = #{roleId} AND u.is_deleted = 0 </select>
+
+</mapper>

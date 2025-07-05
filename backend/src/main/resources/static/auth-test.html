@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧医养平台 - 认证接口测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 智慧医养平台 - 认证接口测试</h1>
+        
+        <!-- 用户注册测试 -->
+        <div class="section">
+            <h2>📝 用户注册测试</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="username">用户名:</label>
+                    <input type="text" id="username" name="username" value="testuser001" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">密码:</label>
+                    <input type="password" id="password" name="password" value="test123456" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">确认密码:</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" value="test123456" required>
+                </div>
+                <div class="form-group">
+                    <label for="name">真实姓名:</label>
+                    <input type="text" id="name" name="name" value="测试用户" required>
+                </div>
+                <div class="form-group">
+                    <label for="gender">性别:</label>
+                    <select id="gender" name="gender">
+                        <option value="1">男</option>
+                        <option value="0">女</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="phone">手机号:</label>
+                    <input type="tel" id="phone" name="phone" value="13800138000" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">邮箱:</label>
+                    <input type="email" id="email" name="email" value="test@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="roleCode">角色:</label>
+                    <select id="roleCode" name="roleCode" required>
+                        <option value="admin">管理员</option>
+                        <option value="doctor">医生</option>
+                        <option value="family">家属</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="department">部门:</label>
+                    <input type="text" id="department" name="department" value="测试部门">
+                </div>
+                <div class="form-group">
+                    <label for="description">描述:</label>
+                    <textarea id="description" name="description" rows="3">这是一个测试用户账号</textarea>
+                </div>
+                <button type="submit">注册用户</button>
+            </form>
+            <div id="registerResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- 用户登录测试 -->
+        <div class="section">
+            <h2>🔐 用户登录测试</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">用户名:</label>
+                    <input type="text" id="loginUsername" name="username" value="testuser001" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">密码:</label>
+                    <input type="password" id="loginPassword" name="password" value="test123456" required>
+                </div>
+                <div class="form-group">
+                    <label for="rememberMe">记住密码:</label>
+                    <input type="checkbox" id="rememberMe" name="rememberMe">
+                </div>
+                <button type="submit">登录</button>
+            </form>
+            <div id="loginResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- 用户信息测试 -->
+        <div class="section">
+            <h2>👤 用户信息测试</h2>
+            <div class="form-group">
+                <label for="token">JWT Token:</label>
+                <input type="text" id="token" name="token" placeholder="从登录结果中复制token">
+            </div>
+            <button onclick="getUserInfo()">获取用户信息</button>
+            <div id="userInfoResult" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:8080/api';
+        
+        // 用户注册
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch(`${BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                const resultDiv = document.getElementById('registerResult');
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '注册成功！\n' + JSON.stringify(result, null, 2);
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = '注册失败：\n' + JSON.stringify(result, null, 2);
+                }
+                
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                const resultDiv = document.getElementById('registerResult');
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '网络错误：' + error.message;
+                resultDiv.style.display = 'block';
+            }
+        });
+        
+        // 用户登录
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch(`${BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                const resultDiv = document.getElementById('loginResult');
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '登录成功！\n' + JSON.stringify(result, null, 2);
+                    
+                    // 自动填充token
+                    if (result.data && result.data.token) {
+                        document.getElementById('token').value = result.data.token;
+                    }
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = '登录失败：\n' + JSON.stringify(result, null, 2);
+                }
+                
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                const resultDiv = document.getElementById('loginResult');
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '网络错误：' + error.message;
+                resultDiv.style.display = 'block';
+            }
+        });
+        
+        // 获取用户信息
+        async function getUserInfo() {
+            const token = document.getElementById('token').value;
+            
+            if (!token) {
+                alert('请先登录获取token');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${BASE_URL}/auth/user-info`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const result = await response.json();
+                const resultDiv = document.getElementById('userInfoResult');
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '获取用户信息成功！\n' + JSON.stringify(result, null, 2);
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = '获取用户信息失败：\n' + JSON.stringify(result, null, 2);
+                }
+                
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                const resultDiv = document.getElementById('userInfoResult');
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '网络错误：' + error.message;
+                resultDiv.style.display = 'block';
+            }
+        }
+        
+        // 页面加载时检查服务器状态
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(`${BASE_URL}/auth/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (response.ok) {
+                    console.log('✅ 后端服务正常运行');
+                } else {
+                    console.warn('⚠️  后端服务状态异常');
+                }
+            } catch (error) {
+                console.error('❌ 无法连接到后端服务:', error.message);
+                alert('无法连接到后端服务，请确保服务已启动 (http://localhost:8080)');
+            }
+        });
+    </script>
+</body>
+</html>

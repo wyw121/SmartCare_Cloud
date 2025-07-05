@@ -317,23 +317,20 @@
 
 <script setup>
 import {
-    deleteHealthWarning,
-    deleteHealthWarningBatch,
-    getHealthWarningPageList,
-    getWarningLevelStatistics,
-    handleHealthWarning,
-    updateHealthWarningStatus
+  deleteHealthWarning,
+  deleteHealthWarningBatch,
+  getHealthWarningPageList,
+  getWarningLevelStatistics,
+  handleHealthWarning,
+  updateHealthWarningStatus
 } from '@/api/healthWarning'
 import {
-    Check,
-    CircleCheck,
-    Close, Delete,
-    Download,
-    InfoFilled,
-    Refresh,
-    Search,
-    View,
-    Warning
+  CircleCheck,
+  Download,
+  InfoFilled,
+  Refresh,
+  Search,
+  Warning
 } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
