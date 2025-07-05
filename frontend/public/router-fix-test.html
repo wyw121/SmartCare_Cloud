@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>路由跳转测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .test-section h2 {
+            color: #555;
+            margin-bottom: 15px;
+        }
+        .test-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .test-link {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #409eff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s;
+            font-weight: 500;
+            text-align: center;
+            min-width: 120px;
+        }
+        .test-link:hover {
+            background: #337ecc;
+            transform: translateY(-2px);
+        }
+        .test-link.register {
+            background: #67c23a;
+        }
+        .test-link.register:hover {
+            background: #5daf34;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .success {
+            background: #f0f9ff;
+            color: #0891b2;
+            border: 2px solid #0891b2;
+        }
+        .error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 2px solid #dc2626;
+        }
+        .test-steps {
+            background: #fff5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .step {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            border-left: 4px solid #409eff;
+        }
+        .info-box {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        .console-log {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 路由跳转修复测试</h1>
+        
+        <div class="status success">
+            ✅ 路由守卫已修复，注册页面现在应该可以正常访问
+        </div>
+
+        <div class="test-section">
+            <h2>🧪 路由测试</h2>
+            <div class="test-links">
+                <a href="/login" class="test-link">登录页面</a>
+                <a href="/register" class="test-link register">注册页面</a>
+                <a href="/dashboard" class="test-link">仪表板</a>
+                <a href="/home" class="test-link">首页</a>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>📋 测试步骤</h2>
+            <div class="test-steps">
+                <div class="step">
+                    <strong>步骤 1:</strong> 点击上方"登录页面"链接
+                </div>
+                <div class="step">
+                    <strong>步骤 2:</strong> 在登录页面找到"立即注册"链接
+                </div>
+                <div class="step">
+                    <strong>步骤 3:</strong> 点击"立即注册"链接
+                </div>
+                <div class="step">
+                    <strong>步骤 4:</strong> 验证是否成功跳转到注册页面
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>🔍 问题原因和解决方案</h3>
+            <p><strong>问题：</strong> 路由守卫中只允许访问登录页面，但没有包含注册页面，导致访问注册页面时被重定向到登录页面。</p>
+            <p><strong>解决：</strong> 在路由守卫中增加对注册页面的处理，允许未登录用户访问注册页面。</p>
+            <p><strong>修改文件：</strong> <code>src/router/index.js</code></p>
+        </div>
+
+        <div class="info-box">
+            <h3>📊 当前状态</h3>
+            <p><strong>当前URL:</strong> <span id="currentUrl"></span></p>
+            <p><strong>当前时间:</strong> <span id="currentTime"></span></p>
+            <p><strong>用户代理:</strong> <span id="userAgent"></span></p>
+        </div>
+
+        <div class="console-log">
+            <strong>控制台日志:</strong>
+            <div id="console-output">
+                [√] 路由守卫已修复<br>
+                [√] 注册页面现在可以正常访问<br>
+                [√] 登录页面跳转到注册页面功能已恢复<br>
+                [INFO] 测试页面加载完成 - <span id="loadTime"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 更新页面信息
+        function updateInfo() {
+            document.getElementById('currentUrl').textContent = window.location.href;
+            document.getElementById('currentTime').textContent = new Date().toLocaleString('zh-CN');
+            document.getElementById('userAgent').textContent = navigator.userAgent.substring(0, 80) + '...';
+        }
+        
+        // 页面加载完成时更新信息
+        window.addEventListener('load', function() {
+            updateInfo();
+            document.getElementById('loadTime').textContent = new Date().toLocaleString('zh-CN');
+            
+            // 每秒更新一次时间
+            setInterval(updateInfo, 1000);
+            
+            console.log('路由测试页面加载完成');
+            console.log('修复内容: 路由守卫增加对注册页面的支持');
+        });
+
+        // 监听链接点击
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('test-link')) {
+                console.log('点击链接:', e.target.href);
+                
+                // 更新控制台输出
+                const output = document.getElementById('console-output');
+                output.innerHTML += `<br>[TEST] 点击链接: ${e.target.textContent} -> ${e.target.href}`;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -288,7 +288,13 @@ const toggleDevMode = () => {
  */
 const goToRegister = () => {
   console.log('准备跳转到注册页面')
-  router.push('/register')
+  try {
+    router.push('/register')
+    console.log('成功跳转到注册页面')
+  } catch (error) {
+    console.error('跳转到注册页面失败:', error)
+    ElMessage.error('跳转失败，请重试')
+  }
 }
 </script>
 

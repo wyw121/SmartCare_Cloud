@@ -335,8 +335,8 @@ router.beforeEach((to, from, next) => {
   const isLoggedIn = userStore.isLoggedIn
   const userRole = userStore.userRole
   
-  // 如果是登录页面，直接通过
-  if (to.path === '/login') {
+  // 如果是登录页面或注册页面，直接通过
+  if (to.path === '/login' || to.path === '/register') {
     next()
     return
   }
