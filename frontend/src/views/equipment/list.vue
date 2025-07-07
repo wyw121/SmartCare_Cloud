@@ -67,18 +67,20 @@
           </el-form>
         </el-col>
         <el-col :span="8" style="text-align: right">
-          <el-button type="primary" @click="showAddDialog">
-            <el-icon><Plus /></el-icon>
-            添加设备
-          </el-button>
-          <el-button type="success" @click="showIntegrationGuide">
-            <el-icon><Document /></el-icon>
-            接入指南
-          </el-button>
-          <el-button type="info" @click="exportData">
-            <el-icon><Download /></el-icon>
-            导出数据
-          </el-button>
+          <div class="action-buttons">
+            <el-button type="primary" @click="showAddDialog">
+              <el-icon><Plus /></el-icon>
+              添加设备
+            </el-button>
+            <el-button type="success" @click="showIntegrationGuide">
+              <el-icon><Document /></el-icon>
+              接入指南
+            </el-button>
+            <el-button type="warning" @click="exportData">
+              <el-icon><Download /></el-icon>
+              导出数据
+            </el-button>
+          </div>
         </el-col>
       </el-row>
     </div>
@@ -149,18 +151,19 @@
         stripe
         border
         style="width: 100%"
+        table-layout="fixed"
       >
-        <el-table-column prop="deviceId" label="设备编号" width="120" />
-        <el-table-column prop="deviceName" label="设备名称" width="150" />
-        <el-table-column label="设备类型" width="120">
+        <el-table-column prop="deviceId" label="设备编号" width="140" show-overflow-tooltip />
+        <el-table-column prop="deviceName" label="设备名称" width="160" show-overflow-tooltip />
+        <el-table-column label="设备类型" width="130">
           <template #default="scope">
             <el-tag :type="getDeviceTypeTagType(scope.row.deviceType)">
               {{ getDeviceTypeName(scope.row.deviceType) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="brand" label="品牌" width="100" />
-        <el-table-column prop="model" label="型号" width="120" />
+        <el-table-column prop="brand" label="品牌" width="100" show-overflow-tooltip />
+        <el-table-column prop="model" label="型号" width="120" show-overflow-tooltip />
         <el-table-column label="状态" width="100">
           <template #default="scope">
             <el-tag :type="getStatusTagType(scope.row.status)">
@@ -168,47 +171,68 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="location" label="位置" width="150" />
-        <el-table-column label="电池电量" width="100">
+        <el-table-column prop="location" label="位置" width="140" show-overflow-tooltip />
+        <el-table-column label="电池电量" width="120">
           <template #default="scope">
             <div v-if="scope.row.batteryLevel !== null">
               <el-progress 
                 :percentage="scope.row.batteryLevel" 
                 :status="getBatteryStatus(scope.row.batteryLevel)"
-                :stroke-width="8"
+                :stroke-width="6"
                 :show-text="false"
               />
-              <span style="margin-left: 8px;">{{ scope.row.batteryLevel }}%</span>
+              <span style="margin-left: 8px; font-size: 12px;">{{ scope.row.batteryLevel }}%</span>
             </div>
             <span v-else>-</span>
           </template>
         </el-table-column>
-        <el-table-column prop="lastOnlineTime" label="最后在线" width="150">
+        <el-table-column prop="lastOnlineTime" label="最后在线" min-width="150" show-overflow-tooltip>
           <template #default="scope">
             {{ formatTime(scope.row.lastOnlineTime) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="280" fixed="right">
+        <el-table-column label="操作" width="340" fixed="right" align="center">
           <template #default="scope">
-            <el-button size="small" @click="viewDetail(scope.row)">
-              <el-icon><View /></el-icon>
-              详情
-            </el-button>
-            <el-button size="small" type="primary" @click="editEquipment(scope.row)">
-              <el-icon><Edit /></el-icon>
-              编辑
-            </el-button>
-            <el-button 
-              size="small" 
-              :type="scope.row.status === 'ONLINE' ? 'warning' : 'success'"
-              @click="toggleStatus(scope.row)"
-            >
-              {{ scope.row.status === 'ONLINE' ? '离线' : '上线' }}
-            </el-button>
-            <el-button size="small" type="danger" @click="deleteEquipment(scope.row)">
-              <el-icon><Delete /></el-icon>
-              删除
-            </el-button>
+            <div class="action-buttons">
+              <!-- 主要操作 -->
+              <el-button 
+                text 
+                type="primary" 
+                size="small" 
+                @click="viewDetail(scope.row)"
+              >
+                查看
+              </el-button>
+              
+              <el-button 
+                text 
+                type="primary" 
+                size="small" 
+                @click="editEquipment(scope.row)"
+              >
+                编辑
+              </el-button>
+              
+              <!-- 功能操作 -->
+              <el-button 
+                text 
+                :type="scope.row.status === 'ONLINE' ? 'warning' : 'success'"
+                size="small"
+                @click="toggleStatus(scope.row)"
+              >
+                {{ scope.row.status === 'ONLINE' ? '离线' : '上线' }}
+              </el-button>
+              
+              <!-- 危险操作 -->
+              <el-button 
+                text 
+                type="danger" 
+                size="small" 
+                @click="deleteEquipment(scope.row)"
+              >
+                删除
+              </el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -269,7 +293,7 @@
 
 <script setup>
 import { equipment } from '@/api'
-import { Checked, Connection, Delete, Document, Download, Edit, Monitor, Plus, Refresh, Search, View, Warning } from '@element-plus/icons-vue'
+import { Checked, Connection, Document, Download, Monitor, Plus, Refresh, Search, Warning } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { computed, onMounted, reactive, ref } from 'vue'
 import DeviceIntegrationGuide from './components/DeviceIntegrationGuide.vue'
@@ -667,6 +691,24 @@ onMounted(() => {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
+  overflow: hidden; /* 防止内容溢出 */
+}
+
+.table-container .el-table {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* 表格头部样式 */
+.table-container :deep(.el-table__header-wrapper) {
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+/* 表格底部样式 */
+.table-container :deep(.el-table__body-wrapper) {
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
 }
 
 .pagination-container {
@@ -725,18 +767,240 @@ onMounted(() => {
   min-height: 32px;
 }
 
-:deep(.search-select-multiple .el-input__inner) {
-  height: auto;
-  min-height: 32px;
-  line-height: 1.5;
-}
-
 /* 响应式布局优化 */
 @media (max-width: 768px) {
   .search-select,
   .search-select-multiple {
     width: 100%;
     min-width: 120px;
+  }
+}
+
+/* 按钮风格设计配置规范样式 */
+/* 操作按钮容器 - 标准布局 */
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
+  padding: 4px 0;
+  min-height: 32px; /* 确保最小点击区域 */
+}
+
+/* 操作按钮容器 - 居中布局 */
+.action-buttons-center {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  padding: 4px 0;
+  min-height: 32px;
+}
+
+/* 操作按钮容器 - 右对齐布局 */
+.action-buttons-right {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 4px 0;
+  min-height: 32px;
+}
+
+/* 按钮基础样式重置 */
+.action-buttons .el-button {
+  margin: 0;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  min-width: 60px; /* 确保按钮最小宽度 */
+  
+  /* 确保文字不换行 */
+  white-space: nowrap;
+  
+  /* 提升点击体验 */
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+/* 文本按钮悬停效果 */
+.action-buttons .el-button.is-text {
+  &:hover {
+    background-color: rgba(64, 158, 255, 0.1);
+    transform: translateY(-1px);
+  }
+  
+  /* 不同类型的悬停效果 */
+  &.el-button--primary:hover {
+    background-color: rgba(64, 158, 255, 0.1);
+    color: #409eff;
+  }
+  
+  &.el-button--success:hover {
+    background-color: rgba(103, 194, 58, 0.1);
+    color: #67c23a;
+  }
+  
+  &.el-button--warning:hover {
+    background-color: rgba(230, 162, 60, 0.1);
+    color: #e6a23c;
+  }
+  
+  &.el-button--danger:hover {
+    background-color: rgba(245, 108, 108, 0.1);
+    color: #f56c6c;
+  }
+  
+  &.el-button--info:hover {
+    background-color: rgba(144, 147, 153, 0.1);
+    color: #909399;
+  }
+}
+
+/* 禁用状态 */
+.action-buttons .el-button.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  
+  &:hover {
+    transform: none !important;
+    background-color: transparent !important;
+  }
+}
+
+/* 加载状态 */
+.action-buttons .el-button.is-loading {
+  pointer-events: none;
+  
+  .el-icon {
+    animation: rotate 1s linear infinite;
+  }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 表格固定列样式优化 */
+:deep(.el-table) {
+  .el-table-fixed-column--right {
+    box-shadow: -1px 0 8px rgba(0, 0, 0, 0.1);
+    border-left: 1px solid #ebeef5;
+  }
+  
+  /* 操作列标题样式 */
+  th.el-table-fixed-column--right {
+    background-color: #fafafa;
+    font-weight: 600;
+    
+    .cell {
+      color: #303133;
+    }
+  }
+  
+  /* 操作列内容对齐 */
+  td.el-table-fixed-column--right {
+    .cell {
+      padding: 0 8px;
+    }
+  }
+  
+  /* 表格整体优化 */
+  .el-table__body-wrapper {
+    overflow-x: auto;
+  }
+  
+  /* 表格行高优化 */
+  .el-table__row {
+    height: 60px;
+  }
+  
+  /* 表格单元格内容居中 */
+  .el-table .cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 8px 12px;
+  }
+  
+  /* 左对齐的列 */
+  .el-table-column--left .cell {
+    justify-content: flex-start;
+  }
+  
+  /* 表格内容优化 */
+  .el-table td {
+    padding: 8px 0;
+  }
+  
+  /* 表格标题优化 */
+  .el-table th {
+    padding: 12px 0;
+    font-size: 14px;
+  }
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  
+  .action-buttons .el-button {
+    width: 100%;
+    justify-content: center;
+    padding: 6px 10px;
+    font-size: 14px;
+    min-height: 44px; /* 移动端最小点击区域 */
+  }
+  
+  /* 移动端表格优化 */
+  :deep(.el-table) {
+    .el-table__body-wrapper {
+      overflow-x: auto;
+    }
+    
+    .el-table-fixed-column--right {
+      position: relative !important;
+      right: auto !important;
+    }
+    
+    .el-table__body-wrapper .el-table__row {
+      height: auto;
+      min-height: 60px;
+    }
+  }
+  
+  .table-container {
+    overflow-x: auto;
+  }
+}
+
+/* 平板适配 */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .action-buttons {
+    gap: 6px;
+  }
+  
+  .action-buttons .el-button {
+    padding: 5px 10px;
+    font-size: 13px;
+  }
+  
+  /* 平板表格优化 */
+  :deep(.el-table) {
+    .el-table__row {
+      height: 55px;
+    }
   }
 }
 </style>
