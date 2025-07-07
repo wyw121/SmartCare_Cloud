@@ -1,43 +1,54 @@
 <template>
-  <div class="users-container">
-    <div class="header-section">
-      <h2>用户管理</h2>
-      <p>管理系统用户账号、角色权限和基本信息</p>
-    </div>
-
-    <!-- 搜索和操作栏 -->
-    <div class="toolbar">
-      <div class="search-box">
-        <el-input
-          v-model="searchForm.keyword"
-          placeholder="请输入用户名或姓名搜索"
-          style="width: 300px"
-          clearable
-          @keyup.enter="handleSearch"
-        >
-          <template #prefix>
-            <el-icon><Search /></el-icon>
-          </template>
-        </el-input>
-        <el-select 
-          v-model="searchForm.status" 
-          placeholder="用户状态" 
-          style="width: 120px; margin-left: 10px"
-          clearable
-        >
-          <el-option label="启用" value="1" />
-          <el-option label="禁用" value="0" />
-        </el-select>
-        <el-button type="primary" @click="handleSearch">
-          <el-icon><Search /></el-icon>
-          搜索
-        </el-button>
-        <el-button @click="resetSearch">重置</el-button>
+  <div class="users-management">
+    <!-- 页面头部 -->
+    <el-card class="page-header">
+      <div class="header-content">
+        <h2>用户管理</h2>
+        <p>管理系统用户账号、角色权限和基本信息</p>
       </div>
-      
-      <div class="toolbar-buttons">
+    </el-card>
+
+    <!-- 搜索栏 -->
+    <el-card class="search-card">
+      <el-form :inline="true" :model="searchForm" class="search-form">
+        <el-form-item label="关键词">
+          <el-input
+            v-model="searchForm.keyword"
+            placeholder="请输入用户名或姓名"
+            clearable
+            style="width: 200px;"
+            @keyup.enter="handleSearch"
+          />
+        </el-form-item>
+        <el-form-item label="用户状态">
+          <el-select 
+            v-model="searchForm.status" 
+            placeholder="请选择用户状态" 
+            clearable
+            style="width: 150px;"
+          >
+            <el-option label="启用" value="1" />
+            <el-option label="禁用" value="0" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">
+            <i class="el-icon-search"></i>
+            搜索
+          </el-button>
+          <el-button @click="resetSearch">
+            <i class="el-icon-refresh"></i>
+            重置
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+
+    <!-- 操作栏 -->
+    <el-card class="toolbar-card">
+      <div class="toolbar">
         <el-button type="primary" @click="handleAdd">
-          <el-icon><Plus /></el-icon>
+          <i class="el-icon-plus"></i>
           新增用户
         </el-button>
         <el-button 
@@ -45,111 +56,104 @@
           :disabled="!selectedUsers.length"
           @click="handleBatchDelete"
         >
-          <el-icon><Delete /></el-icon>
+          <i class="el-icon-delete"></i>
           批量删除
         </el-button>
         <el-button type="success" @click="handleExport">
-          <el-icon><Download /></el-icon>
+          <i class="el-icon-download"></i>
           导出数据
         </el-button>
         <el-button type="warning" @click="handleImport">
-          <el-icon><Upload /></el-icon>
+          <i class="el-icon-upload"></i>
           导入数据
         </el-button>
         <el-button type="info" @click="handleRefresh">
-          <el-icon><Refresh /></el-icon>
+          <i class="el-icon-refresh"></i>
           刷新
         </el-button>
       </div>
-    </div>
+    </el-card>
 
-    <!-- 用户列表 -->
-    <div class="table-container">
+    <!-- 数据表格 -->
+    <el-card class="table-card">
       <el-table
         ref="tableRef"
         v-loading="loading"
         :data="userList"
         @selection-change="handleSelectionChange"
-        stripe
-        border
         style="width: 100%"
-        table-layout="fixed"
       >
-        <el-table-column type="selection" width="55" align="center" />
-        <el-table-column prop="id" label="ID" width="80" align="center" />
+        <el-table-column type="selection" width="55" />
+        <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="username" label="用户名" width="120" show-overflow-tooltip />
         <el-table-column prop="realName" label="真实姓名" width="120" show-overflow-tooltip />
         <el-table-column prop="email" label="邮箱" width="200" show-overflow-tooltip />
         <el-table-column prop="phone" label="手机号" width="130" />
-        <el-table-column prop="roleName" label="角色" width="100" align="center" />
+        <el-table-column prop="roleName" label="角色" width="100" />
         <el-table-column prop="departmentName" label="部门" width="120" show-overflow-tooltip />
-        <el-table-column prop="status" label="状态" width="80" align="center">
-          <template #default="{ row }">
-            <el-tag :type="row.status === 1 ? 'success' : 'danger'">
-              {{ row.status === 1 ? '启用' : '禁用' }}
+        <el-table-column prop="status" label="状态" width="80">
+          <template #default="scope">
+            <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">
+              {{ scope.row.status === 1 ? '启用' : '禁用' }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="180" />
         <el-table-column prop="lastLoginTime" label="最后登录" width="180" />
-        <el-table-column label="操作" width="320" align="center" fixed="right">
-          <template #default="{ row }">
-            <div class="action-buttons-compact">
-              <!-- 主要操作 -->
-              <el-tooltip content="查看用户详情" placement="top">
+        <el-table-column label="操作" width="360" fixed="right">
+          <template #default="scope">
+            <div class="action-buttons">
+              <el-tooltip content="查看详情" placement="top">
                 <el-button 
                   text 
                   type="primary" 
                   size="small" 
-                  @click="handleView(row)"
+                  @click="handleView(scope.row)"
                 >
                   查看
                 </el-button>
               </el-tooltip>
               
-              <el-tooltip content="编辑用户信息" placement="top">
+              <el-tooltip content="编辑信息" placement="top">
                 <el-button 
                   text 
                   type="primary" 
                   size="small" 
-                  @click="handleEdit(row)"
+                  @click="handleEdit(scope.row)"
                 >
                   编辑
                 </el-button>
               </el-tooltip>
               
-              <!-- 功能操作 -->
-              <el-tooltip content="重置用户密码" placement="top">
+              <el-tooltip content="重置密码" placement="top">
                 <el-button 
                   text 
                   type="success" 
                   size="small" 
-                  @click="handleResetPassword(row)"
+                  @click="handleResetPassword(scope.row)"
                 >
                   重置
                 </el-button>
               </el-tooltip>
               
-              <!-- 状态操作 -->
-              <el-tooltip :content="row.status === 1 ? '禁用用户账号' : '启用用户账号'" placement="top">
+              <el-tooltip :content="scope.row.status === 1 ? '禁用账号' : '启用账号'" placement="top">
                 <el-button 
                   text 
-                  :type="row.status === 1 ? 'warning' : 'success'" 
+                  :type="scope.row.status === 1 ? 'warning' : 'success'" 
                   size="small" 
-                  @click="handleToggleStatus(row)"
+                  @click="handleToggleStatus(scope.row)"
                 >
-                  {{ row.status === 1 ? '禁用' : '启用' }}
+                  {{ scope.row.status === 1 ? '禁用' : '启用' }}
                 </el-button>
               </el-tooltip>
               
-              <!-- 危险操作 -->
-              <el-tooltip content="删除用户账号" placement="top">
+              <el-tooltip content="删除账号" placement="top">
                 <el-button 
                   text 
                   type="danger" 
                   size="small" 
-                  @click="handleDelete(row)"
-                  :disabled="row.username === 'admin'"
+                  @click="handleDelete(scope.row)"
+                  :disabled="scope.row.username === 'admin'"
                 >
                   删除
                 </el-button>
@@ -160,7 +164,7 @@
       </el-table>
 
       <!-- 分页 -->
-      <div class="pagination-container">
+      <div class="pagination-wrapper">
         <el-pagination
           v-model:current-page="pageParams.current"
           v-model:page-size="pageParams.size"
@@ -171,7 +175,7 @@
           @current-change="handlePageChange"
         />
       </div>
-    </div>
+    </el-card>
 
     <!-- 用户表单弹窗 -->
     <el-dialog
@@ -291,15 +295,14 @@
 
 <script setup>
 import {
-    checkEmail,
-    checkUsername,
-    createUser,
-    getUserList as fetchUserList,
-    getDepartmentList,
-    getRoleList,
-    updateUser
+  checkEmail,
+  checkUsername,
+  createUser,
+  getUserList as fetchUserList,
+  getDepartmentList,
+  getRoleList,
+  updateUser
 } from '@/api/system'
-import { Delete, Download, Plus, Refresh, Search, Upload } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
 
@@ -360,7 +363,8 @@ const userRules = {
             callback(new Error('用户名已存在'))
           }
         } catch (error) {
-          // 如果检查失败，跳过验证
+          // 如果检查失败，跳过验证（服务器可能不可用）
+          console.warn('用户名检查失败:', error)
           callback()
         }
       },
@@ -387,7 +391,8 @@ const userRules = {
             callback(new Error('邮箱已被使用'))
           }
         } catch (error) {
-          // 如果检查失败，跳过验证
+          // 如果检查失败，跳过验证（服务器可能不可用）
+          console.warn('邮箱检查失败:', error)
           callback()
         }
       },
@@ -599,6 +604,128 @@ const handleResetPassword = async (row) => {
 }
 
 /**
+ * 切换用户状态
+ */
+const handleToggleStatus = async (row) => {
+  try {
+    const action = row.status === 1 ? '禁用' : '启用'
+    await ElMessageBox.confirm(
+      `确定要${action}用户"${row.realName}"吗？`,
+      `${action}用户`,
+      {
+        type: 'warning',
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }
+    )
+    
+    // 这里调用切换状态的API
+    // const result = await toggleUserStatus(row.id)
+    
+    // 模拟API调用
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    // 更新本地数据
+    row.status = row.status === 1 ? 0 : 1
+    
+    ElMessage.success(`用户"${row.realName}"已${action}`)
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('切换用户状态失败:', error)
+      ElMessage.error('操作失败')
+    }
+  }
+}
+
+/**
+ * 删除用户
+ */
+const handleDelete = async (row) => {
+  try {
+    await ElMessageBox.confirm(
+      `确定要删除用户"${row.realName}"吗？此操作不可撤销！`,
+      '删除用户',
+      {
+        type: 'warning',
+        confirmButtonText: '确定删除',
+        cancelButtonText: '取消'
+      }
+    )
+    
+    // 这里调用删除API
+    // const result = await deleteUser(row.id)
+    
+    // 模拟API调用
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    ElMessage.success(`用户"${row.realName}"已删除`)
+    getUserList()
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('删除用户失败:', error)
+      ElMessage.error('删除失败')
+    }
+  }
+}
+
+/**
+ * 批量删除用户
+ */
+const handleBatchDelete = async () => {
+  try {
+    await ElMessageBox.confirm(
+      `确定要删除选中的 ${selectedUsers.value.length} 个用户吗？此操作不可撤销！`,
+      '批量删除用户',
+      {
+        type: 'warning',
+        confirmButtonText: '确定删除',
+        cancelButtonText: '取消'
+      }
+    )
+    
+    // 这里调用批量删除API
+    // const ids = selectedUsers.value.map(user => user.id)
+    // const result = await batchDeleteUsers(ids)
+    
+    // 模拟API调用
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    ElMessage.success(`成功删除 ${selectedUsers.value.length} 个用户`)
+    selectedUsers.value = []
+    getUserList()
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('批量删除失败:', error)
+      ElMessage.error('批量删除失败')
+    }
+  }
+}
+
+/**
+ * 分页大小改变
+ */
+const handlePageSizeChange = (size) => {
+  pageParams.size = size
+  pageParams.current = 1
+  getUserList()
+}
+
+/**
+ * 当前页改变
+ */
+const handlePageChange = (page) => {
+  pageParams.current = page
+  getUserList()
+}
+
+/**
+ * 选择变化处理
+ */
+const handleSelectionChange = (selection) => {
+  selectedUsers.value = selection
+}
+
+/**
  * 导出用户数据
  */
 const handleExport = async () => {
@@ -718,207 +845,147 @@ const resetForm = () => {
 </script>
 
 <style lang="scss" scoped>
-@import '@/styles/user-management.scss';
-
-/* 用户管理样式 */
-.users-container {
+// 用户管理页面样式
+.users-management {
   padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-}
-
-.header-section {
-  margin-bottom: 20px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #ebeef5;
   
-  h2 {
-    color: #303133;
-    font-size: 24px;
-    font-weight: 600;
-    margin: 0 0 8px 0;
-  }
-  
-  p {
-    color: #606266;
-    font-size: 14px;
-    margin: 0;
-  }
-}
-
-.toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-}
-
-.search-box {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.toolbar-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  
-  .el-button {
-    padding: 8px 16px;
-    font-size: 14px;
-    border-radius: 6px;
-    transition: all 0.3s ease;
+  // 页面头部样式
+  .page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    margin-bottom: 20px;
     
-    &:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-    
-    &:active {
-      transform: scale(0.95);
-    }
-    
-    .el-icon {
-      margin-right: 4px;
-    }
-  }
-}
-
-.table-container {
-  margin-top: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-.pagination-container {
-  margin-top: 20px;
-  text-align: right;
-  padding: 16px 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-}
-
-:deep(.el-table) {
-  border-radius: 8px;
-  overflow: hidden;
-  
-  .el-table__header {
-    th {
-      background-color: #fafafa;
-      color: #606266;
-      font-weight: 600;
-      border-bottom: 1px solid #ebeef5;
-    }
-  }
-  
-  .el-table__body {
-    tr:hover {
-      background-color: #f5f7fa;
-    }
-  }
-  
-  /* 表格固定列优化 */
-  .el-table-fixed-column--right {
-    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.12);
-    border-left: 1px solid #ebeef5;
-    
-    .cell {
-      padding: 8px 12px;
+    .header-content {
+      padding: 20px;
       
-      .action-buttons {
-        justify-content: center;
-        padding: 0;
-        min-height: auto;
+      h2 {
+        margin: 0 0 8px 0;
+        font-size: 24px;
+        font-weight: 600;
+      }
+      
+      p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 14px;
       }
     }
   }
   
-  /* 确保表格宽度占满容器 */
-  .el-table__body-wrapper {
-    width: 100% !important;
-  }
-  
-  /* 操作列单元格样式 */
-  .el-table__cell {
-    padding: 8px 0;
+  // 搜索卡片样式
+  .search-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
     
-    &.el-table-fixed-column--right {
-      .cell {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 40px;
+    .search-form {
+      margin: 0;
+      
+      .el-form-item {
+        margin-bottom: 0;
       }
     }
   }
-}
-
-:deep(.el-dialog) {
-  .el-dialog__header {
-    padding: 20px 20px 10px;
-    border-bottom: 1px solid #ebeef5;
-  }
   
-  .el-dialog__body {
-    padding: 20px;
-  }
-}
-
-/* 响应式布局 */
-@media (max-width: 1200px) {
-  .toolbar {
-    flex-direction: column;
-    gap: 16px;
-    align-items: stretch;
+  // 工具栏卡片样式
+  .toolbar-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
     
-    .search-box {
-      justify-content: center;
-    }
-    
-    .toolbar-buttons {
-      justify-content: center;
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      
+      .el-button {
+        transition: all 0.3s ease;
+        
+        &:hover {
+          transform: translateY(-1px);
+        }
+        
+        &:active {
+          transform: scale(0.95);
+        }
+      }
     }
   }
   
-  :deep(.el-table) {
-    .el-table__cell {
-      padding: 6px 0;
+  // 表格卡片样式
+  .table-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    .pagination-wrapper {
+      padding: 20px;
+      text-align: right;
+      border-top: 1px solid #ebeef5;
+      background: #fafafa;
+      border-radius: 0 0 8px 8px;
+    }
+  }
+  
+  // 操作按钮组样式
+  .action-buttons {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    flex-wrap: wrap;
+    
+    .el-button {
+      padding: 4px 8px;
       font-size: 12px;
+      border-radius: 3px;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-1px);
+      }
+      
+      &:active {
+        transform: scale(0.95);
+      }
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 1200px) {
+  .users-management {
+    .toolbar {
+      justify-content: center;
+    }
+    
+    .action-buttons {
+      .el-button {
+        padding: 3px 6px;
+        font-size: 11px;
+      }
     }
   }
 }
 
 @media (max-width: 768px) {
-  .users-container {
+  .users-management {
     padding: 10px;
-  }
-  
-  .toolbar {
-    padding: 15px;
     
-    .search-box {
-      flex-direction: column;
-      gap: 8px;
-      
-      .el-input {
-        width: 100% !important;
-      }
-      
-      .el-select {
-        width: 100% !important;
+    .search-card {
+      .search-form {
+        .el-form-item {
+          margin-bottom: 16px;
+          display: block;
+          
+          .el-input,
+          .el-select {
+            width: 100% !important;
+          }
+        }
       }
     }
     
-    .toolbar-buttons {
+    .toolbar {
       flex-direction: column;
       gap: 8px;
       
@@ -926,14 +993,6 @@ const resetForm = () => {
         width: 100%;
         justify-content: center;
       }
-    }
-  }
-  
-  :deep(.el-table) {
-    font-size: 12px;
-    
-    .el-table__cell {
-      padding: 4px 0;
     }
     
     .action-buttons {
@@ -942,45 +1001,20 @@ const resetForm = () => {
       
       .el-button {
         width: 100%;
+        min-height: 32px;
         font-size: 12px;
-        padding: 4px 8px;
       }
     }
-  }
-  
-  .pagination-container {
-    padding: 12px;
     
-    :deep(.el-pagination) {
-      .el-pagination__sizes,
-      .el-pagination__jump {
-        display: none;
+    .pagination-wrapper {
+      padding: 15px;
+      
+      :deep(.el-pagination) {
+        .el-pagination__sizes,
+        .el-pagination__jump {
+          display: none;
+        }
       }
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .header-section {
-    text-align: center;
-    
-    h2 {
-      font-size: 20px;
-    }
-    
-    p {
-      font-size: 12px;
-    }
-  }
-  
-  .toolbar {
-    padding: 12px;
-  }
-  
-  :deep(.el-table) {
-    .action-buttons .el-button {
-      font-size: 11px;
-      padding: 3px 6px;
     }
   }
 }
