@@ -1,14 +1,22 @@
 <template>
   <div class="doctor-list">
+    <!-- 页面头部 -->
+    <el-card class="page-header">
+      <div class="header-content">
+        <h2>医生管理</h2>
+        <p>全面管理医生信息，包括基本资料、科室分配、职称管理和排班安排</p>
+      </div>
+    </el-card>
+
     <!-- 搜索表单 -->
     <el-card class="search-card">
-      <el-form :model="searchForm" ref="searchFormRef" :inline="true" label-width="70px" class="compact-search-form">
+      <el-form :model="searchForm" ref="searchFormRef" :inline="true" class="search-form">
         <el-form-item label="姓名" prop="name">
           <el-input 
             v-model="searchForm.name" 
             placeholder="医生姓名" 
             clearable 
-            style="width: 150px"
+            style="width: 180px"
           />
         </el-form-item>
         <el-form-item label="工号" prop="employeeNumber">
@@ -16,7 +24,7 @@
             v-model="searchForm.employeeNumber" 
             placeholder="工号" 
             clearable 
-            style="width: 130px"
+            style="width: 160px"
           />
         </el-form-item>
         <el-form-item label="科室" prop="department">
@@ -27,7 +35,7 @@
             multiple
             collapse-tags
             collapse-tags-tooltip
-            style="width: 160px"
+            style="width: 180px"
           >
             <el-option label="内科" value="内科" />
             <el-option label="外科" value="外科" />
@@ -49,7 +57,7 @@
             multiple
             collapse-tags
             collapse-tags-tooltip
-            style="width: 160px"
+            style="width: 180px"
           >
             <el-option label="主任医师" value="主任医师" />
             <el-option label="副主任医师" value="副主任医师" />
@@ -63,25 +71,25 @@
             v-model="searchForm.status" 
             placeholder="状态" 
             clearable
-            style="width: 100px"
+            style="width: 150px"
           >
             <el-option label="在职" value="1" />
             <el-option label="离职" value="0" />
           </el-select>
         </el-form-item>
-        <el-form-item class="search-buttons">
-          <el-button type="primary" @click="handleSearch" :icon="Search" size="default">
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch" :icon="Search">
             搜索
           </el-button>
-          <el-button @click="handleReset" :icon="Refresh" size="default">
+          <el-button @click="handleReset" :icon="Refresh">
             重置
           </el-button>
         </el-form-item>
       </el-form>
     </el-card>
 
-    <!-- 操作按钮 -->
-    <el-card class="operation-card">
+    <!-- 操作工具栏 -->
+    <el-card class="toolbar-card">
       <div class="toolbar">
         <el-button type="primary" @click="handleAdd" v-permission="'doctor:add'">
           <el-icon><Plus /></el-icon>
@@ -106,16 +114,8 @@
         </el-button>
         <el-button type="info" @click="handleStatistics" v-permission="'doctor:statistics'">
           <el-icon><DataAnalysis /></el-icon>
-          医生统计
+          统计分析
         </el-button>
-        
-        <!-- 角色信息显示 -->
-        <div class="role-info">
-          <el-tag type="info" size="small">当前角色：{{ currentUserRole }}</el-tag>
-          <el-tooltip content="支持快捷键：Ctrl+N 新增, Delete 批量删除" placement="top">
-            <el-button size="small" type="info" text :icon="QuestionFilled" />
-          </el-tooltip>
-        </div>
       </div>
     </el-card>
 
@@ -133,7 +133,13 @@
         <el-table-column type="selection" width="55" />
         <el-table-column prop="employeeNumber" label="工号" width="120" />
         <el-table-column prop="name" label="姓名" width="100" />
-        <el-table-column prop="gender" label="性别" width="80" class-name="hidden-sm-and-down" />
+        <el-table-column prop="gender" label="性别" width="80">
+          <template #default="scope">
+            <el-tag :type="scope.row.gender === 1 ? 'primary' : 'warning'" size="small">
+              {{ scope.row.gender === 1 ? '男' : '女' }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="phone" label="联系电话" width="130" />
         <el-table-column prop="department" label="科室" width="100" class-name="hidden-sm-and-down" />
         <el-table-column prop="title" label="职称" width="120" />
@@ -146,59 +152,63 @@
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="160" class-name="hidden-sm-and-down" />
-        <el-table-column label="操作" width="350" fixed="right" align="center">
+        <el-table-column label="操作" width="300" fixed="right">
           <template #default="scope">
             <div class="action-buttons">
-              <el-button 
-                text 
-                type="primary" 
-                size="small" 
-                @click="handleView(scope.row)"
-                class="action-btn"
-              >
-                <el-icon><View /></el-icon>
-                查看
-              </el-button>
-              <el-button 
-                text 
-                type="success" 
-                size="small" 
-                @click="handleEdit(scope.row)" 
-                v-permission="'doctor:edit'"
-                class="action-btn"
-              >
-                <el-icon><Edit /></el-icon>
-                编辑
-              </el-button>
-              <el-button 
-                text 
-                type="warning" 
-                size="small" 
-                @click="handleViewSchedule(scope.row)"
-                v-permission="'doctor:schedule'"
-                class="action-btn"
-              >
-                <el-icon><Calendar /></el-icon>
-                排班
-              </el-button>
-              <el-button 
-                text 
-                type="danger" 
-                size="small" 
-                @click="handleDelete(scope.row)"
-                v-permission="'doctor:delete'"
-                class="action-btn"
-              >
-                <el-icon><Delete /></el-icon>
-                删除
-              </el-button>
+              <el-tooltip content="查看详情" placement="top">
+                <el-button 
+                  text 
+                  type="primary" 
+                  size="small" 
+                  @click="handleView(scope.row)"
+                >
+                  <el-icon><View /></el-icon>
+                  查看
+                </el-button>
+              </el-tooltip>
+              <el-tooltip content="编辑信息" placement="top">
+                <el-button 
+                  text 
+                  type="primary" 
+                  size="small" 
+                  @click="handleEdit(scope.row)" 
+                  v-permission="'doctor:edit'"
+                >
+                  <el-icon><Edit /></el-icon>
+                  编辑
+                </el-button>
+              </el-tooltip>
+              <el-tooltip content="排班管理" placement="top">
+                <el-button 
+                  text 
+                  type="warning" 
+                  size="small" 
+                  @click="handleViewSchedule(scope.row)"
+                  v-permission="'doctor:schedule'"
+                >
+                  <el-icon><Calendar /></el-icon>
+                  排班
+                </el-button>
+              </el-tooltip>
+              <el-tooltip content="删除记录" placement="top">
+                <el-button 
+                  text 
+                  type="danger" 
+                  size="small" 
+                  @click="handleDelete(scope.row)"
+                  v-permission="'doctor:delete'"
+                >
+                  <el-icon><Delete /></el-icon>
+                  删除
+                </el-button>
+              </el-tooltip>
             </div>
           </template>
         </el-table-column>
       </el-table>
 
       <!-- 分页 -->
-      <div class="pagination-container">
+      <div class="pagination-wrapper">
         <el-pagination
           v-model:current-page="pageInfo.pageNum"
           v-model:page-size="pageInfo.pageSize"
@@ -1876,154 +1886,145 @@ onUnmounted(() => {
   padding: 20px;
 }
 
+/* 页面头部样式 */
+.page-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.page-header .header-content {
+  padding: 20px;
+}
+
+.page-header .header-content h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.page-header .header-content p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+}
+
+/* 卡片样式 */
 .search-card,
-.operation-card,
+.toolbar-card,
 .table-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
 }
 
-/* 搜索表单优化 - 紧凑单行布局 */
-
-.compact-search-form {
+/* 搜索表单样式 */
+.search-form {
   display: flex;
   align-items: center;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  padding: 8px 0;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
-.compact-search-form .el-form-item {
-  margin-right: 12px;
-  margin-bottom: 0 !important;
-  flex-shrink: 0;
+.search-form .el-form-item {
+  margin-bottom: 0;
 }
 
-.compact-search-form .el-form-item:last-child {
-  margin-right: 0;
-}
-
-.compact-search-form .el-form-item__label {
-  font-size: 14px;
-  color: #606266;
+.search-form .el-form-item__label {
   font-weight: 500;
-  padding-right: 8px;
+  color: #606266;
 }
 
-.compact-search-form .el-input {
-  --el-input-height: 32px;
+.search-form .el-input,
+.search-form .el-select {
+  border-radius: 4px;
 }
 
-.compact-search-form .el-select {
-  --el-select-height: 32px;
+.search-form .el-input__wrapper,
+.search-form .el-select__wrapper {
+  transition: all 0.3s ease;
 }
 
-.compact-search-form .el-button {
-  height: 32px;
-  padding: 8px 16px;
-  font-size: 14px;
+.search-form .el-input__wrapper:hover,
+.search-form .el-select__wrapper:hover {
+  box-shadow: 0 0 0 1px #409eff;
 }
 
-/* 搜索按钮组样式 */
-.search-buttons {
-  margin-left: auto;
-  flex-shrink: 0;
+/* 工具栏样式 */
+.toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-.search-buttons .el-button {
-  margin-left: 8px;
+.toolbar .el-button {
+  border-radius: 4px;
+  transition: all 0.3s ease;
 }
 
-.search-buttons .el-button:first-child {
-  margin-left: 0;
+.toolbar .el-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* 解决多选框在紧凑布局下的显示问题 */
-.compact-search-form .el-select .el-select__wrapper {
-  min-height: 32px;
-  height: 32px;
+.toolbar .el-button:active {
+  transform: scale(0.95);
 }
 
-.compact-search-form .el-select .el-select__tags {
-  max-width: calc(100% - 32px);
+/* 表格样式 */
+.table-card :deep(.el-table) {
+  border-radius: 8px;
   overflow: hidden;
-  flex-wrap: nowrap;
 }
 
-.compact-search-form .el-select .el-tag {
-  max-width: 80px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  margin: 1px 2px 1px 0;
-  height: 20px;
-  line-height: 18px;
+.table-card :deep(.el-table th) {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.table-card :deep(.el-table td) {
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.table-card :deep(.el-table tr:hover > td) {
+  background-color: #f8f9fa;
+}
+
+/* 操作按钮样式 */
+.action-buttons {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.action-buttons .el-button {
+  padding: 4px 8px;
   font-size: 12px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  min-width: 60px;
 }
 
-/* 折叠标签样式 */
-.compact-search-form .el-select .el-tag.el-tag--info {
-  background-color: #f4f4f5;
-  border-color: #e9e9eb;
-  color: #909399;
+.action-buttons .el-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* 响应式调整 - 保持单行布局 */
-@media (max-width: 1400px) {
-  .compact-search-form .el-form-item__label {
-    width: 60px !important;
-    font-size: 13px;
-  }
-  
-  .compact-search-form .el-form-item {
-    margin-right: 10px;
-  }
+.action-buttons .el-button:active {
+  transform: scale(0.95);
 }
 
-@media (max-width: 1200px) {
-  .compact-search-form {
-    overflow-x: auto;
-    padding-bottom: 8px;
-  }
-  
-  .compact-search-form .el-form-item__label {
-    width: 50px !important;
-    font-size: 12px;
-  }
-  
-  .compact-search-form .el-form-item {
-    margin-right: 8px;
-  }
-}
-
-/* 平板和手机端恢复多行布局 */
-@media (max-width: 768px) {
-  .compact-search-form {
-    flex-wrap: wrap;
-    overflow-x: visible;
-  }
-  
-  .compact-search-form .el-form-item {
-    margin-bottom: 12px !important;
-    margin-right: 16px;
-    flex: 1;
-    min-width: 200px;
-  }
-  
-  .compact-search-form .el-form-item__label {
-    width: 70px !important;
-    font-size: 14px;
-  }
-  
-  .search-buttons {
-    margin-left: 0;
-    width: 100%;
-    text-align: center;
-  }
-}
-
-.role-info {
-  margin-left: 15px;
-  display: inline-block;
+/* 分页样式 */
+.pagination-wrapper {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
 }
 
 /* 对话框样式优化 */
@@ -2067,139 +2068,6 @@ onUnmounted(() => {
 
 .el-input__suffix .el-icon:hover {
   color: #409eff;
-}
-
-/* 工具栏样式 */
-.toolbar {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.pagination-container {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-}
-
-/* 按钮风格设计规范 - 操作列按钮样式 */
-.action-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  justify-content: center;
-  padding: 8px 4px;
-  min-height: 32px;
-}
-
-.action-buttons .el-button.action-btn {
-  margin: 0;
-  padding: 6px 8px;
-  font-size: 12px;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-  min-width: 65px;
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-}
-
-.action-buttons .el-button.action-btn .el-icon {
-  font-size: 14px;
-}
-
-.action-buttons .el-button.action-btn:active {
-  transform: scale(0.95);
-}
-
-/* 文本按钮悬停效果优化 */
-.action-buttons .el-button.is-text:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* 不同类型按钮的悬停颜色 - 根据设计规范优化 */
-.action-buttons .el-button.is-text.el-button--primary:hover {
-  background-color: rgba(64, 158, 255, 0.1);
-  color: #409eff;
-  border-color: rgba(64, 158, 255, 0.3);
-}
-
-.action-buttons .el-button.is-text.el-button--success:hover {
-  background-color: rgba(103, 194, 58, 0.1);
-  color: #67c23a;
-  border-color: rgba(103, 194, 58, 0.3);
-}
-
-.action-buttons .el-button.is-text.el-button--warning:hover {
-  background-color: rgba(230, 162, 60, 0.1);
-  color: #e6a23c;
-  border-color: rgba(230, 162, 60, 0.3);
-}
-
-.action-buttons .el-button.is-text.el-button--danger:hover {
-  background-color: rgba(245, 108, 108, 0.1);
-  color: #f56c6c;
-  border-color: rgba(245, 108, 108, 0.3);
-}
-
-/* 禁用状态样式 */
-.action-buttons .el-button.is-disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.action-buttons .el-button.is-disabled:hover {
-  transform: none !important;
-  background-color: transparent !important;
-}
-
-/* 表格整体样式优化 */
-:deep(.el-table) {
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-:deep(.el-table th) {
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
-}
-
-:deep(.el-table td) {
-  border-bottom: 1px solid #f1f3f4;
-}
-
-:deep(.el-table tr:hover > td) {
-  background-color: #f8f9fa;
-}
-
-/* 表格固定列样式优化 */
-:deep(.el-table .el-table-fixed-column--right) {
-  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.08);
-  border-left: 1px solid #ebeef5;
-  background-color: #fff;
-}
-
-/* 操作列标题样式 */
-:deep(.el-table th.el-table-fixed-column--right) {
-  background-color: #f8f9fa;
-  font-weight: 600;
-}
-
-:deep(.el-table th.el-table-fixed-column--right .cell) {
-  color: #303133;
-  text-align: center;
-}
-
-/* 操作列内容对齐 */
-:deep(.el-table td.el-table-fixed-column--right .cell) {
-  padding: 0 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 /* 状态标签优化 */
@@ -2420,30 +2288,47 @@ onUnmounted(() => {
   opacity: 0.8;
 }
 
-/* 响应式调整 */
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  .action-buttons .el-button {
+    padding: 3px 6px;
+    font-size: 11px;
+    min-width: 55px;
+  }
+}
+
 @media (max-width: 768px) {
-  .doctor-detail-container {
+  .doctor-list {
     padding: 16px;
   }
   
-  .detail-card {
-    margin-bottom: 16px;
+  .search-form {
+    flex-direction: column;
+    align-items: stretch;
   }
   
-  .card-header {
-    font-size: 14px;
+  .search-form .el-form-item {
+    margin-bottom: 12px;
   }
   
-  .header-icon {
-    font-size: 16px;
+  .toolbar {
+    flex-direction: column;
+    gap: 8px;
   }
   
-  .stat-value {
-    font-size: 16px;
+  .toolbar .el-button {
+    width: 100%;
+    min-height: 44px;
   }
   
-  .stat-label {
-    font-size: 12px;
+  .action-buttons {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .action-buttons .el-button {
+    width: 100%;
+    min-height: 36px;
   }
   
   .schedule-management {
