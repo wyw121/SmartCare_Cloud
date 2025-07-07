@@ -1,17 +1,17 @@
-import request from '@/utils/request'
+import request from '@/utils/request';
 import {
-  mockOverviewStatistics,
-  mockHealthStatusStatistics,
-  mockWarningAnalysis,
-  mockMedicalServiceStatistics,
-  mockCareLevelStatistics,
-  mockEquipmentUsageStatistics,
-  mockTrendAnalysis,
-  mockRegionDistribution,
-  mockServiceQuality,
-  mockAIInsights,
-  mockStatisticsData
-} from './mockReports'
+    mockAIInsights,
+    mockCareLevelStatistics,
+    mockEquipmentUsageStatistics,
+    mockHealthStatusStatistics,
+    mockMedicalServiceStatistics,
+    mockOverviewStatistics,
+    mockRegionDistribution,
+    mockServiceQuality,
+    mockStatisticsData,
+    mockTrendAnalysis,
+    mockWarningAnalysis
+} from './mockReports';
 
 /**
  * 报表分析相关API

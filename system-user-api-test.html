@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统用户管理API测试</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h2 {
+            color: #34495e;
+            margin-top: 0;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-success {
+            background-color: #28a745;
+        }
+        .status-error {
+            background-color: #dc3545;
+        }
+        .status-warning {
+            background-color: #ffc107;
+        }
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .user-table th, .user-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .user-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .user-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 系统用户管理API测试</h1>
+        
+        <div class="test-section">
+            <h2>📡 服务状态检查</h2>
+            <button onclick="checkBackendStatus()">检查后端服务</button>
+            <button onclick="checkFrontendStatus()">检查前端服务</button>
+            <div id="statusResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>👥 用户管理API测试</h2>
+            <button onclick="testUserListAPI()">测试用户列表API</button>
+            <button onclick="testUserListWithAuth()">测试用户列表API（带认证）</button>
+            <button onclick="testRoleAPI()">测试角色API</button>
+            <button onclick="testDepartmentAPI()">测试部门API</button>
+            <div id="userResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔐 认证测试</h2>
+            <button onclick="testLogin()">测试登录</button>
+            <button onclick="testUserInfo()">测试用户信息</button>
+            <div id="authResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 用户数据展示</h2>
+            <button onclick="loadUserData()">加载用户数据</button>
+            <div id="userDataResult" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'http://localhost:8080';
+        const FRONTEND_URL = 'http://localhost:3000';
+        let currentToken = '';
+
+        function showResult(elementId, content, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `result ${type}`;
+            element.innerHTML = content;
+        }
+
+        // 检查后端服务状态
+        async function checkBackendStatus() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/auth/health`);
+                if (response.ok) {
+                    const data = await response.json();
+                    showResult('statusResult', `
+                        <div style="display: flex; align-items: center;">
+                            <span class="status-indicator status-success"></span>
+                            <strong>后端服务正常运行</strong>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            端口: 8080<br>
+                            状态: ${data.message || '服务正常'}<br>
+                            时间: ${new Date().toLocaleString()}
+                        </div>
+                    `, 'success');
+                } else {
+                    showResult('statusResult', `
+                        <div style="display: flex; align-items: center;">
+                            <span class="status-indicator status-error"></span>
+                            <strong>后端服务响应异常</strong>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            状态码: ${response.status}
+                        </div>
+                    `, 'error');
+                }
+            } catch (error) {
+                showResult('statusResult', `
+                    <div style="display: flex; align-items: center;">
+                        <span class="status-indicator status-error"></span>
+                        <strong>后端服务连接失败</strong>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        错误信息: ${error.message}
+                    </div>
+                `, 'error');
+            }
+        }
+
+        // 检查前端服务状态
+        async function checkFrontendStatus() {
+            try {
+                const response = await fetch(`${FRONTEND_URL}/`);
+                if (response.ok) {
+                    showResult('statusResult', `
+                        <div style="display: flex; align-items: center;">
+                            <span class="status-indicator status-success"></span>
+                            <strong>前端服务正常运行</strong>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            端口: 3000<br>
+                            状态: 服务正常<br>
+                            时间: ${new Date().toLocaleString()}
+                        </div>
+                    `, 'success');
+                } else {
+                    showResult('statusResult', `
+                        <div style="display: flex; align-items: center;">
+                            <span class="status-indicator status-warning"></span>
+                            <strong>前端服务响应异常</strong>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            状态码: ${response.status}
+                        </div>
+                    `, 'error');
+                }
+            } catch (error) {
+                showResult('statusResult', `
+                    <div style="display: flex; align-items: center;">
+                        <span class="status-indicator status-error"></span>
+                        <strong>前端服务连接失败</strong>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        错误信息: ${error.message}
+                    </div>
+                `, 'error');
+            }
+        }
+
+        // 测试用户列表API（不带认证）
+        async function testUserListAPI() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/system/users?current=1&size=10`);
+                const data = await response.json();
+                
+                if (response.ok && data.code === 200) {
+                    showResult('userResult', `
+                        <div style="display: flex; align-items: center;">
+                            <span class="status-indicator status-success"></span>
+                            <strong>用户列表API测试成功</strong>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            返回数据: ${JSON.stringify(data, null, 2)}
+                        </div>
+                    `, 'success');
+                } else {
+                    showResult('userResult', `
+                        <div style="display: flex; align-items: center;">
+                            <span class="status-indicator status-error"></span>
+                            <strong>用户列表API测试失败</strong>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            状态码: ${response.status}<br>
+                            错误信息: ${data.message || '未知错误'}
+                        </div>
+                    `, 'error');
+                }
+            } catch (error) {
+                showResult('userResult', `
+                    <div style="display: flex; align-items: center;">
+                        <span class="status-indicator status-error"></span>
+                        <strong>用户列表API请求失败</strong>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        错误信息: ${error.message}
+                    </div>
+                `, 'error');
+            }
+        }
+
+        // 测试登录
+        async function testLogin() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: 'admin',
+                        password: '123456'
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.code === 200) {
+                    currentToken = data.data.token;
+                    showResult('authResult', `
+                        <div style="display: flex; align-items: center;">
+                            <span class="status-indicator status-success"></span>
+                            <strong>登录成功</strong>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            用户信息: ${JSON.stringify(data.data.user, null, 2)}<br>
+                            Token: ${currentToken}
+                        </div>
+                    `, 'success');
+                } else {
+                    showResult('authResult', `
+                        <div style="display: flex; align-items: center;">
+                            <span class="status-indicator status-error"></span>
+                            <strong>登录失败</strong>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            错误信息: ${data.message || '未知错误'}
+                        </div>
+                    `, 'error');
+                }
+            } catch (error) {
+                showResult('authResult', `
+                    <div style="display: flex; align-items: center;">
+                        <span class="status-indicator status-error"></span>
+                        <strong>登录请求失败</strong>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        错误信息: ${error.message}
+                    </div>
+                `, 'error');
+            }
+        }
+
+        // 测试用户列表API（带认证）
+        async function testUserListWithAuth() {
+            if (!currentToken) {
+                showResult('userResult', `
+                    <div style="display: flex; align-items: center;">
+                        <span class="status-indicator status-warning"></span>
+                        <strong>请先登录获取Token</strong>
+                    </div>
+                `, 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/system/users?current=1&size=10`, {
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`
+                    }
+                });
+                const data = await response.json();
+                
+                if (response.ok && data.code === 200) {
+                    showResult('userResult', `
+                        <div style="display: flex; align-items: center;">
+                            <span class="status-indicator status-success"></span>
+                            <strong>用户列表API测试成功（带认证）</strong>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            用户数量: ${data.data.total}<br>
+                            返回数据: ${JSON.stringify(data, null, 2)}
+                        </div>
+                    `, 'success');
+                } else {
+                    showResult('userResult', `
+                        <div style="display: flex; align-items: center;">
+                            <span class="status-indicator status-error"></span>
+                            <strong>用户列表API测试失败（带认证）</strong>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            状态码: ${response.status}<br>
+                            错误信息: ${data.message || '未知错误'}
+                        </div>
+                    `, 'error');
+                }
+            } catch (error) {
+                showResult('userResult', `
+                    <div style="display: flex; align-items: center;">
+                        <span class="status-indicator status-error"></span>
+                        <strong>用户列表API请求失败（带认证）</strong>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        错误信息: ${error.message}
+                    </div>
+                `, 'error');
+            }
+        }
+
+        // 测试角色API
+        async function testRoleAPI() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/system/roles`);
+                const data = await response.json();
+                
+                if (response.ok && data.code === 200) {
+                    showResult('userResult', `
+                        <div style="display: flex; align-items: center;">
+                            <span class="status-indicator status-success"></span>
+                            <strong>角色API测试成功</strong>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            返回数据: ${JSON.stringify(data, null, 2)}
+                        </div>
+                    `, 'success');
+                } else {
+                    showResult('userResult', `
+                        <div style="display: flex; align-items: center;">
+                            <span class="status-indicator status-error"></span>
+                            <strong>角色API测试失败</strong>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            状态码: ${response.status}<br>
+                            错误信息: ${data.message || '未知错误'}
+                        </div>
+                    `, 'error');
+                }
+            } catch (error) {
+                showResult('userResult', `
+                    <div style="display: flex; align-items: center;">
+                        <span class="status-indicator status-error"></span>
+                        <strong>角色API请求失败</strong>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        错误信息: ${error.message}
+                    </div>
+                `, 'error');
+            }
+        }
+
+        // 测试部门API
+        async function testDepartmentAPI() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/system/departments`);
+                const data = await response.json();
+                
+                if (response.ok && data.code === 200) {
+                    showResult('userResult', `
+                        <div style="display: flex; align-items: center;">
+                            <span class="status-indicator status-success"></span>
+                            <strong>部门API测试成功</strong>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            返回数据: ${JSON.stringify(data, null, 2)}
+                        </div>
+                    `, 'success');
+                } else {
+                    showResult('userResult', `
+                        <div style="display: flex; align-items: center;">
+                            <span class="status-indicator status-error"></span>
+                            <strong>部门API测试失败</strong>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            状态码: ${response.status}<br>
+                            错误信息: ${data.message || '未知错误'}
+                        </div>
+                    `, 'error');
+                }
+            } catch (error) {
+                showResult('userResult', `
+                    <div style="display: flex; align-items: center;">
+                        <span class="status-indicator status-error"></span>
+                        <strong>部门API请求失败</strong>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        错误信息: ${error.message}
+                    </div>
+                `, 'error');
+            }
+        }
+
+        // 加载用户数据
+        async function loadUserData() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/system/users?current=1&size=10`);
+                const data = await response.json();
+                
+                if (response.ok && data.code === 200) {
+                    const users = data.data.records || [];
+                    let tableHtml = `
+                        <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                            <span class="status-indicator status-success"></span>
+                            <strong>用户数据加载成功（共 ${data.data.total} 条）</strong>
+                        </div>
+                        <table class="user-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>用户名</th>
+                                    <th>真实姓名</th>
+                                    <th>角色</th>
+                                    <th>邮箱</th>
+                                    <th>手机号</th>
+                                    <th>状态</th>
+                                    <th>创建时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+                    
+                    users.forEach(user => {
+                        tableHtml += `
+                            <tr>
+                                <td>${user.id}</td>
+                                <td>${user.username}</td>
+                                <td>${user.realName}</td>
+                                <td>${user.roleName}</td>
+                                <td>${user.email}</td>
+                                <td>${user.phone}</td>
+                                <td>${user.status === 1 ? '启用' : '禁用'}</td>
+                                <td>${new Date(user.createTime).toLocaleString()}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    tableHtml += `
+                            </tbody>
+                        </table>
+                    `;
+                    
+                    showResult('userDataResult', tableHtml, 'success');
+                } else {
+                    showResult('userDataResult', `
+                        <div style="display: flex; align-items: center;">
+                            <span class="status-indicator status-error"></span>
+                            <strong>用户数据加载失败</strong>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            状态码: ${response.status}<br>
+                            错误信息: ${data.message || '未知错误'}
+                        </div>
+                    `, 'error');
+                }
+            } catch (error) {
+                showResult('userDataResult', `
+                    <div style="display: flex; align-items: center;">
+                        <span class="status-indicator status-error"></span>
+                        <strong>用户数据加载请求失败</strong>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        错误信息: ${error.message}
+                    </div>
+                `, 'error');
+            }
+        }
+
+        // 页面加载时自动检查服务状态
+        window.addEventListener('load', function() {
+            checkBackendStatus();
+            checkFrontendStatus();
+        });
+    </script>
+</body>
+</html>

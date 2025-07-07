@@ -229,6 +229,18 @@
 </template>
 
 <script setup>
+import {
+    batchDeleteUsers,
+    checkEmail,
+    checkUsername,
+    createUser,
+    deleteUser,
+    getUserList as fetchUserList,
+    getDepartmentList,
+    getRoleList,
+    toggleUserStatus,
+    updateUser
+} from '@/api/system'
 import { Delete, Plus, Search } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
@@ -275,14 +287,54 @@ const userForm = reactive({
 const userRules = {
   username: [
     { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, max: 20, message: '用户名长度在 3 到 20 个字符', trigger: 'blur' }
+    { min: 3, max: 20, message: '用户名长度在 3 到 20 个字符', trigger: 'blur' },
+    {
+      validator: async (rule, value, callback) => {
+        if (!value) {
+          callback()
+          return
+        }
+        try {
+          const result = await checkUsername(value, isEdit.value ? userForm.id : null)
+          if (result.code === 200 && result.data.available) {
+            callback()
+          } else {
+            callback(new Error('用户名已存在'))
+          }
+        } catch (error) {
+          // 如果检查失败，跳过验证
+          callback()
+        }
+      },
+      trigger: 'blur'
+    }
   ],
   realName: [
     { required: true, message: '请输入真实姓名', trigger: 'blur' }
   ],
   email: [
     { required: true, message: '请输入邮箱', trigger: 'blur' },
-    { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
+    { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' },
+    {
+      validator: async (rule, value, callback) => {
+        if (!value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          callback()
+          return
+        }
+        try {
+          const result = await checkEmail(value, isEdit.value ? userForm.id : null)
+          if (result.code === 200 && result.data.available) {
+            callback()
+          } else {
+            callback(new Error('邮箱已被使用'))
+          }
+        } catch (error) {
+          // 如果检查失败，跳过验证
+          callback()
+        }
+      },
+      trigger: 'blur'
+    }
   ],
   phone: [
     { required: true, message: '请输入手机号', trigger: 'blur' },
@@ -311,29 +363,61 @@ const userRules = {
 }
 
 // 角色列表
-const roleList = ref([
-  { id: 1, name: '超级管理员' },
-  { id: 2, name: '系统管理员' },
-  { id: 3, name: '医生' },
-  { id: 4, name: '护士' },
-  { id: 5, name: '运营人员' }
-])
+const roleList = ref([])
 
 // 部门列表
-const departmentList = ref([
-  { id: 1, name: '管理部' },
-  { id: 2, name: '医疗部' },
-  { id: 3, name: '护理部' },
-  { id: 4, name: '运营部' },
-  { id: 5, name: '技术部' }
-])
+const departmentList = ref([])
 
 /**
  * 页面加载时获取数据
  */
-onMounted(() => {
-  getUserList()
+onMounted(async () => {
+  await Promise.all([
+    getUserList(),
+    loadRoleList(),
+    loadDepartmentList()
+  ])
 })
+
+/**
+ * 加载角色列表
+ */
+const loadRoleList = async () => {
+  try {
+    const result = await getRoleList()
+    roleList.value = result.data || []
+  } catch (error) {
+    console.error('获取角色列表失败:', error)
+    // 如果API失败，使用默认数据
+    roleList.value = [
+      { id: 1, name: '超级管理员' },
+      { id: 2, name: '系统管理员' },
+      { id: 3, name: '医生' },
+      { id: 4, name: '护士' },
+      { id: 5, name: '运营人员' }
+    ]
+  }
+}
+
+/**
+ * 加载部门列表
+ */
+const loadDepartmentList = async () => {
+  try {
+    const result = await getDepartmentList()
+    departmentList.value = result.data || []
+  } catch (error) {
+    console.error('获取部门列表失败:', error)
+    // 如果API失败，使用默认数据
+    departmentList.value = [
+      { id: 1, name: '管理部' },
+      { id: 2, name: '医疗部' },
+      { id: 3, name: '护理部' },
+      { id: 4, name: '运营部' },
+      { id: 5, name: '技术部' }
+    ]
+  }
+}
 
 /**
  * 获取用户列表
@@ -341,51 +425,41 @@ onMounted(() => {
 const getUserList = async () => {
   loading.value = true
   try {
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    // 模拟数据
-    const mockData = {
-      records: [
-        {
-          id: 1,
-          username: 'admin',
-          realName: '系统管理员',
-          email: 'admin@smartcare.com',
-          phone: '13800138001',
-          roleId: 1,
-          roleName: '超级管理员',
-          departmentId: 1,
-          departmentName: '管理部',
-          status: 1,
-          createTime: '2024-01-01 00:00:00',
-          lastLoginTime: '2024-01-15 10:30:00',
-          remark: '系统默认管理员账号'
-        },
-        {
-          id: 2,
-          username: 'doctor01',
-          realName: '张医生',
-          email: 'zhang@smartcare.com',
-          phone: '13800138002',
-          roleId: 3,
-          roleName: '医生',
-          departmentId: 2,
-          departmentName: '医疗部',
-          status: 1,
-          createTime: '2024-01-02 00:00:00',
-          lastLoginTime: '2024-01-15 09:00:00',
-          remark: '心血管专科医生'
-        }
-      ],
-      total: 2
+    const params = {
+      keyword: searchForm.keyword,
+      status: searchForm.status,
+      current: pageParams.current,
+      size: pageParams.size
     }
     
-    userList.value = mockData.records
-    total.value = mockData.total
+    const result = await fetchUserList(params)
+    
+    if (result.code === 200) {
+      // 处理分页数据
+      const pageData = result.data || {}
+      const users = pageData.records || []
+      userList.value = users.map(user => ({
+        id: user.id,
+        username: user.username,
+        realName: user.realName,
+        roleCode: user.roleCode,
+        roleName: user.roleName,
+        status: user.status,
+        createTime: user.createTime,
+        phone: user.phone,
+        email: user.email
+      }))
+      total.value = pageData.total || 0
+    } else {
+      throw new Error(result.message || '获取用户列表失败')
+    }
   } catch (error) {
-    ElMessage.error('获取用户列表失败')
-    console.error(error)
+    console.error('获取用户列表失败:', error)
+    ElMessage.error(error.message || '获取用户列表失败')
+    
+    // 如果API失败，清空列表
+    userList.value = []
+    total.value = 0
   } finally {
     loading.value = false
   }
@@ -437,14 +511,18 @@ const handleDelete = async (row) => {
       type: 'warning'
     })
     
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 500))
+    const result = await deleteUser(row.id)
     
-    ElMessage.success('删除成功')
-    getUserList()
+    if (result.code === 200) {
+      ElMessage.success('删除成功')
+      getUserList()
+    } else {
+      throw new Error(result.message || '删除失败')
+    }
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error('删除失败')
+      console.error('删除用户失败:', error)
+      ElMessage.error(error.message || '删除失败')
     }
   }
 }
@@ -458,15 +536,20 @@ const handleBatchDelete = async () => {
       type: 'warning'
     })
     
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 500))
+    const ids = selectedUsers.value.map(user => user.id)
+    const result = await batchDeleteUsers(ids)
     
-    ElMessage.success('批量删除成功')
-    selectedUsers.value = []
-    getUserList()
+    if (result.code === 200) {
+      ElMessage.success('批量删除成功')
+      selectedUsers.value = []
+      getUserList()
+    } else {
+      throw new Error(result.message || '批量删除失败')
+    }
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error('批量删除失败')
+      console.error('批量删除失败:', error)
+      ElMessage.error(error.message || '批量删除失败')
     }
   }
 }
@@ -476,19 +559,25 @@ const handleBatchDelete = async () => {
  */
 const handleToggleStatus = async (row) => {
   try {
-    const action = row.status === 1 ? '禁用' : '启用'
+    const newStatus = row.status === 1 ? 0 : 1
+    const action = newStatus === 0 ? '禁用' : '启用'
+    
     await ElMessageBox.confirm(`确定要${action}该用户吗？`, `${action}确认`, {
       type: 'warning'
     })
     
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 500))
+    const result = await toggleUserStatus(row.id, newStatus)
     
-    row.status = row.status === 1 ? 0 : 1
-    ElMessage.success(`${action}成功`)
+    if (result.code === 200) {
+      row.status = newStatus
+      ElMessage.success(`${action}成功`)
+    } else {
+      throw new Error(result.message || '操作失败')
+    }
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error('操作失败')
+      console.error('切换用户状态失败:', error)
+      ElMessage.error(error.message || '操作失败')
     }
   }
 }
@@ -529,14 +618,40 @@ const handleSubmit = async () => {
     
     submitLoading.value = true
     
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // 准备提交数据
+    const submitData = {
+      username: userForm.username,
+      realName: userForm.realName,
+      email: userForm.email,
+      phone: userForm.phone,
+      roleId: userForm.roleId,
+      departmentId: userForm.departmentId,
+      status: userForm.status,
+      remark: userForm.remark
+    }
     
-    ElMessage.success(isEdit.value ? '编辑成功' : '新增成功')
-    dialogVisible.value = false
-    getUserList()
+    // 如果是新增用户，添加密码
+    if (!isEdit.value) {
+      submitData.password = userForm.password
+    }
+    
+    let result
+    if (isEdit.value) {
+      result = await updateUser(userForm.id, submitData)
+    } else {
+      result = await createUser(submitData)
+    }
+    
+    if (result.code === 200) {
+      ElMessage.success(isEdit.value ? '编辑成功' : '新增成功')
+      dialogVisible.value = false
+      getUserList()
+    } else {
+      throw new Error(result.message || '操作失败')
+    }
   } catch (error) {
-    ElMessage.error(isEdit.value ? '编辑失败' : '新增失败')
+    console.error('提交用户数据失败:', error)
+    ElMessage.error(error.message || (isEdit.value ? '编辑失败' : '新增失败'))
   } finally {
     submitLoading.value = false
   }
