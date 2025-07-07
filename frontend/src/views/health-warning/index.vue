@@ -1,5 +1,13 @@
 <template>
   <div class="health-warning">
+    <!-- 页面头部 -->
+    <el-card class="page-header">
+      <div class="header-content">
+        <h2>健康预警管理</h2>
+        <p>智能监测老人健康状况，及时发现异常情况并提供预警提醒</p>
+      </div>
+    </el-card>
+
     <!-- 统计卡片 -->
     <el-row :gutter="20" class="statistics-row">
       <el-col :span="6">
@@ -126,22 +134,30 @@
       </el-form>
     </el-card>
 
-    <!-- 操作按钮 -->
-    <el-card class="operation-card">
-      <el-row>
-        <el-col :span="24">
-          <el-button type="success" @click="handleBatchHandle" :disabled="multipleSelection.length === 0">
-            批量处理
-          </el-button>
-          <el-button type="warning" @click="handleBatchIgnore" :disabled="multipleSelection.length === 0">
-            批量忽略
-          </el-button>
-          <el-button type="danger" @click="handleBatchDelete" :disabled="multipleSelection.length === 0">
-            批量删除
-          </el-button>
-          <el-button type="info" @click="handleExport" :icon="Download">导出数据</el-button>
-        </el-col>
-      </el-row>
+    <!-- 操作工具栏 -->
+    <el-card class="toolbar-card">
+      <div class="toolbar">
+        <el-button type="success" @click="handleBatchHandle" :disabled="multipleSelection.length === 0">
+          <el-icon><Select /></el-icon>
+          批量处理
+        </el-button>
+        <el-button type="warning" @click="handleBatchIgnore" :disabled="multipleSelection.length === 0">
+          <el-icon><Hide /></el-icon>
+          批量忽略
+        </el-button>
+        <el-button type="danger" @click="handleBatchDelete" :disabled="multipleSelection.length === 0">
+          <el-icon><Delete /></el-icon>
+          批量删除
+        </el-button>
+        <el-button type="info" @click="handleExport">
+          <el-icon><Download /></el-icon>
+          导出数据
+        </el-button>
+        <el-button type="primary" @click="handleRefresh">
+          <el-icon><Refresh /></el-icon>
+          刷新数据
+        </el-button>
+      </div>
     </el-card>
 
     <!-- 数据表格 -->
@@ -326,10 +342,13 @@ import {
 } from '@/api/healthWarning'
 import {
   CircleCheck,
+  Delete,
   Download,
+  Hide,
   InfoFilled,
   Refresh,
   Search,
+  Select,
   Warning
 } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -449,58 +468,56 @@ const getStatistics = async () => {
   }
 }
 
+// 处理搜索参数
+const processSearchParams = (form) => {
+  const params = {
+    ...form,
+    pageNum: pageInfo.pageNum,
+    pageSize: pageInfo.pageSize
+  }
+  
+  // 处理时间范围
+  if (form.triggerTime && form.triggerTime.length === 2) {
+    params.startTime = form.triggerTime[0]
+    params.endTime = form.triggerTime[1]
+  }
+  delete params.triggerTime
+  
+  return params
+}
+
+// 处理多选参数
+const processMultiSelectParams = (params) => {
+  const processParam = (key) => {
+    if (Array.isArray(params[key])) {
+      if (params[key].length > 0) {
+        params[key] = params[key].join(',')
+      } else {
+        delete params[key]
+      }
+    } else if (!params[key] || params[key] === '') {
+      delete params[key]
+    }
+  }
+  
+  processParam('warningType')
+  processParam('warningLevel')
+  processParam('status')
+  
+  // 清理空字符串参数
+  if (!params.elderlyName || params.elderlyName.trim() === '') {
+    delete params.elderlyName
+  }
+  
+  return params
+}
+
 // 获取预警列表
 const getList = async () => {
   tableLoading.value = true
   try {
-    const params = {
-      ...searchForm,
-      pageNum: pageInfo.pageNum,
-      pageSize: pageInfo.pageSize
-    }
-    
-    // 处理时间范围
-    if (searchForm.triggerTime && searchForm.triggerTime.length === 2) {
-      params.startTime = searchForm.triggerTime[0]
-      params.endTime = searchForm.triggerTime[1]
-    }
-    delete params.triggerTime
-    
-    // 处理多选参数 - 优化空数组处理
-    if (Array.isArray(params.warningType)) {
-      if (params.warningType.length > 0) {
-        params.warningType = params.warningType.join(',')
-      } else {
-        delete params.warningType
-      }
-    } else if (!params.warningType || params.warningType === '') {
-      delete params.warningType
-    }
-    
-    if (Array.isArray(params.warningLevel)) {
-      if (params.warningLevel.length > 0) {
-        params.warningLevel = params.warningLevel.join(',')
-      } else {
-        delete params.warningLevel
-      }
-    } else if (!params.warningLevel || params.warningLevel === '') {
-      delete params.warningLevel
-    }
-    
-    if (Array.isArray(params.status)) {
-      if (params.status.length > 0) {
-        params.status = params.status.join(',')
-      } else {
-        delete params.status
-      }
-    } else if (!params.status || params.status === '') {
-      delete params.status
-    }
-    
-    // 清理空字符串参数
-    if (!params.elderlyName || params.elderlyName.trim() === '') {
-      delete params.elderlyName
-    }
+    let params = processSearchParams(searchForm)
+    params = processMultiSelectParams(params)
     
     console.log('发送的请求参数:', params)
     
@@ -675,6 +692,13 @@ const handleExport = () => {
   ElMessage.info('导出功能待实现')
 }
 
+// 刷新数据
+const handleRefresh = () => {
+  getList()
+  getStatistics()
+  ElMessage.success('数据已刷新')
+}
+
 // 多选
 const handleSelectionChange = (selection) => {
   multipleSelection.value = selection
@@ -703,6 +727,34 @@ onMounted(() => {
 <style scoped>
 .health-warning {
   padding: 20px;
+}
+
+/* 页面头部样式 */
+.page-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+.page-header .header-content {
+  padding: 20px;
+}
+
+.page-header .header-content h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: white;
+}
+
+.page-header .header-content p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .statistics-row {
@@ -754,16 +806,58 @@ onMounted(() => {
   opacity: 0.3;
 }
 
-.search-card,
-.operation-card,
-.table-card {
+/* 工具栏样式 */
+.toolbar-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
 }
 
-.pagination-container {
-  margin-top: 20px;
+.toolbar {
   display: flex;
-  justify-content: center;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.toolbar .el-button {
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+  
+  &.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+}
+
+/* 按钮图标样式 */
+.toolbar .el-button .el-icon {
+  margin-right: 4px;
+}
+
+.search-card,
+.toolbar-card,
+.table-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
 }
 
 .warning-detail {
@@ -832,34 +926,6 @@ onMounted(() => {
 .search-buttons .el-form-item__content {
   display: flex;
   gap: 8px;
-}
-
-/* 响应式布局 */
-@media (max-width: 1400px) {
-  .compact-search-form {
-    flex-wrap: wrap;
-  }
-  
-  .compact-search-form .el-form-item {
-    margin-bottom: 12px;
-  }
-  
-  .search-buttons {
-    margin-left: 0;
-    width: 100%;
-  }
-}
-
-@media (max-width: 768px) {
-  .compact-search-form .el-form-item {
-    width: 100%;
-  }
-  
-  .compact-search-form .el-input,
-  .compact-search-form .el-select,
-  .compact-search-form .el-date-picker {
-    width: 100% !important;
-  }
 }
 
 /* 表格操作按钮网格布局 */
@@ -1019,94 +1085,86 @@ onMounted(() => {
   }
 }
 
-/* 平板适配 (768px - 1024px) */
+/* 响应式设计 */
+/* 平板端适配 */
 @media (max-width: 1024px) and (min-width: 769px) {
-  .action-buttons {
-    gap: 4px;
+  .toolbar {
+    gap: 8px;
   }
   
-  .action-buttons .el-button {
-    padding: 3px 6px;
-    font-size: 12px;
-    min-width: 48px;
-  }
-  
-  /* 网格布局适配 */
-  .action-buttons-grid {
-    gap: 3px;
-  }
-  
-  .action-buttons-grid .el-button {
-    padding: 3px 5px;
-    font-size: 11px;
-    min-width: 45px;
-  }
-}
-
-/* 移动端适配 (≤768px) */
-@media (max-width: 768px) {
-  .action-buttons {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 2px;
-    justify-content: center;
-  }
-  
-  .action-buttons .el-button {
-    padding: 4px 6px;
-    font-size: 11px;
-    min-width: 40px;
-    min-height: 32px;
-  }
-  
-  /* 网格布局移动端适配 */
-  .action-buttons-grid {
-    grid-template-columns: 1fr 1fr; /* 移动端改为两列 */
-    grid-template-rows: 1fr 1fr; /* 两行 */
-    gap: 2px;
-  }
-  
-  .action-buttons-grid .el-button {
-    padding: 4px 5px;
-    font-size: 10px;
-    min-width: 35px;
-  }
-  
-  /* 调整表格操作列宽度 */
-  .el-table .el-table__cell:last-child {
-    min-width: 180px; /* 移动端缩小宽度 */
-  }
-}
-
-/* 小屏幕设备适配 (≤480px) */
-@media (max-width: 480px) {
-  .action-buttons {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 2px;
-  }
-  
-  .action-buttons .el-button {
-    width: 100%;
-    justify-content: center;
-    font-size: 14px;
-    padding: 8px 12px;
-    min-height: 36px;
-  }
-  
-  /* 网格布局小屏幕适配 */
-  .action-buttons-grid {
-    grid-template-columns: 1fr; /* 小屏幕单列 */
-    grid-template-rows: repeat(4, 1fr); /* 四行 */
-    gap: 2px;
-  }
-  
-  .action-buttons-grid .el-button {
-    width: 100%;
-    justify-content: center;
+  .toolbar .el-button {
+    padding: 6px 12px;
     font-size: 13px;
-    padding: 6px 10px;
-    min-height: 32px;
+  }
+  
+  .page-header .header-content h2 {
+    font-size: 22px;
+  }
+  
+  .page-header .header-content p {
+    font-size: 13px;
+  }
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .health-warning {
+    padding: 15px;
+  }
+  
+  .toolbar {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .toolbar .el-button {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+    padding: 12px 16px;
+    font-size: 16px;
+  }
+  
+  .page-header .header-content {
+    padding: 15px;
+  }
+  
+  .page-header .header-content h2 {
+    font-size: 20px;
+  }
+  
+  .page-header .header-content p {
+    font-size: 12px;
+  }
+  
+  .statistics-row {
+    margin-bottom: 15px;
+  }
+  
+  .search-card,
+  .toolbar-card,
+  .table-card {
+    margin-bottom: 15px;
+  }
+}
+
+/* 小屏幕设备适配 */
+@media (max-width: 480px) {
+  .health-warning {
+    padding: 10px;
+  }
+  
+  .page-header .header-content {
+    padding: 12px;
+  }
+  
+  .page-header .header-content h2 {
+    font-size: 18px;
+  }
+  
+  .toolbar .el-button {
+    min-height: 48px;
+    font-size: 15px;
   }
 }
 </style>
