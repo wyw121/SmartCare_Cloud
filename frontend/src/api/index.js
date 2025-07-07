@@ -252,9 +252,88 @@ export const health = {
 /**
  * 设备管理API
  */
+
+// 开发模式控制
+const isDev = process.env.NODE_ENV === 'development';
+
+// 模拟设备数据
+const mockEquipmentList = {
+  code: 200,
+  data: {
+    records: [
+      {
+        id: 1,
+        deviceId: 'DEV001',
+        deviceName: '智能血压计A1',
+        deviceType: 'BLOOD_PRESSURE',
+        brand: '欧姆龙',
+        model: 'HEM-7200',
+        status: 'ONLINE',
+        location: '201房间',
+        elderlyId: 1,
+        elderlyName: '张三',
+        lastDataTime: '2025-07-08 10:30:00',
+        installTime: '2025-01-15',
+        batteryLevel: 85,
+        signalStrength: 95
+      },
+      {
+        id: 2,
+        deviceId: 'DEV002',
+        deviceName: '血糖仪B2',
+        deviceType: 'BLOOD_GLUCOSE',
+        brand: '强生',
+        model: 'OneTouch',
+        status: 'ONLINE',
+        location: '202房间',
+        elderlyId: 2,
+        elderlyName: '李四',
+        lastDataTime: '2025-07-08 09:45:00',
+        installTime: '2025-02-01',
+        batteryLevel: 70,
+        signalStrength: 88
+      },
+      {
+        id: 3,
+        deviceId: 'DEV003',
+        deviceName: '智能手环C3',
+        deviceType: 'SMART_WATCH',
+        brand: '小米',
+        model: 'Mi Band 7',
+        status: 'OFFLINE',
+        location: '203房间',
+        elderlyId: 3,
+        elderlyName: '王五',
+        lastDataTime: '2025-07-07 22:15:00',
+        installTime: '2025-03-10',
+        batteryLevel: 15,
+        signalStrength: 0
+      }
+    ],
+    total: 89,
+    current: 1,
+    size: 10
+  }
+};
+
+const mockEquipmentStatistics = {
+  code: 200,
+  data: {
+    totalCount: 89,
+    onlineCount: 76,
+    offlineCount: 13,
+    faultCount: 5,
+    maintenanceCount: 2
+  }
+};
+
 export const equipment = {
   // 获取设备列表
   getList(params) {
+    if (isDev) {
+      // 开发模式返回模拟数据
+      return Promise.resolve(mockEquipmentList);
+    }
     return request({
       url: '/equipment/list',
       method: 'get',
@@ -307,6 +386,10 @@ export const equipment = {
 
   // 获取设备统计信息
   getStatistics() {
+    if (isDev) {
+      // 开发模式返回模拟数据
+      return Promise.resolve(mockEquipmentStatistics);
+    }
     return request({
       url: '/equipment/statistics',
       method: 'get'

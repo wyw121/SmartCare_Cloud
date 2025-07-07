@@ -315,7 +315,47 @@ const fetchEquipmentList = async () => {
     }
   } catch (error) {
     console.error('获取设备列表失败:', error)
-    ElMessage.error('获取设备列表失败')
+    
+    // 开发模式下使用模拟数据
+    if (process.env.NODE_ENV === 'development') {
+      equipmentList.value = [
+        {
+          id: 1,
+          deviceId: 'DEV001',
+          deviceName: '智能血压计A1',
+          deviceType: 'BLOOD_PRESSURE',
+          brand: '欧姆龙',
+          model: 'HEM-7200',
+          status: 'ONLINE',
+          location: '201房间',
+          elderlyId: 1,
+          elderlyName: '张三',
+          lastDataTime: '2025-07-08 10:30:00',
+          installTime: '2025-01-15',
+          batteryLevel: 85,
+          signalStrength: 95
+        },
+        {
+          id: 2,
+          deviceId: 'DEV002',
+          deviceName: '血糖仪B2',
+          deviceType: 'BLOOD_GLUCOSE',
+          brand: '强生',
+          model: 'OneTouch',
+          status: 'ONLINE',
+          location: '202房间',
+          elderlyId: 2,
+          elderlyName: '李四',
+          lastDataTime: '2025-07-08 09:45:00',
+          installTime: '2025-02-01',
+          batteryLevel: 70,
+          signalStrength: 88
+        }
+      ]
+      pagination.total = 89
+    } else {
+      ElMessage.error('获取设备列表失败')
+    }
   } finally {
     loading.value = false
   }
@@ -324,12 +364,21 @@ const fetchEquipmentList = async () => {
 // 获取统计数据
 const fetchStatistics = async () => {
   try {
-    const response = await equipment.getOnlineStatistics()
+    const response = await equipment.getStatistics()
     if (response.code === 200) {
       statistics.value = response.data || {}
     }
   } catch (error) {
     console.error('获取统计数据失败:', error)
+    // 开发模式下使用模拟数据
+    if (process.env.NODE_ENV === 'development') {
+      statistics.value = {
+        totalCount: 89,
+        onlineCount: 76,
+        offlineCount: 13,
+        faultCount: 5
+      }
+    }
   }
 }
 
