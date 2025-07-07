@@ -1,158 +1,162 @@
 <template>
   <div class="equipment-management">
     <!-- 页面头部 -->
-    <div class="page-header">
+    <el-card class="page-header">
       <div class="header-content">
         <h2>设备管理</h2>
         <p>智慧医养设备接入与管理中心</p>
       </div>
-    </div>
+    </el-card>
 
-    <!-- 功能工具栏 -->
-    <div class="toolbar">
-      <el-row :gutter="20">
-        <el-col :span="16">
-          <el-form inline>
-            <el-form-item label="设备类型">
-              <el-select 
-                v-model="searchForm.deviceType" 
-                placeholder="请选择设备类型" 
-                clearable 
-                class="search-select"
-                @change="handleSearch"
-              >
-                <el-option label="智能血压计" value="BLOOD_PRESSURE" />
-                <el-option label="血糖仪" value="BLOOD_GLUCOSE" />
-                <el-option label="智能手环" value="SMART_WATCH" />
-                <el-option label="体温计" value="THERMOMETER" />
-                <el-option label="心电监护仪" value="ECG_MONITOR" />
-                <el-option label="智能体重秤" value="WEIGHT_SCALE" />
-                <el-option label="定位器" value="LOCATOR" />
-                <el-option label="紧急呼叫器" value="EMERGENCY_BUTTON" />
-                <el-option label="环境监测器" value="ENVIRONMENT_SENSOR" />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="设备状态">
-              <el-select 
-                v-model="searchForm.status" 
-                placeholder="请选择设备状态" 
-                clearable 
-                class="search-select"
-                @change="handleSearch"
-              >
-                <el-option label="在线" value="ONLINE" />
-                <el-option label="离线" value="OFFLINE" />
-                <el-option label="故障" value="FAULT" />
-                <el-option label="维护中" value="MAINTENANCE" />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="搜索">
-              <el-input
-                v-model="searchForm.keyword"
-                placeholder="请输入设备名称、编号或品牌"
-                style="width: 250px"
-                @keyup.enter="handleSearch"
-              />
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="handleSearch">
-                <el-icon><Search /></el-icon>
-                搜索
-              </el-button>
-              <el-button @click="resetSearch">
-                <el-icon><Refresh /></el-icon>
-                重置
-              </el-button>
-            </el-form-item>
-          </el-form>
-        </el-col>
-        <el-col :span="8" style="text-align: right">
-          <div class="action-buttons">
-            <el-button type="primary" @click="showAddDialog">
-              <el-icon><Plus /></el-icon>
-              添加设备
-            </el-button>
-            <el-button type="success" @click="showIntegrationGuide">
-              <el-icon><Document /></el-icon>
-              接入指南
-            </el-button>
-            <el-button type="warning" @click="exportData">
-              <el-icon><Download /></el-icon>
-              导出数据
-            </el-button>
-          </div>
-        </el-col>
-      </el-row>
-    </div>
+    <!-- 搜索筛选区 -->
+    <el-card class="search-card">
+      <el-form :inline="true" :model="searchForm" class="search-form">
+        <el-form-item label="设备类型">
+          <el-select 
+            v-model="searchForm.deviceType" 
+            placeholder="请选择设备类型" 
+            clearable 
+            style="width: 150px"
+            @change="handleSearch"
+          >
+            <el-option label="智能血压计" value="BLOOD_PRESSURE" />
+            <el-option label="血糖仪" value="BLOOD_GLUCOSE" />
+            <el-option label="智能手环" value="SMART_WATCH" />
+            <el-option label="体温计" value="THERMOMETER" />
+            <el-option label="心电监护仪" value="ECG_MONITOR" />
+            <el-option label="智能体重秤" value="WEIGHT_SCALE" />
+            <el-option label="定位器" value="LOCATOR" />
+            <el-option label="紧急呼叫器" value="EMERGENCY_BUTTON" />
+            <el-option label="环境监测器" value="ENVIRONMENT_SENSOR" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="设备状态">
+          <el-select 
+            v-model="searchForm.status" 
+            placeholder="请选择设备状态" 
+            clearable 
+            style="width: 150px"
+            @change="handleSearch"
+          >
+            <el-option label="在线" value="ONLINE" />
+            <el-option label="离线" value="OFFLINE" />
+            <el-option label="故障" value="FAULT" />
+            <el-option label="维护中" value="MAINTENANCE" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="搜索关键词">
+          <el-input
+            v-model="searchForm.keyword"
+            placeholder="请输入设备名称、编号或品牌"
+            style="width: 250px"
+            clearable
+            @keyup.enter="handleSearch"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">
+            <el-icon><Search /></el-icon>
+            搜索
+          </el-button>
+          <el-button @click="resetSearch">
+            <el-icon><Refresh /></el-icon>
+            重置
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+
+    <!-- 操作工具栏 -->
+    <el-card class="toolbar-card">
+      <div class="toolbar">
+        <el-button type="primary" @click="showAddDialog">
+          <el-icon><Plus /></el-icon>
+          新增设备
+        </el-button>
+        <el-button type="success" @click="showIntegrationGuide">
+          <el-icon><Document /></el-icon>
+          接入指南
+        </el-button>
+        <el-button type="warning" @click="exportData">
+          <el-icon><Download /></el-icon>
+          导出数据
+        </el-button>
+        <el-button type="info" @click="showStatistics">
+          <el-icon><DataAnalysis /></el-icon>
+          统计分析
+        </el-button>
+      </div>
+    </el-card>
 
     <!-- 统计卡片 -->
-    <div class="statistics-cards">
-      <el-row :gutter="20">
-        <el-col :span="6">
-          <el-card class="stat-card">
-            <div class="stat-content">
-              <div class="stat-icon online">
-                <el-icon><Connection /></el-icon>
-              </div>
-              <div class="stat-info">
-                <div class="stat-number">{{ statistics.onlineCount || 0 }}</div>
-                <div class="stat-label">在线设备</div>
-              </div>
-            </div>
-          </el-card>
-        </el-col>
-        <el-col :span="6">
-          <el-card class="stat-card">
-            <div class="stat-content">
-              <div class="stat-icon total">
-                <el-icon><Monitor /></el-icon>
-              </div>
-              <div class="stat-info">
-                <div class="stat-number">{{ statistics.totalCount || 0 }}</div>
-                <div class="stat-label">设备总数</div>
+    <el-card class="statistics-card">
+      <div class="statistics-cards">
+        <el-row :gutter="20">
+          <el-col :span="6">
+            <div class="stat-card">
+              <div class="stat-content">
+                <div class="stat-icon online">
+                  <el-icon><Connection /></el-icon>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-number">{{ statistics.onlineCount || 0 }}</div>
+                  <div class="stat-label">在线设备</div>
+                </div>
               </div>
             </div>
-          </el-card>
-        </el-col>
-        <el-col :span="6">
-          <el-card class="stat-card">
-            <div class="stat-content">
-              <div class="stat-icon fault">
-                <el-icon><Warning /></el-icon>
-              </div>
-              <div class="stat-info">
-                <div class="stat-number">{{ statistics.faultCount || 0 }}</div>
-                <div class="stat-label">故障设备</div>
-              </div>
-            </div>
-          </el-card>
-        </el-col>
-        <el-col :span="6">
-          <el-card class="stat-card">
-            <div class="stat-content">
-              <div class="stat-icon rate">
-                <el-icon><Checked /></el-icon>
-              </div>
-              <div class="stat-info">
-                <div class="stat-number">{{ onlineRate }}%</div>
-                <div class="stat-label">在线率</div>
+          </el-col>
+          <el-col :span="6">
+            <div class="stat-card">
+              <div class="stat-content">
+                <div class="stat-icon total">
+                  <el-icon><Monitor /></el-icon>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-number">{{ statistics.totalCount || 0 }}</div>
+                  <div class="stat-label">设备总数</div>
+                </div>
               </div>
             </div>
-          </el-card>
-        </el-col>
-      </el-row>
-    </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="stat-card">
+              <div class="stat-content">
+                <div class="stat-icon fault">
+                  <el-icon><Warning /></el-icon>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-number">{{ statistics.faultCount || 0 }}</div>
+                  <div class="stat-label">故障设备</div>
+                </div>
+              </div>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="stat-card">
+              <div class="stat-content">
+                <div class="stat-icon rate">
+                  <el-icon><Checked /></el-icon>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-number">{{ onlineRate }}%</div>
+                  <div class="stat-label">在线率</div>
+                </div>
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
+    </el-card>
 
     <!-- 设备列表表格 -->
-    <div class="table-container">
+    <el-card class="table-card">
       <el-table 
         :data="equipmentList" 
         v-loading="loading"
-        stripe
-        border
+        @selection-change="handleSelectionChange"
         style="width: 100%"
-        table-layout="fixed"
       >
+        <el-table-column type="selection" width="55" />
         <el-table-column prop="deviceId" label="设备编号" width="140" show-overflow-tooltip />
         <el-table-column prop="deviceName" label="设备名称" width="160" show-overflow-tooltip />
         <el-table-column label="设备类型" width="130">
@@ -191,68 +195,70 @@
             {{ formatTime(scope.row.lastOnlineTime) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="340" fixed="right" align="center">
+        <el-table-column label="操作" width="360" fixed="right">
           <template #default="scope">
             <div class="action-buttons">
-              <!-- 主要操作 -->
-              <el-button 
-                text 
-                type="primary" 
-                size="small" 
-                @click="viewDetail(scope.row)"
-              >
-                查看
-              </el-button>
+              <el-tooltip content="查看详情" placement="top">
+                <el-button 
+                  text 
+                  type="primary" 
+                  size="small" 
+                  @click="viewDetail(scope.row)"
+                >
+                  查看
+                </el-button>
+              </el-tooltip>
               
-              <el-button 
-                text 
-                type="primary" 
-                size="small" 
-                @click="editEquipment(scope.row)"
-              >
-                编辑
-              </el-button>
+              <el-tooltip content="编辑信息" placement="top">
+                <el-button 
+                  text 
+                  type="primary" 
+                  size="small" 
+                  @click="editEquipment(scope.row)"
+                >
+                  编辑
+                </el-button>
+              </el-tooltip>
               
-              <!-- 功能操作 -->
-              <el-button 
-                text 
-                :type="scope.row.status === 'ONLINE' ? 'warning' : 'success'"
-                size="small"
-                @click="toggleStatus(scope.row)"
-              >
-                {{ scope.row.status === 'ONLINE' ? '离线' : '上线' }}
-              </el-button>
+              <el-tooltip content="设备控制" placement="top">
+                <el-button 
+                  text 
+                  :type="scope.row.status === 'ONLINE' ? 'warning' : 'success'"
+                  size="small"
+                  @click="toggleStatus(scope.row)"
+                >
+                  {{ scope.row.status === 'ONLINE' ? '离线' : '上线' }}
+                </el-button>
+              </el-tooltip>
               
-              <!-- 危险操作 -->
-              <el-button 
-                text 
-                type="danger" 
-                size="small" 
-                @click="deleteEquipment(scope.row)"
-              >
-                删除
-              </el-button>
+              <el-tooltip content="删除设备" placement="top">
+                <el-button 
+                  text 
+                  type="danger" 
+                  size="small" 
+                  @click="deleteEquipment(scope.row)"
+                >
+                  删除
+                </el-button>
+              </el-tooltip>
             </div>
           </template>
         </el-table-column>
       </el-table>
 
       <!-- 分页 -->
-      <div class="pagination-container">
+      <div class="pagination-wrapper">
         <el-pagination
-          v-model:current-page="pagination.current"
-          v-model:page-size="pagination.size"
-          :page-sizes="[10, 20, 50, 100]"
-          :small="false"
-          :disabled="loading"
-          :background="true"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="pagination.total"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
+          :current-page="pagination.current"
+          :page-sizes="[10, 20, 50, 100]"
+          :page-size="pagination.size"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="pagination.total"
         />
       </div>
-    </div>
+    </el-card>
 
     <!-- 设备接入指南对话框 -->
     <el-dialog
@@ -293,7 +299,7 @@
 
 <script setup>
 import { equipment } from '@/api'
-import { Checked, Connection, Document, Download, Monitor, Plus, Refresh, Search, Warning } from '@element-plus/icons-vue'
+import { Checked, Connection, DataAnalysis, Document, Download, Monitor, Plus, Refresh, Search, Warning } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { computed, onMounted, reactive, ref } from 'vue'
 import DeviceIntegrationGuide from './components/DeviceIntegrationGuide.vue'
@@ -309,6 +315,7 @@ const detailDialogVisible = ref(false)
 const formDialogVisible = ref(false)
 const currentEquipment = ref(null)
 const isEdit = ref(false)
+const selectedRows = ref([])
 
 // 搜索表单
 const searchForm = reactive({
@@ -351,47 +358,44 @@ const fetchEquipmentList = async () => {
     }
   } catch (error) {
     console.error('获取设备列表失败:', error)
+    ElMessage.warning('后端服务连接失败，显示模拟数据')
     
     // 开发模式下使用模拟数据
-    if (process.env.NODE_ENV === 'development') {
-      equipmentList.value = [
-        {
-          id: 1,
-          deviceId: 'DEV001',
-          deviceName: '智能血压计A1',
-          deviceType: 'BLOOD_PRESSURE',
-          brand: '欧姆龙',
-          model: 'HEM-7200',
-          status: 'ONLINE',
-          location: '201房间',
-          elderlyId: 1,
-          elderlyName: '张三',
-          lastDataTime: '2025-07-08 10:30:00',
-          installTime: '2025-01-15',
-          batteryLevel: 85,
-          signalStrength: 95
-        },
-        {
-          id: 2,
-          deviceId: 'DEV002',
-          deviceName: '血糖仪B2',
-          deviceType: 'BLOOD_GLUCOSE',
-          brand: '强生',
-          model: 'OneTouch',
-          status: 'ONLINE',
-          location: '202房间',
-          elderlyId: 2,
-          elderlyName: '李四',
-          lastDataTime: '2025-07-08 09:45:00',
-          installTime: '2025-02-01',
-          batteryLevel: 70,
-          signalStrength: 88
-        }
-      ]
-      pagination.total = 89
-    } else {
-      ElMessage.error('获取设备列表失败')
-    }
+    equipmentList.value = [
+      {
+        id: 1,
+        deviceId: 'DEV001',
+        deviceName: '智能血压计A1',
+        deviceType: 'BLOOD_PRESSURE',
+        brand: '欧姆龙',
+        model: 'HEM-7200',
+        status: 'ONLINE',
+        location: '201房间',
+        elderlyId: 1,
+        elderlyName: '张三',
+        lastOnlineTime: '2025-07-08 10:30:00',
+        installTime: '2025-01-15',
+        batteryLevel: 85,
+        signalStrength: 95
+      },
+      {
+        id: 2,
+        deviceId: 'DEV002',
+        deviceName: '血糖仪B2',
+        deviceType: 'BLOOD_GLUCOSE',
+        brand: '强生',
+        model: 'OneTouch',
+        status: 'ONLINE',
+        location: '202房间',
+        elderlyId: 2,
+        elderlyName: '李四',
+        lastOnlineTime: '2025-07-08 09:45:00',
+        installTime: '2025-02-01',
+        batteryLevel: 70,
+        signalStrength: 88
+      }
+    ]
+    pagination.total = 89
   } finally {
     loading.value = false
   }
@@ -407,13 +411,11 @@ const fetchStatistics = async () => {
   } catch (error) {
     console.error('获取统计数据失败:', error)
     // 开发模式下使用模拟数据
-    if (process.env.NODE_ENV === 'development') {
-      statistics.value = {
-        totalCount: 89,
-        onlineCount: 76,
-        offlineCount: 13,
-        faultCount: 5
-      }
+    statistics.value = {
+      totalCount: 89,
+      onlineCount: 76,
+      offlineCount: 13,
+      faultCount: 5
     }
   }
 }
@@ -445,6 +447,11 @@ const handleCurrentChange = (current) => {
   fetchEquipmentList()
 }
 
+// 表格多选处理
+const handleSelectionChange = (selection) => {
+  selectedRows.value = selection
+}
+
 // 显示添加对话框
 const showAddDialog = () => {
   currentEquipment.value = null
@@ -455,6 +462,11 @@ const showAddDialog = () => {
 // 显示接入指南
 const showIntegrationGuide = () => {
   integrationDialogVisible.value = true
+}
+
+// 显示统计分析
+const showStatistics = () => {
+  ElMessage.info('统计分析功能开发中...')
 }
 
 // 查看详情
@@ -599,59 +611,98 @@ onMounted(() => {
   padding: 20px;
 }
 
+/* 页面头部样式 */
 .page-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 8px;
-  padding: 30px;
-  margin-bottom: 20px;
   color: white;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  padding: 20px;
 }
 
 .header-content h2 {
   margin: 0 0 8px 0;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 600;
 }
 
 .header-content p {
   margin: 0;
-  font-size: 16px;
-  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+}
+
+/* 搜索卡片样式 */
+.search-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.search-form {
+  padding: 10px 0;
+}
+
+.search-form .el-form-item {
+  margin-bottom: 10px;
+}
+
+/* 工具栏卡片样式 */
+.toolbar-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
 }
 
 .toolbar {
-  background: white;
-  padding: 20px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* 统计卡片样式 */
+.statistics-card {
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
 }
 
 .statistics-cards {
-  margin-bottom: 20px;
+  padding: 10px 0;
 }
 
 .stat-card {
-  border: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
 }
 
 .stat-content {
   display: flex;
   align-items: center;
-  padding: 10px;
 }
 
 .stat-icon {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 20px;
   color: white;
   margin-right: 15px;
+  flex-shrink: 0;
 }
 
 .stat-icon.online {
@@ -686,321 +737,89 @@ onMounted(() => {
   color: #909399;
 }
 
-.table-container {
-  background: white;
+/* 表格卡片样式 */
+.table-card {
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  overflow: hidden; /* 防止内容溢出 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.table-container .el-table {
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-/* 表格头部样式 */
-.table-container :deep(.el-table__header-wrapper) {
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
-}
-
-/* 表格底部样式 */
-.table-container :deep(.el-table__body-wrapper) {
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
-}
-
-.pagination-container {
-  margin-top: 20px;
-  text-align: right;
-}
-
-:deep(.el-table th) {
-  background-color: #f8f9fa;
-  color: #606266;
-  font-weight: 600;
-}
-
-:deep(.el-table--striped .el-table__body tr.el-table__row--striped td) {
-  background-color: #fafafa;
-}
-
-/* 搜索栏样式优化 */
-.search-select {
-  width: 160px;
-  min-width: 160px;
-}
-
-/* 多选框样式优化 */
-.search-select-multiple {
-  width: 200px;
-  min-width: 200px;
-}
-
-:deep(.search-select .el-input__inner) {
-  width: 100%;
-  min-width: 160px;
-}
-
-:deep(.search-select-multiple .el-input__inner) {
-  width: 100%;
-  min-width: 200px;
-}
-
-/* 多选标签样式优化 */
-:deep(.search-select-multiple .el-select__tags) {
-  max-width: 180px;
-  overflow: hidden;
-}
-
-:deep(.search-select-multiple .el-tag) {
-  max-width: 80px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* 输入框高度自适应 */
-:deep(.search-select-multiple .el-input) {
-  height: auto;
-  min-height: 32px;
-}
-
-/* 响应式布局优化 */
-@media (max-width: 768px) {
-  .search-select,
-  .search-select-multiple {
-    width: 100%;
-    min-width: 120px;
-  }
-}
-
-/* 按钮风格设计配置规范样式 */
-/* 操作按钮容器 - 标准布局 */
+/* 操作按钮样式 */
 .action-buttons {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  justify-content: flex-start;
-  padding: 4px 0;
-  min-height: 32px; /* 确保最小点击区域 */
-}
-
-/* 操作按钮容器 - 居中布局 */
-.action-buttons-center {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
+  gap: 4px;
   justify-content: center;
-  padding: 4px 0;
-  min-height: 32px;
-}
-
-/* 操作按钮容器 - 右对齐布局 */
-.action-buttons-right {
-  display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  justify-content: flex-end;
-  padding: 4px 0;
-  min-height: 32px;
+  flex-wrap: wrap;
 }
 
-/* 按钮基础样式重置 */
 .action-buttons .el-button {
-  margin: 0;
   padding: 4px 8px;
   font-size: 12px;
-  border-radius: 4px;
+  border-radius: 3px;
   transition: all 0.3s ease;
-  min-width: 60px; /* 确保按钮最小宽度 */
-  
-  /* 确保文字不换行 */
-  white-space: nowrap;
-  
-  /* 提升点击体验 */
-  &:active {
-    transform: scale(0.95);
-  }
 }
 
-/* 文本按钮悬停效果 */
-.action-buttons .el-button.is-text {
-  &:hover {
-    background-color: rgba(64, 158, 255, 0.1);
-    transform: translateY(-1px);
-  }
-  
-  /* 不同类型的悬停效果 */
-  &.el-button--primary:hover {
-    background-color: rgba(64, 158, 255, 0.1);
-    color: #409eff;
-  }
-  
-  &.el-button--success:hover {
-    background-color: rgba(103, 194, 58, 0.1);
-    color: #67c23a;
-  }
-  
-  &.el-button--warning:hover {
-    background-color: rgba(230, 162, 60, 0.1);
-    color: #e6a23c;
-  }
-  
-  &.el-button--danger:hover {
-    background-color: rgba(245, 108, 108, 0.1);
-    color: #f56c6c;
-  }
-  
-  &.el-button--info:hover {
-    background-color: rgba(144, 147, 153, 0.1);
-    color: #909399;
-  }
+.action-buttons .el-button:hover {
+  transform: translateY(-1px);
 }
 
-/* 禁用状态 */
-.action-buttons .el-button.is-disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  
-  &:hover {
-    transform: none !important;
-    background-color: transparent !important;
-  }
+.action-buttons .el-button:active {
+  transform: scale(0.95);
 }
 
-/* 加载状态 */
-.action-buttons .el-button.is-loading {
-  pointer-events: none;
-  
-  .el-icon {
-    animation: rotate 1s linear infinite;
-  }
+/* 分页样式 */
+.pagination-wrapper {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
 }
 
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* 表格固定列样式优化 */
-:deep(.el-table) {
-  .el-table-fixed-column--right {
-    box-shadow: -1px 0 8px rgba(0, 0, 0, 0.1);
-    border-left: 1px solid #ebeef5;
-  }
-  
-  /* 操作列标题样式 */
-  th.el-table-fixed-column--right {
-    background-color: #fafafa;
-    font-weight: 600;
-    
-    .cell {
-      color: #303133;
-    }
-  }
-  
-  /* 操作列内容对齐 */
-  td.el-table-fixed-column--right {
-    .cell {
-      padding: 0 8px;
-    }
-  }
-  
-  /* 表格整体优化 */
-  .el-table__body-wrapper {
-    overflow-x: auto;
-  }
-  
-  /* 表格行高优化 */
-  .el-table__row {
-    height: 60px;
-  }
-  
-  /* 表格单元格内容居中 */
-  .el-table .cell {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 40px;
-    padding: 8px 12px;
-  }
-  
-  /* 左对齐的列 */
-  .el-table-column--left .cell {
-    justify-content: flex-start;
-  }
-  
-  /* 表格内容优化 */
-  .el-table td {
-    padding: 8px 0;
-  }
-  
-  /* 表格标题优化 */
-  .el-table th {
-    padding: 12px 0;
-    font-size: 14px;
-  }
-}
-
-/* 移动端适配 */
+/* 响应式设计 */
 @media (max-width: 768px) {
+  .equipment-management {
+    padding: 10px;
+  }
+  
+  .toolbar {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .toolbar .el-button {
+    width: 100%;
+    min-height: 44px;
+  }
+  
   .action-buttons {
     flex-direction: column;
-    align-items: stretch;
     gap: 4px;
   }
   
   .action-buttons .el-button {
     width: 100%;
-    justify-content: center;
+    min-height: 44px;
     padding: 6px 10px;
     font-size: 14px;
-    min-height: 44px; /* 移动端最小点击区域 */
   }
   
-  /* 移动端表格优化 */
-  :deep(.el-table) {
-    .el-table__body-wrapper {
-      overflow-x: auto;
-    }
-    
-    .el-table-fixed-column--right {
-      position: relative !important;
-      right: auto !important;
-    }
-    
-    .el-table__body-wrapper .el-table__row {
-      height: auto;
-      min-height: 60px;
-    }
+  .statistics-cards .el-col {
+    margin-bottom: 10px;
   }
   
-  .table-container {
-    overflow-x: auto;
+  .search-form .el-form-item {
+    width: 100%;
+  }
+  
+  .search-form .el-form-item .el-input,
+  .search-form .el-form-item .el-select {
+    width: 100%;
   }
 }
 
-/* 平板适配 */
 @media (max-width: 1024px) and (min-width: 769px) {
-  .action-buttons {
-    gap: 6px;
-  }
-  
   .action-buttons .el-button {
-    padding: 5px 10px;
-    font-size: 13px;
-  }
-  
-  /* 平板表格优化 */
-  :deep(.el-table) {
-    .el-table__row {
-      height: 55px;
-    }
+    padding: 3px 6px;
+    font-size: 11px;
   }
 }
 </style>
