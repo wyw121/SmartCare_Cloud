@@ -165,6 +165,8 @@ export const useUserStore = defineStore('user', {
   actions: {
     // 登录
     async login(loginForm) {
+      const isDevMode = process.env.NODE_ENV === 'development'
+      
       try {
         // 先尝试真实API登录
         const response = await auth.login(loginForm)
@@ -180,12 +182,17 @@ export const useUserStore = defineStore('user', {
           localStorage.setItem('token', token)
           localStorage.setItem('userInfo', JSON.stringify(userInfo))
           
+          console.log('🎉 真实API登录成功')
           return response
         } else {
           throw new Error(response.message || '登录失败')
         }
       } catch (error) {
-        console.error('真实API登录失败，尝试模拟登录:', error)
+        if (isDevMode) {
+          console.log('🔄 真实API登录失败，尝试开发模式模拟登录:', error.message)
+        } else {
+          console.error('真实API登录失败，尝试模拟登录:', error)
+        }
         
         // API失败时，回退到模拟登录
         const roleData = Object.values(ROLE_DATA).find(
@@ -193,7 +200,8 @@ export const useUserStore = defineStore('user', {
         )
         
         if (!roleData) {
-          throw new Error('用户名或密码错误')
+          // 在生产模式或找不到模拟用户时抛出原始错误
+          throw new Error(isDevMode ? '用户名或密码错误' : error.message)
         }
         
         // 模拟生成token
@@ -206,6 +214,10 @@ export const useUserStore = defineStore('user', {
         // 存储到本地
         localStorage.setItem('token', token)
         localStorage.setItem('userInfo', JSON.stringify(roleData))
+        
+        if (isDevMode) {
+          console.log('✅ 开发模式模拟登录成功，角色:', roleData.role)
+        }
         
         return { data: { token, userInfo: roleData } }
       }

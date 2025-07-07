@@ -48,7 +48,14 @@ service.interceptors.response.use(
     }
     
     // 业务错误处理
-    ElMessage.error(message || '请求失败')
+    // 开发模式下，登录API失败时不显示错误消息，因为会有模拟登录的回退机制
+    const isDevMode = process.env.NODE_ENV === 'development'
+    const isLoginApi = response.config && response.config.url && response.config.url.includes('/auth/login')
+    
+    if (!(isDevMode && isLoginApi)) {
+      ElMessage.error(message || '请求失败')
+    }
+    
     return Promise.reject(new Error(message || '请求失败'))
   },
   error => {
