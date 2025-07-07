@@ -1,0 +1,403 @@
+/* 用户管理页面布局优化 */
+.users-container {
+  padding: 20px;
+  background: #f5f5f5;
+  min-height: 100vh;
+  
+  /* 确保容器占满整个视口 */
+  .header-section {
+    margin-bottom: 20px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    
+    h2 {
+      color: #303133;
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+    }
+    
+    p {
+      color: #606266;
+      font-size: 14px;
+      margin: 0;
+    }
+  }
+  
+  /* 工具栏样式 */
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .toolbar-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      
+      .el-button {
+        padding: 8px 16px;
+        font-size: 14px;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        &:active {
+          transform: scale(0.95);
+        }
+        
+        .el-icon {
+          margin-right: 4px;
+        }
+      }
+    }
+  }
+  
+  /* 表格容器样式 */
+  .table-container {
+    margin-top: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    
+    /* 确保表格完全占满容器 */
+    .el-table {
+      border-radius: 8px;
+      overflow: hidden;
+      width: 100% !important;
+      
+      .el-table__header {
+        th {
+          background-color: #fafafa;
+          color: #606266;
+          font-weight: 600;
+          border-bottom: 1px solid #ebeef5;
+          padding: 12px 0;
+        }
+      }
+      
+      .el-table__body {
+        tr:hover {
+          background-color: #f5f7fa;
+        }
+        
+        td {
+          padding: 12px 0;
+          border-bottom: 1px solid #ebeef5;
+        }
+      }
+      
+      /* 表格固定列优化 */
+      .el-table-fixed-column--right {
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.12);
+        border-left: 1px solid #ebeef5;
+        
+        .cell {
+          padding: 4px 8px; /* 减少单元格内边距 */
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 40px;
+          overflow: hidden; /* 防止内容溢出 */
+          
+          .action-buttons-compact {
+            width: 100%;
+            justify-content: center;
+            padding: 0;
+            min-height: auto;
+          }
+        }
+      }
+      
+      /* 确保表格宽度占满容器 */
+      .el-table__body-wrapper {
+        width: 100% !important;
+      }
+      
+      /* 表格行样式 */
+      .el-table__row {
+        &:hover {
+          background-color: #f5f7fa;
+        }
+      }
+    }
+  }
+  
+  /* 分页容器样式 */
+  .pagination-container {
+    margin-top: 20px;
+    text-align: right;
+    padding: 16px 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* 操作按钮样式 */
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  padding: 4px 0;
+  min-height: 32px;
+  
+  .el-button {
+    margin: 0;
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    min-width: 60px;
+    white-space: nowrap;
+    
+    &:hover {
+      transform: translateY(-1px);
+    }
+    
+    &:active {
+      transform: scale(0.95);
+    }
+    
+    /* 文本按钮样式 */
+    &.is-text {
+      &:hover {
+        background-color: rgba(64, 158, 255, 0.1);
+      }
+      
+      &.el-button--primary:hover {
+        background-color: rgba(64, 158, 255, 0.1);
+        color: #409eff;
+      }
+      
+      &.el-button--success:hover {
+        background-color: rgba(103, 194, 58, 0.1);
+        color: #67c23a;
+      }
+      
+      &.el-button--warning:hover {
+        background-color: rgba(230, 162, 60, 0.1);
+        color: #e6a23c;
+      }
+      
+      &.el-button--danger:hover {
+        background-color: rgba(245, 108, 108, 0.1);
+        color: #f56c6c;
+      }
+    }
+  }
+}
+
+/* 表格布局优化 - 解决操作列溢出问题 */
+.el-table {
+  /* 确保表格固定列正确显示 */
+  .el-table-fixed-column--right {
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.12);
+    border-left: 1px solid #ebeef5;
+    
+    .cell {
+      padding: 4px 8px; /* 减少单元格内边距 */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      overflow: hidden; /* 防止内容溢出 */
+      
+      .action-buttons-compact {
+        width: 100%;
+        justify-content: center;
+        padding: 0;
+        min-height: auto;
+      }
+    }
+  }
+  
+  /* 操作列标题优化 */
+  th.el-table-fixed-column--right {
+    background-color: #fafafa;
+    font-weight: 600;
+    
+    .cell {
+      color: #303133;
+      padding: 8px;
+    }
+  }
+}
+
+/* 响应式布局 */
+@media (max-width: 1200px) {
+  .users-container {
+    padding: 15px;
+    
+    .toolbar {
+      flex-direction: column;
+      gap: 16px;
+      align-items: stretch;
+      
+      .search-box {
+        justify-content: center;
+      }
+      
+      .toolbar-buttons {
+        justify-content: center;
+      }
+    }
+    
+    .table-container .el-table {
+      .el-table__cell {
+        padding: 8px 0;
+        font-size: 13px;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .users-container {
+    padding: 10px;
+    
+    .toolbar {
+      padding: 15px;
+      
+      .search-box {
+        flex-direction: column;
+        gap: 8px;
+        
+        .el-input {
+          width: 100% !important;
+        }
+        
+        .el-select {
+          width: 100% !important;
+        }
+      }
+      
+      .toolbar-buttons {
+        flex-direction: column;
+        gap: 8px;
+        
+        .el-button {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    }
+    
+    .table-container .el-table {
+      font-size: 12px;
+      
+      .el-table__cell {
+        padding: 6px 0;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+        gap: 4px;
+        
+        .el-button {
+          width: 100%;
+          font-size: 12px;
+          padding: 6px 8px;
+        }
+      }
+    }
+    
+    .pagination-container {
+      padding: 12px;
+      
+      .el-pagination {
+        .el-pagination__sizes,
+        .el-pagination__jump {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .users-container {
+    padding: 8px;
+    
+    .header-section {
+      text-align: center;
+      padding: 15px;
+      
+      h2 {
+        font-size: 20px;
+      }
+      
+      p {
+        font-size: 12px;
+      }
+    }
+    
+    .toolbar {
+      padding: 12px;
+    }
+    
+    .table-container .el-table {
+      .action-buttons .el-button {
+        font-size: 11px;
+        padding: 4px 6px;
+        min-width: 50px;
+      }
+    }
+  }
+}
+
+/* 响应式优化 - 针对操作列 */
+@media (max-width: 1200px) {
+  .action-buttons-compact {
+    gap: 3px; /* 进一步减少间距 */
+    
+    .el-button {
+      padding: 2px 4px; /* 进一步减少内边距 */
+      font-size: 11px;
+      min-width: 44px;
+      max-width: 56px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .action-buttons-compact {
+    flex-direction: column;
+    gap: 2px;
+    
+    .el-button {
+      width: 100%;
+      max-width: none;
+      font-size: 12px;
+      padding: 4px 6px;
+      min-height: 32px;
+    }
+  }
+  
+  /* 移动端操作列宽度调整 */
+  .el-table__cell.el-table-fixed-column--right {
+    width: 80px !important;
+    min-width: 80px !important;
+  }
+}

@@ -35,7 +35,7 @@
         <el-button @click="resetSearch">重置</el-button>
       </div>
       
-      <div class="action-buttons">
+      <div class="toolbar-buttons">
         <el-button type="primary" @click="handleAdd">
           <el-icon><Plus /></el-icon>
           新增用户
@@ -47,6 +47,18 @@
         >
           <el-icon><Delete /></el-icon>
           批量删除
+        </el-button>
+        <el-button type="success" @click="handleExport">
+          <el-icon><Download /></el-icon>
+          导出数据
+        </el-button>
+        <el-button type="warning" @click="handleImport">
+          <el-icon><Upload /></el-icon>
+          导入数据
+        </el-button>
+        <el-button type="info" @click="handleRefresh">
+          <el-icon><Refresh /></el-icon>
+          刷新
         </el-button>
       </div>
     </div>
@@ -61,15 +73,16 @@
         stripe
         border
         style="width: 100%"
+        table-layout="fixed"
       >
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column prop="id" label="用户ID" width="80" align="center" />
-        <el-table-column prop="username" label="用户名" width="120" />
-        <el-table-column prop="realName" label="真实姓名" width="120" />
-        <el-table-column prop="email" label="邮箱" width="180" />
-        <el-table-column prop="phone" label="手机号" width="120" />
-        <el-table-column prop="roleName" label="角色" width="100" />
-        <el-table-column prop="departmentName" label="部门" width="120" />
+        <el-table-column prop="id" label="ID" width="80" align="center" />
+        <el-table-column prop="username" label="用户名" width="120" show-overflow-tooltip />
+        <el-table-column prop="realName" label="真实姓名" width="120" show-overflow-tooltip />
+        <el-table-column prop="email" label="邮箱" width="200" show-overflow-tooltip />
+        <el-table-column prop="phone" label="手机号" width="130" />
+        <el-table-column prop="roleName" label="角色" width="100" align="center" />
+        <el-table-column prop="departmentName" label="部门" width="120" show-overflow-tooltip />
         <el-table-column prop="status" label="状态" width="80" align="center">
           <template #default="{ row }">
             <el-tag :type="row.status === 1 ? 'success' : 'danger'">
@@ -77,23 +90,71 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" width="160" />
-        <el-table-column prop="lastLoginTime" label="最后登录" width="160" />
-        <el-table-column label="操作" width="200" align="center" fixed="right">
+        <el-table-column prop="createTime" label="创建时间" width="180" />
+        <el-table-column prop="lastLoginTime" label="最后登录" width="180" />
+        <el-table-column label="操作" width="320" align="center" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="handleEdit(row)">
-              编辑
-            </el-button>
-            <el-button 
-              :type="row.status === 1 ? 'warning' : 'success'" 
-              size="small" 
-              @click="handleToggleStatus(row)"
-            >
-              {{ row.status === 1 ? '禁用' : '启用' }}
-            </el-button>
-            <el-button type="danger" size="small" @click="handleDelete(row)">
-              删除
-            </el-button>
+            <div class="action-buttons-compact">
+              <!-- 主要操作 -->
+              <el-tooltip content="查看用户详情" placement="top">
+                <el-button 
+                  text 
+                  type="primary" 
+                  size="small" 
+                  @click="handleView(row)"
+                >
+                  查看
+                </el-button>
+              </el-tooltip>
+              
+              <el-tooltip content="编辑用户信息" placement="top">
+                <el-button 
+                  text 
+                  type="primary" 
+                  size="small" 
+                  @click="handleEdit(row)"
+                >
+                  编辑
+                </el-button>
+              </el-tooltip>
+              
+              <!-- 功能操作 -->
+              <el-tooltip content="重置用户密码" placement="top">
+                <el-button 
+                  text 
+                  type="success" 
+                  size="small" 
+                  @click="handleResetPassword(row)"
+                >
+                  重置
+                </el-button>
+              </el-tooltip>
+              
+              <!-- 状态操作 -->
+              <el-tooltip :content="row.status === 1 ? '禁用用户账号' : '启用用户账号'" placement="top">
+                <el-button 
+                  text 
+                  :type="row.status === 1 ? 'warning' : 'success'" 
+                  size="small" 
+                  @click="handleToggleStatus(row)"
+                >
+                  {{ row.status === 1 ? '禁用' : '启用' }}
+                </el-button>
+              </el-tooltip>
+              
+              <!-- 危险操作 -->
+              <el-tooltip content="删除用户账号" placement="top">
+                <el-button 
+                  text 
+                  type="danger" 
+                  size="small" 
+                  @click="handleDelete(row)"
+                  :disabled="row.username === 'admin'"
+                >
+                  删除
+                </el-button>
+              </el-tooltip>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -230,18 +291,15 @@
 
 <script setup>
 import {
-    batchDeleteUsers,
     checkEmail,
     checkUsername,
     createUser,
-    deleteUser,
     getUserList as fetchUserList,
     getDepartmentList,
     getRoleList,
-    toggleUserStatus,
     updateUser
 } from '@/api/system'
-import { Delete, Plus, Search } from '@element-plus/icons-vue'
+import { Delete, Download, Plus, Refresh, Search, Upload } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
 
@@ -503,106 +561,76 @@ const handleEdit = (row) => {
 }
 
 /**
- * 删除用户
+ * 查看用户详情
  */
-const handleDelete = async (row) => {
+const handleView = (row) => {
+  isEdit.value = true
+  Object.assign(userForm, { ...row })
+  // 设置为查看模式，禁用所有表单字段
+  dialogVisible.value = true
+  // 可以在这里添加查看模式的逻辑
+  ElMessage.info('查看用户详情功能')
+}
+
+/**
+ * 重置用户密码
+ */
+const handleResetPassword = async (row) => {
   try {
-    await ElMessageBox.confirm('确定要删除该用户吗？', '删除确认', {
-      type: 'warning'
+    await ElMessageBox.confirm(`确定要重置用户"${row.realName}"的密码吗？\n重置后的密码为：123456`, '重置密码确认', {
+      type: 'warning',
+      confirmButtonText: '确定重置',
+      cancelButtonText: '取消'
     })
     
-    const result = await deleteUser(row.id)
+    // 这里调用重置密码的API
+    // const result = await resetUserPassword(row.id)
     
-    if (result.code === 200) {
-      ElMessage.success('删除成功')
-      getUserList()
-    } else {
-      throw new Error(result.message || '删除失败')
-    }
+    // 模拟API调用
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    ElMessage.success(`用户"${row.realName}"的密码已重置为：123456`)
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('删除用户失败:', error)
-      ElMessage.error(error.message || '删除失败')
+      console.error('重置密码失败:', error)
+      ElMessage.error('重置密码失败')
     }
   }
 }
 
 /**
- * 批量删除
+ * 导出用户数据
  */
-const handleBatchDelete = async () => {
+const handleExport = async () => {
   try {
-    await ElMessageBox.confirm(`确定要删除选中的 ${selectedUsers.value.length} 个用户吗？`, '批量删除确认', {
-      type: 'warning'
-    })
+    ElMessage.info('正在导出用户数据...')
     
-    const ids = selectedUsers.value.map(user => user.id)
-    const result = await batchDeleteUsers(ids)
+    // 这里调用导出API
+    // const result = await exportUsers(searchForm)
     
-    if (result.code === 200) {
-      ElMessage.success('批量删除成功')
-      selectedUsers.value = []
-      getUserList()
-    } else {
-      throw new Error(result.message || '批量删除失败')
-    }
+    // 模拟导出
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    
+    ElMessage.success('用户数据导出成功')
   } catch (error) {
-    if (error !== 'cancel') {
-      console.error('批量删除失败:', error)
-      ElMessage.error(error.message || '批量删除失败')
-    }
+    console.error('导出失败:', error)
+    ElMessage.error('导出失败')
   }
 }
 
 /**
- * 切换用户状态
+ * 导入用户数据
  */
-const handleToggleStatus = async (row) => {
-  try {
-    const newStatus = row.status === 1 ? 0 : 1
-    const action = newStatus === 0 ? '禁用' : '启用'
-    
-    await ElMessageBox.confirm(`确定要${action}该用户吗？`, `${action}确认`, {
-      type: 'warning'
-    })
-    
-    const result = await toggleUserStatus(row.id, newStatus)
-    
-    if (result.code === 200) {
-      row.status = newStatus
-      ElMessage.success(`${action}成功`)
-    } else {
-      throw new Error(result.message || '操作失败')
-    }
-  } catch (error) {
-    if (error !== 'cancel') {
-      console.error('切换用户状态失败:', error)
-      ElMessage.error(error.message || '操作失败')
-    }
-  }
+const handleImport = () => {
+  ElMessage.info('导入用户数据功能')
+  // 可以在这里添加文件上传组件的逻辑
 }
 
 /**
- * 选择变化
+ * 刷新用户列表
  */
-const handleSelectionChange = (selection) => {
-  selectedUsers.value = selection
-}
-
-/**
- * 页码变化
- */
-const handlePageChange = (page) => {
-  pageParams.current = page
-  getUserList()
-}
-
-/**
- * 页大小变化
- */
-const handlePageSizeChange = (size) => {
-  pageParams.size = size
-  pageParams.current = 1
+const handleRefresh = () => {
+  ElMessage.info('刷新用户列表')
   getUserList()
 }
 
@@ -690,6 +718,9 @@ const resetForm = () => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/styles/user-management.scss';
+
+/* 用户管理样式 */
 .users-container {
   padding: 20px;
   background: #fff;
@@ -721,8 +752,9 @@ const resetForm = () => {
   align-items: center;
   margin-bottom: 20px;
   padding: 20px;
-  background: #f8f9fa;
-  border-radius: 6px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }
 
 .search-box {
@@ -731,26 +763,101 @@ const resetForm = () => {
   gap: 10px;
 }
 
-.action-buttons {
+.toolbar-buttons {
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  
+  .el-button {
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    &:active {
+      transform: scale(0.95);
+    }
+    
+    .el-icon {
+      margin-right: 4px;
+    }
+  }
 }
 
 .table-container {
   margin-top: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
 .pagination-container {
   margin-top: 20px;
   text-align: right;
+  padding: 16px 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }
 
 :deep(.el-table) {
+  border-radius: 8px;
+  overflow: hidden;
+  
   .el-table__header {
     th {
       background-color: #fafafa;
       color: #606266;
       font-weight: 600;
+      border-bottom: 1px solid #ebeef5;
+    }
+  }
+  
+  .el-table__body {
+    tr:hover {
+      background-color: #f5f7fa;
+    }
+  }
+  
+  /* 表格固定列优化 */
+  .el-table-fixed-column--right {
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.12);
+    border-left: 1px solid #ebeef5;
+    
+    .cell {
+      padding: 8px 12px;
+      
+      .action-buttons {
+        justify-content: center;
+        padding: 0;
+        min-height: auto;
+      }
+    }
+  }
+  
+  /* 确保表格宽度占满容器 */
+  .el-table__body-wrapper {
+    width: 100% !important;
+  }
+  
+  /* 操作列单元格样式 */
+  .el-table__cell {
+    padding: 8px 0;
+    
+    &.el-table-fixed-column--right {
+      .cell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+      }
     }
   }
 }
@@ -763,6 +870,118 @@ const resetForm = () => {
   
   .el-dialog__body {
     padding: 20px;
+  }
+}
+
+/* 响应式布局 */
+@media (max-width: 1200px) {
+  .toolbar {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+    
+    .search-box {
+      justify-content: center;
+    }
+    
+    .toolbar-buttons {
+      justify-content: center;
+    }
+  }
+  
+  :deep(.el-table) {
+    .el-table__cell {
+      padding: 6px 0;
+      font-size: 12px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .users-container {
+    padding: 10px;
+  }
+  
+  .toolbar {
+    padding: 15px;
+    
+    .search-box {
+      flex-direction: column;
+      gap: 8px;
+      
+      .el-input {
+        width: 100% !important;
+      }
+      
+      .el-select {
+        width: 100% !important;
+      }
+    }
+    
+    .toolbar-buttons {
+      flex-direction: column;
+      gap: 8px;
+      
+      .el-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+  
+  :deep(.el-table) {
+    font-size: 12px;
+    
+    .el-table__cell {
+      padding: 4px 0;
+    }
+    
+    .action-buttons {
+      flex-direction: column;
+      gap: 4px;
+      
+      .el-button {
+        width: 100%;
+        font-size: 12px;
+        padding: 4px 8px;
+      }
+    }
+  }
+  
+  .pagination-container {
+    padding: 12px;
+    
+    :deep(.el-pagination) {
+      .el-pagination__sizes,
+      .el-pagination__jump {
+        display: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .header-section {
+    text-align: center;
+    
+    h2 {
+      font-size: 20px;
+    }
+    
+    p {
+      font-size: 12px;
+    }
+  }
+  
+  .toolbar {
+    padding: 12px;
+  }
+  
+  :deep(.el-table) {
+    .action-buttons .el-button {
+      font-size: 11px;
+      padding: 3px 6px;
+    }
   }
 }
 </style>

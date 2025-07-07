@@ -1,0 +1,284 @@
+/* 智慧医养平台 - 按钮风格统一样式 */
+/* 基于按钮风格设计配置规范 v1.0 */
+
+/* 操作按钮容器 - 标准布局 */
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
+  padding: 4px 0;
+  min-height: 32px; /* 确保最小点击区域 */
+}
+
+/* 操作按钮容器 - 居中布局 */
+.action-buttons-center {
+  @extend .action-buttons;
+  justify-content: center;
+}
+
+/* 操作按钮容器 - 右对齐布局 */
+.action-buttons-right {
+  @extend .action-buttons;
+  justify-content: flex-end;
+}
+
+/* 按钮基础样式重置 */
+.action-buttons .el-button {
+  margin: 0;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  min-width: 60px; /* 确保按钮最小宽度 */
+  
+  /* 确保文字不换行 */
+  white-space: nowrap;
+  
+  /* 提升点击体验 */
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+/* 文本按钮悬停效果 */
+.action-buttons .el-button.is-text {
+  &:hover {
+    background-color: rgba(64, 158, 255, 0.1);
+    transform: translateY(-1px);
+  }
+  
+  /* 不同类型的悬停效果 */
+  &.el-button--primary:hover {
+    background-color: rgba(64, 158, 255, 0.1);
+    color: #409eff;
+  }
+  
+  &.el-button--success:hover {
+    background-color: rgba(103, 194, 58, 0.1);
+    color: #67c23a;
+  }
+  
+  &.el-button--warning:hover {
+    background-color: rgba(230, 162, 60, 0.1);
+    color: #e6a23c;
+  }
+  
+  &.el-button--danger:hover {
+    background-color: rgba(245, 108, 108, 0.1);
+    color: #f56c6c;
+  }
+  
+  &.el-button--info:hover {
+    background-color: rgba(144, 147, 153, 0.1);
+    color: #909399;
+  }
+}
+
+/* 禁用状态 */
+.action-buttons .el-button.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  
+  &:hover {
+    transform: none !important;
+    background-color: transparent !important;
+  }
+}
+
+/* 加载状态 */
+.action-buttons .el-button.is-loading {
+  pointer-events: none;
+  
+  .el-icon {
+    animation: rotate 1s linear infinite;
+  }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 工具栏按钮样式 */
+.toolbar-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  
+  .el-button {
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-1px);
+    }
+    
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+}
+
+/* 表格固定列样式优化 */
+.el-table {
+  .el-table-fixed-column--right {
+    box-shadow: -1px 0 8px rgba(0, 0, 0, 0.1);
+    border-left: 1px solid #ebeef5;
+  }
+  
+  /* 操作列标题样式 */
+  th.el-table-fixed-column--right {
+    background-color: #fafafa;
+    font-weight: 600;
+    
+    .cell {
+      color: #303133;
+    }
+  }
+  
+  /* 操作列内容对齐 */
+  td.el-table-fixed-column--right {
+    .cell {
+      padding: 0 8px;
+    }
+  }
+}
+
+/* 紧凑型操作按钮容器 - 专门用于解决宽度溢出问题 */
+.action-buttons-compact {
+  display: flex;
+  flex-wrap: nowrap; /* 强制单行显示 */
+  align-items: center;
+  gap: 4px; /* 减少间距 */
+  justify-content: center;
+  padding: 2px 0;
+  min-height: 32px;
+  overflow: hidden; /* 防止溢出 */
+  
+  .el-button {
+    margin: 0;
+    padding: 3px 6px; /* 减少内边距 */
+    font-size: 12px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+    min-width: 48px; /* 减少最小宽度 */
+    max-width: 60px; /* 限制最大宽度 */
+    white-space: nowrap;
+    flex-shrink: 0; /* 防止按钮被压缩 */
+    
+    /* 提升点击体验 */
+    &:active {
+      transform: scale(0.95);
+    }
+    
+    /* 文本按钮样式优化 */
+    &.is-text {
+      &:hover {
+        background-color: rgba(64, 158, 255, 0.1);
+        transform: translateY(-1px);
+      }
+      
+      &.el-button--primary:hover {
+        background-color: rgba(64, 158, 255, 0.1);
+        color: #409eff;
+      }
+      
+      &.el-button--success:hover {
+        background-color: rgba(103, 194, 58, 0.1);
+        color: #67c23a;
+      }
+      
+      &.el-button--warning:hover {
+        background-color: rgba(230, 162, 60, 0.1);
+        color: #e6a23c;
+      }
+      
+      &.el-button--danger:hover {
+        background-color: rgba(245, 108, 108, 0.1);
+        color: #f56c6c;
+      }
+      
+      &.el-button--info:hover {
+        background-color: rgba(144, 147, 153, 0.1);
+        color: #909399;
+      }
+    }
+    
+    /* 禁用状态 */
+    &.is-disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      
+      &:hover {
+        transform: none !important;
+        background-color: transparent !important;
+      }
+    }
+  }
+}
+
+/* 平板适配 (768px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .action-buttons {
+    gap: 6px;
+  }
+  
+  .action-buttons .el-button {
+    padding: 5px 10px;
+    font-size: 13px;
+  }
+  
+  .toolbar-buttons .el-button {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}
+
+/* 移动端适配 (≤768px) */
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  
+  .action-buttons .el-button {
+    width: 100%;
+    justify-content: center;
+    padding: 6px 10px;
+    font-size: 14px;
+    min-height: 44px; /* 移动端最小点击区域 */
+  }
+  
+  .toolbar-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    
+    .el-button {
+      width: 100%;
+      justify-content: center;
+      padding: 10px 16px;
+      font-size: 16px;
+      min-height: 44px;
+    }
+  }
+}
+
+/* 小屏幕设备适配 (≤480px) */
+@media (max-width: 480px) {
+  .action-buttons .el-button {
+    font-size: 16px;
+    padding: 8px 12px;
+  }
+  
+  .toolbar-buttons .el-button {
+    font-size: 18px;
+    padding: 12px 20px;
+  }
+}
