@@ -59,37 +59,49 @@ export default {
       const allRoutes = router.getRoutes()
       const userRole = userStore.userRole
       
-      // 预定义的菜单结构
+      // 预定义的菜单结构 - 基于实际路由配置
       const menuItems = [
         {
           path: '/dashboard',
           name: 'dashboard',
-          meta: { title: '仪表板', icon: 'DataBoard' }
+          meta: { title: '首页仪表板', icon: 'DataBoard' },
+          roles: ['admin', 'doctor', 'family']
         },
         {
           path: '/elderly',
           name: 'elderly',
-          meta: { title: '老人管理', icon: 'User' }
+          meta: { title: '老人档案管理', icon: 'User' },
+          roles: ['admin', 'doctor', 'family']
         },
         {
           path: '/doctor',
           name: 'doctor',
-          meta: { title: '医生管理', icon: 'Avatar' }
+          meta: { title: '医生管理', icon: 'Avatar' },
+          roles: ['admin', 'doctor']
         },
         {
-          path: '/health/warning',
+          path: '/health-warning',
           name: 'health-warning',
-          meta: { title: '健康预警', icon: 'Warning' }
+          meta: { title: '健康预警', icon: 'Warning' },
+          roles: ['admin', 'doctor', 'family']
+        },
+        {
+          path: '/equipment',
+          name: 'equipment',
+          meta: { title: '设备管理', icon: 'Monitor' },
+          roles: ['admin', 'doctor']
         },
         {
           path: '/reports',
           name: 'reports',
-          meta: { title: '报表统计', icon: 'DataAnalysis' }
+          meta: { title: '报表统计', icon: 'DataAnalysis' },
+          roles: ['admin', 'doctor', 'family']
         },
         {
           path: '/system',
           name: 'system',
-          meta: { title: '系统管理', icon: 'Setting' }
+          meta: { title: '系统管理', icon: 'Setting' },
+          roles: ['admin'] // 仅系统管理员可见
         }
       ]
       

@@ -47,6 +47,39 @@ public interface RoleService extends IService<Role> {
     void assignPermissions(Long roleId, List<Long> permissionIds);
 
     /**
+     * 移除角色权限
+     *
+     * @param roleId 角色ID
+     * @param permissionIds 权限ID列表
+     */
+    void removePermissions(Long roleId, List<Long> permissionIds);
+
+    /**
+     * 批量分配角色权限（覆盖原有权限）
+     *
+     * @param roleId 角色ID
+     * @param permissionIds 权限ID列表
+     */
+    void batchAssignPermissions(Long roleId, List<Long> permissionIds);
+
+    /**
+     * 获取角色的权限ID列表
+     *
+     * @param roleId 角色ID
+     * @return 权限ID列表
+     */
+    List<Long> getRolePermissionIds(Long roleId);
+
+    /**
+     * 检查角色是否拥有指定权限
+     *
+     * @param roleId 角色ID
+     * @param permissionCode 权限编码
+     * @return 是否拥有权限
+     */
+    boolean hasPermission(Long roleId, String permissionCode);
+
+    /**
      * 分页查询角色列表
      *
      * @param page 分页参数

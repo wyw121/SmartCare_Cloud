@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧医养平台权限系统验证</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #409EFF;
+        }
+        .header h1 {
+            color: #409EFF;
+            margin: 0;
+        }
+        .role-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .role-card {
+            border: 2px solid #e4e7ed;
+            border-radius: 8px;
+            padding: 20px;
+            background: #fafafa;
+            transition: all 0.3s;
+        }
+        .role-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .role-card.admin {
+            border-color: #f56c6c;
+            background: linear-gradient(135deg, #fff5f5 0%, #fef0f0 100%);
+        }
+        .role-card.doctor {
+            border-color: #409EFF;
+            background: linear-gradient(135deg, #f0f7ff 0%, #e6f3ff 100%);
+        }
+        .role-card.family {
+            border-color: #67c23a;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e6f7e6 100%);
+        }
+        .role-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .role-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .admin .role-icon { background: #f56c6c; }
+        .doctor .role-icon { background: #409EFF; }
+        .family .role-icon { background: #67c23a; }
+        .role-title {
+            flex: 1;
+        }
+        .role-title h3 {
+            margin: 0 0 5px 0;
+            font-size: 18px;
+        }
+        .role-title p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+        .permission-list {
+            margin-top: 15px;
+        }
+        .permission-category {
+            margin-bottom: 15px;
+        }
+        .permission-category h4 {
+            margin: 0 0 8px 0;
+            color: #303133;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        .permission-category h4::before {
+            content: '';
+            width: 4px;
+            height: 4px;
+            background: #409EFF;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .permission-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .permission-tag {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            background: #e6f3ff;
+            color: #409EFF;
+            border: 1px solid #b3d8ff;
+        }
+        .permission-tag.readonly {
+            background: #f0f9ff;
+            color: #67c23a;
+            border-color: #c2e7b0;
+        }
+        .permission-tag.full {
+            background: #fff0f0;
+            color: #f56c6c;
+            border-color: #fbc4c4;
+        }
+        .test-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .test-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .test-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .test-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .test-btn.admin-only {
+            background: #f56c6c;
+            color: white;
+        }
+        .test-btn.doctor-only {
+            background: #409EFF;
+            color: white;
+        }
+        .test-btn.family-only {
+            background: #67c23a;
+            color: white;
+        }
+        .test-btn.all-roles {
+            background: #909399;
+            color: white;
+        }
+        .result-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #409EFF;
+        }
+        .quick-login {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .quick-login button {
+            margin: 0 10px;
+            padding: 8px 16px;
+            border: 2px solid;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .login-admin {
+            background: #f56c6c;
+            color: white;
+            border-color: #f56c6c;
+        }
+        .login-doctor {
+            background: #409EFF;
+            color: white;
+            border-color: #409EFF;
+        }
+        .login-family {
+            background: #67c23a;
+            color: white;
+            border-color: #67c23a;
+        }
+        .current-user {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #e6f3ff;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 智慧医养平台权限系统验证</h1>
+            <p>三角色权限管理系统 - 系统管理员、医生、家属</p>
+        </div>
+
+        <div class="current-user" id="currentUser">
+            当前未登录 - 请选择角色进行测试
+        </div>
+
+        <div class="quick-login">
+            <h3>快速登录测试</h3>
+            <button class="login-admin" onclick="quickLogin('admin')">👑 管理员登录</button>
+            <button class="login-doctor" onclick="quickLogin('doctor')">👨‍⚕️ 医生登录</button>
+            <button class="login-family" onclick="quickLogin('family')">👨‍👩‍👧‍👦 家属登录</button>
+        </div>
+
+        <div class="role-cards">
+            <!-- 系统管理员 -->
+            <div class="role-card admin">
+                <div class="role-header">
+                    <div class="role-icon">👑</div>
+                    <div class="role-title">
+                        <h3>系统管理员 (admin)</h3>
+                        <p>拥有系统全部管理权限</p>
+                    </div>
+                </div>
+                <div class="permission-list">
+                    <div class="permission-category">
+                        <h4>核心权限</h4>
+                        <div class="permission-items">
+                            <span class="permission-tag full">用户管理</span>
+                            <span class="permission-tag full">角色管理</span>
+                            <span class="permission-tag full">权限管理</span>
+                            <span class="permission-tag full">系统配置</span>
+                        </div>
+                    </div>
+                    <div class="permission-category">
+                        <h4>业务权限</h4>
+                        <div class="permission-items">
+                            <span class="permission-tag full">老人档案管理</span>
+                            <span class="permission-tag full">健康预警管理</span>
+                            <span class="permission-tag full">设备管理</span>
+                            <span class="permission-tag full">报表分析</span>
+                            <span class="permission-tag full">大数据分析</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 医生 -->
+            <div class="role-card doctor">
+                <div class="role-header">
+                    <div class="role-icon">👨‍⚕️</div>
+                    <div class="role-title">
+                        <h3>医生 (doctor)</h3>
+                        <p>拥有医疗管理相关权限</p>
+                    </div>
+                </div>
+                <div class="permission-list">
+                    <div class="permission-category">
+                        <h4>医疗管理</h4>
+                        <div class="permission-items">
+                            <span class="permission-tag">老人档案 (增删改查)</span>
+                            <span class="permission-tag">健康预警处理</span>
+                            <span class="permission-tag">评估报告</span>
+                            <span class="permission-tag">重点人群管理</span>
+                        </div>
+                    </div>
+                    <div class="permission-category">
+                        <h4>设备与分析</h4>
+                        <div class="permission-items">
+                            <span class="permission-tag">设备监控</span>
+                            <span class="permission-tag">数据分析</span>
+                            <span class="permission-tag">报表统计</span>
+                        </div>
+                    </div>
+                    <div class="permission-category">
+                        <h4>受限权限</h4>
+                        <div class="permission-items">
+                            <span class="permission-tag readonly">❌ 用户管理</span>
+                            <span class="permission-tag readonly">❌ 角色权限</span>
+                            <span class="permission-tag readonly">❌ 系统配置</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 家属 -->
+            <div class="role-card family">
+                <div class="role-header">
+                    <div class="role-icon">👨‍👩‍👧‍👦</div>
+                    <div class="role-title">
+                        <h3>家属 (family)</h3>
+                        <p>只能查看关联老人信息</p>
+                    </div>
+                </div>
+                <div class="permission-list">
+                    <div class="permission-category">
+                        <h4>查看权限</h4>
+                        <div class="permission-items">
+                            <span class="permission-tag readonly">老人档案 (仅查看)</span>
+                            <span class="permission-tag readonly">健康预警 (仅查看)</span>
+                            <span class="permission-tag readonly">评估报告 (仅查看)</span>
+                            <span class="permission-tag readonly">基础报表</span>
+                        </div>
+                    </div>
+                    <div class="permission-category">
+                        <h4>受限权限</h4>
+                        <div class="permission-items">
+                            <span class="permission-tag readonly">❌ 编辑老人信息</span>
+                            <span class="permission-tag readonly">❌ 处理预警</span>
+                            <span class="permission-tag readonly">❌ 设备管理</span>
+                            <span class="permission-tag readonly">❌ 用户管理</span>
+                            <span class="permission-tag readonly">❌ 系统管理</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 权限功能测试</h3>
+            <p>点击下方按钮测试不同角色的权限访问情况：</p>
+            
+            <div class="test-buttons">
+                <button class="test-btn admin-only" onclick="testPermission('user:manage', '用户管理')">
+                    👥 用户管理 (仅管理员)
+                </button>
+                <button class="test-btn admin-only" onclick="testPermission('role:manage', '角色管理')">
+                    🎭 角色管理 (仅管理员)
+                </button>
+                <button class="test-btn admin-only" onclick="testPermission('permission:manage', '权限管理')">
+                    🔐 权限管理 (仅管理员)
+                </button>
+                <button class="test-btn doctor-only" onclick="testPermission('elderly:edit', '编辑老人档案')">
+                    ✏️ 编辑老人档案 (医生+管理员)
+                </button>
+                <button class="test-btn doctor-only" onclick="testPermission('health-warning:handle', '处理健康预警')">
+                    ⚠️ 处理健康预警 (医生+管理员)
+                </button>
+                <button class="test-btn doctor-only" onclick="testPermission('equipment:manage', '设备管理')">
+                    🖥️ 设备管理 (医生+管理员)
+                </button>
+                <button class="test-btn family-only" onclick="testPermission('elderly:view', '查看老人档案')">
+                    👀 查看老人档案 (所有角色)
+                </button>
+                <button class="test-btn all-roles" onclick="testPermission('dashboard:view', '首页仪表板')">
+                    📊 首页仪表板 (所有角色)
+                </button>
+            </div>
+
+            <div class="result-section" id="testResult" style="display: none;">
+                <h4>测试结果</h4>
+                <div id="resultContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟用户状态
+        let currentUser = {
+            role: null,
+            username: '',
+            permissions: []
+        }
+
+        // 角色权限配置
+        const rolePermissions = {
+            admin: {
+                name: '系统管理员',
+                permissions: ['*'], // 所有权限
+                description: '拥有系统全部管理权限'
+            },
+            doctor: {
+                name: '医生',
+                permissions: [
+                    'dashboard:view', 'elderly:view', 'elderly:add', 'elderly:edit', 'elderly:export',
+                    'health-warning:view', 'health-warning:handle', 'health-warning:statistics',
+                    'equipment:view', 'equipment:manage', 'statistics:view', 'profile:view'
+                ],
+                description: '拥有医疗管理相关权限'
+            },
+            family: {
+                name: '家属',
+                permissions: [
+                    'dashboard:view', 'elderly:view', 'health-warning:view', 
+                    'statistics:view', 'profile:view'
+                ],
+                description: '只能查看关联老人的信息'
+            }
+        }
+
+        // 快速登录
+        function quickLogin(role) {
+            const roleConfig = rolePermissions[role]
+            if (!roleConfig) return
+
+            currentUser = {
+                role: role,
+                username: role === 'admin' ? 'admin' : role === 'doctor' ? 'doctor1' : 'family1',
+                permissions: roleConfig.permissions
+            }
+
+            updateCurrentUserDisplay()
+            
+            // 显示登录成功信息
+            showResult(`✅ 登录成功！`, `
+                <p><strong>角色：</strong>${roleConfig.name}</p>
+                <p><strong>用户名：</strong>${currentUser.username}</p>
+                <p><strong>权限描述：</strong>${roleConfig.description}</p>
+                <p><strong>权限数量：</strong>${roleConfig.permissions.includes('*') ? '全部权限' : roleConfig.permissions.length + '个'}</p>
+            `)
+        }
+
+        // 更新当前用户显示
+        function updateCurrentUserDisplay() {
+            const userElement = document.getElementById('currentUser')
+            if (currentUser.role) {
+                const roleConfig = rolePermissions[currentUser.role]
+                userElement.innerHTML = `
+                    当前登录：<strong>${roleConfig.name}</strong> (${currentUser.username}) 
+                    - ${roleConfig.description}
+                `
+                userElement.style.background = currentUser.role === 'admin' ? '#fff0f0' : 
+                                             currentUser.role === 'doctor' ? '#f0f7ff' : '#f0f9ff'
+            } else {
+                userElement.innerHTML = '当前未登录 - 请选择角色进行测试'
+                userElement.style.background = '#e6f3ff'
+            }
+        }
+
+        // 测试权限
+        function testPermission(permission, action) {
+            if (!currentUser.role) {
+                showResult('❌ 测试失败', '请先登录一个角色进行测试')
+                return
+            }
+
+            const hasPermission = checkPermission(permission)
+            const roleConfig = rolePermissions[currentUser.role]
+            
+            if (hasPermission) {
+                showResult(`✅ 权限验证通过`, `
+                    <p><strong>操作：</strong>${action}</p>
+                    <p><strong>权限编码：</strong>${permission}</p>
+                    <p><strong>当前角色：</strong>${roleConfig.name}</p>
+                    <p><strong>结果：</strong><span style="color: #67c23a; font-weight: bold;">允许访问</span></p>
+                    <p><strong>原因：</strong>${currentUser.permissions.includes('*') ? '管理员拥有所有权限' : '角色拥有此权限'}</p>
+                `)
+            } else {
+                showResult(`❌ 权限验证失败`, `
+                    <p><strong>操作：</strong>${action}</p>
+                    <p><strong>权限编码：</strong>${permission}</p>
+                    <p><strong>当前角色：</strong>${roleConfig.name}</p>
+                    <p><strong>结果：</strong><span style="color: #f56c6c; font-weight: bold;">拒绝访问</span></p>
+                    <p><strong>原因：</strong>当前角色没有此权限</p>
+                    <p><strong>建议：</strong>请使用有权限的角色进行操作</p>
+                `)
+            }
+        }
+
+        // 检查权限
+        function checkPermission(permission) {
+            if (!currentUser.role || !currentUser.permissions) {
+                return false
+            }
+
+            // 管理员拥有所有权限
+            if (currentUser.permissions.includes('*')) {
+                return true
+            }
+
+            // 检查具体权限
+            return currentUser.permissions.includes(permission)
+        }
+
+        // 显示结果
+        function showResult(title, content) {
+            const resultSection = document.getElementById('testResult')
+            const resultContent = document.getElementById('resultContent')
+            
+            resultContent.innerHTML = `
+                <h5 style="margin: 0 0 10px 0; color: #303133;">${title}</h5>
+                ${content}
+            `
+            
+            resultSection.style.display = 'block'
+            resultSection.scrollIntoView({ behavior: 'smooth' })
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrentUserDisplay()
+        })
+    </script>
+</body>
+</html>

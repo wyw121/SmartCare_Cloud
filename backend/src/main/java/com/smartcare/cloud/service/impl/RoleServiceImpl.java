@@ -67,4 +67,38 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     public boolean checkRoleCodeExists(String roleCode, Long excludeId) {
         return roleMapper.countByRoleCode(roleCode, excludeId) > 0;
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removePermissions(Long roleId, List<Long> permissionIds) {
+        if (permissionIds != null && !permissionIds.isEmpty()) {
+            // 这里需要实现删除指定权限的逻辑
+            // 暂时使用简单实现
+            for (Long permissionId : permissionIds) {
+                roleMapper.deleteRolePermission(roleId, permissionId);
+            }
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void batchAssignPermissions(Long roleId, List<Long> permissionIds) {
+        // 先删除该角色的所有权限关联
+        roleMapper.deleteRolePermissions(roleId);
+
+        // 重新分配权限
+        if (permissionIds != null && !permissionIds.isEmpty()) {
+            roleMapper.insertRolePermissions(roleId, permissionIds);
+        }
+    }
+
+    @Override
+    public List<Long> getRolePermissionIds(Long roleId) {
+        return roleMapper.selectRolePermissionIds(roleId);
+    }
+
+    @Override
+    public boolean hasPermission(Long roleId, String permissionCode) {
+        return roleMapper.checkRolePermission(roleId, permissionCode) > 0;
+    }
 }

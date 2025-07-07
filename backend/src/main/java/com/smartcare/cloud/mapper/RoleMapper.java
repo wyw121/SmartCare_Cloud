@@ -78,4 +78,35 @@ public interface RoleMapper extends BaseMapper<Role> {
     @Select("SELECT COUNT(*) FROM sys_role WHERE role_code = #{roleCode} AND is_deleted = 0 "
             + "AND (#{excludeId} IS NULL OR id != #{excludeId})")
     int countByRoleCode(@Param("roleCode") String roleCode, @Param("excludeId") Long excludeId);
+
+    /**
+     * 删除单个角色权限关联
+     *
+     * @param roleId 角色ID
+     * @param permissionId 权限ID
+     */
+    @Delete("DELETE FROM sys_role_permission WHERE role_id = #{roleId} AND permission_id = #{permissionId}")
+    void deleteRolePermission(@Param("roleId") Long roleId, @Param("permissionId") Long permissionId);
+
+    /**
+     * 获取角色的权限ID列表
+     *
+     * @param roleId 角色ID
+     * @return 权限ID列表
+     */
+    @Select("SELECT permission_id FROM sys_role_permission WHERE role_id = #{roleId}")
+    List<Long> selectRolePermissionIds(@Param("roleId") Long roleId);
+
+    /**
+     * 检查角色是否拥有指定权限
+     *
+     * @param roleId 角色ID
+     * @param permissionCode 权限编码
+     * @return 数量
+     */
+    @Select("SELECT COUNT(*) FROM sys_role_permission rp "
+            + "JOIN sys_permission p ON rp.permission_id = p.id "
+            + "WHERE rp.role_id = #{roleId} AND p.permission_code = #{permissionCode} "
+            + "AND p.is_deleted = 0 AND p.status = 1")
+    int checkRolePermission(@Param("roleId") Long roleId, @Param("permissionCode") String permissionCode);
 }

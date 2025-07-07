@@ -1,7 +1,7 @@
-import { defineStore } from 'pinia'
 import { auth } from '@/api'
+import { defineStore } from 'pinia'
 
-// 预定义的三类角色数据 - 智慧医养平台RBAC
+// 智慧医养平台三角色权限数据配置
 const ROLE_DATA = {
   admin: {
     id: 1,
@@ -9,13 +9,29 @@ const ROLE_DATA = {
     password: '123456',
     name: '系统管理员',
     role: 'admin',
-    roleText: '管理员',
-    permissions: ['*'], // 所有权限
+    roleText: '系统管理员',
+    permissions: ['*'], // 拥有所有权限
     avatar: '',
     department: '系统管理部',
     phone: '13800138000',
     email: 'admin@smartcare.com',
-    description: '拥有系统全部管理权限，负责平台整体运营管理'
+    description: '拥有系统全部管理权限，负责平台整体运营管理',
+    features: {
+      // 系统管理功能
+      system: ['user:manage', 'role:manage', 'permission:manage', 'config:manage'],
+      // 老人档案管理
+      elderly: ['view', 'add', 'edit', 'delete', 'export'],
+      // 健康管理
+      health: ['view', 'add', 'edit', 'delete', 'manage', 'warning:handle'],
+      // 评估报告
+      assessment: ['view', 'add', 'edit', 'delete', 'export'],
+      // 设备管理
+      equipment: ['view', 'add', 'edit', 'delete', 'monitor'],
+      // 报表统计
+      report: ['view', 'export', 'analyze'],
+      // 数据分析
+      analysis: ['view', 'manage']
+    }
   },
   doctor: {
     id: 2,
@@ -25,25 +41,37 @@ const ROLE_DATA = {
     role: 'doctor',
     roleText: '医生',
     permissions: [
-      'dashboard:view',           // 仪表板查看
-      'elderly:view',            // 老人档案查看
-      'elderly:edit',            // 老人档案编辑
-      'health:view',             // 健康数据查看
-      'health:manage',           // 健康管理
-      'warning:view',            // 健康预警查看
-      'warning:handle',          // 预警处理
-      'report:view',             // 评估报告查看
-      'report:create',           // 创建报告
-      'equipment:view',          // 设备查看
-      'statistics:view',         // 报表统计查看
-      'analysis:view'            // 数据分析查看
+      // 基础权限
+      'dashboard:view',
+      // 老人档案权限
+      'elderly:view', 'elderly:add', 'elderly:edit', 'elderly:export',
+      // 健康管理权限
+      'health:view', 'health:add', 'health:edit', 'health:manage',
+      // 预警处理权限
+      'health-warning:view', 'health-warning:handle', 'health-warning:export',
+      // 评估报告权限
+      'assessment:view', 'assessment:add', 'assessment:edit', 'assessment:export',
+      // 设备权限
+      'equipment:view', 'equipment:monitor',
+      // 报表权限
+      'report:view', 'report:export',
+      // 数据分析权限
+      'analysis:view'
     ],
     avatar: '',
     department: '内科',
     title: '主治医师',
     phone: '13800138001',
     email: 'doctor@smartcare.com',
-    description: '负责老人医疗健康管理，处理健康预警和评估'
+    description: '负责老人医疗健康管理，处理健康预警和评估',
+    features: {
+      elderly: ['view', 'add', 'edit', 'export'],
+      health: ['view', 'add', 'edit', 'manage'],
+      assessment: ['view', 'add', 'edit', 'export'],
+      equipment: ['view', 'monitor'],
+      report: ['view', 'export'],
+      analysis: ['view']
+    }
   },
   family: {
     id: 3,
@@ -53,19 +81,28 @@ const ROLE_DATA = {
     role: 'family',
     roleText: '家属',
     permissions: [
-      'dashboard:view',           // 仪表板查看（限制）
-      'elderly:view',            // 关联老人信息查看
-      'health:view',             // 健康数据查看（限制）
-      'warning:view',            // 预警信息查看（限制）
-      'report:view'              // 评估报告查看（限制）
+      // 基础查看权限
+      'dashboard:view',
+      // 老人档案查看权限（仅限关联老人）
+      'elderly:view',
+      // 健康信息查看权限（仅限关联老人）
+      'health:view',
+      // 预警查看权限（仅限关联老人）
+      'health-warning:view',
+      // 报表查看权限
+      'report:view'
     ],
     avatar: '',
-    department: '',
-    relationship: '女儿',
-    relatedElderly: [1], // 关联的老人ID
+    relationship: '儿子',
+    elderlyIds: [1, 2], // 关联的老人ID列表
     phone: '13800138002',
     email: 'family@smartcare.com',
-    description: '老人家属，可查看关联老人的基本信息和健康状况'
+    description: '家属用户，可查看关联老人的健康信息和预警',
+    features: {
+      elderly: ['view'], // 只能查看关联老人
+      health: ['view'],  // 只能查看关联老人健康信息
+      report: ['view']   // 只能查看基础报表
+    }
   }
 }
 

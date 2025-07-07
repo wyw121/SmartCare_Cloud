@@ -93,21 +93,21 @@ export function canAccessRoute(routeName, userRole) {
   // 医生权限页面
   const doctorRoutes = [
     'ElderlyList', 'ElderlyProfile', 'ElderlyAdd', 'ElderlyEdit', 'ElderlyDetail',
-    'ElderlyHealthRecords', 
+    'ElderlyHealthRecords', 'ElderlyModular',
     'HealthWarning', 'HealthWarningModular', 'HealthRecords', 'HealthAssessment',
     'EquipmentList', 'EquipmentMonitor',
     'ReportStatistics', 'DataAnalysis', 'ModularDataAnalysis',
-    'DoctorList', 'DoctorModular'
+    'DoctorList', 'DoctorModular', 'KeyPopulation'
   ]
   
   if (userRole === 'doctor' && doctorRoutes.includes(routeName)) {
     return true
   }
   
-  // 家属权限页面（查看权限）
+  // 家属权限页面（只能查看相关信息）
   const familyRoutes = [
-    'ElderlyList', 'ElderlyProfile', 'ElderlyDetail', // 只能查看
-    'HealthWarning', 'HealthRecords', // 只能查看相关老人的
+    'ElderlyList', 'ElderlyProfile', 'ElderlyDetail', 'ElderlyModular', // 只能查看关联老人
+    'HealthWarning', 'HealthWarningModular', 'HealthRecords', // 只能查看关联老人的健康预警
     'ReportStatistics' // 基础报表查看
   ]
   
@@ -117,15 +117,12 @@ export function canAccessRoute(routeName, userRole) {
   
   // 系统管理页面仅管理员可访问
   const adminOnlyRoutes = [
-    'SystemUsers', 'SystemModularUsers', 'SystemRoles', 'SystemPermissions'
+    'SystemUsers', 'SystemModularUsers', 'SystemRoles', 'SystemPermissions',
+    'UserManagement', 'RoleManagement', 'PermissionManagement'
   ]
   
-  if (adminOnlyRoutes.includes(routeName) && userRole !== 'admin') {
-    return false
-  }
-  
-  // 默认允许访问（对于开发环境和管理员）
-  return userRole === 'admin'
+  // 非管理员不能访问系统管理页面
+  return !(adminOnlyRoutes.includes(routeName) && userRole !== 'admin')
 }
 
 /**
@@ -180,34 +177,78 @@ export const roleDirective = {
 
 /**
  * 角色权限映射表
+ * 定义智慧医养平台三个角色的详细权限配置
  */
 export const ROLE_PERMISSIONS = {
   admin: {
-    name: '管理员',
+    name: '系统管理员',
     permissions: ['*'], // 所有权限
     routes: ['*'], // 所有路由
-    description: '系统管理员，拥有所有权限'
+    description: '系统管理员，拥有系统全部管理权限',
+    features: {
+      elderly: ['view', 'add', 'edit', 'delete', 'export'],
+      health: ['view', 'add', 'edit', 'delete', 'manage', 'export'],
+      user: ['view', 'add', 'edit', 'delete', 'reset-password'],
+      role: ['view', 'add', 'edit', 'delete', 'assign-permissions'],
+      permission: ['view', 'add', 'edit', 'delete'],
+      equipment: ['view', 'add', 'edit', 'delete', 'monitor'],
+      report: ['view', 'export', 'analyze'],
+      system: ['config', 'log', 'backup']
+    }
   },
   doctor: {
     name: '医生',
     permissions: [
-      'elderly:view', 'elderly:edit',
-      'health:manage', 'health:view', 'health:edit',
+      'dashboard:view',
+      'elderly:view', 'elderly:add', 'elderly:edit', 'elderly:export',
+      'health:view', 'health:add', 'health:edit', 'health:manage',
+      'health-warning:view', 'health-warning:handle', 'health-warning:export',
+      'assessment:view', 'assessment:add', 'assessment:edit',
+      'equipment:view', 'equipment:monitor',
       'report:view', 'report:export',
-      'dashboard:view'
+      'doctor:view', 'doctor:edit'
     ],
-    routes: ['dashboard', 'elderly', 'health-warning', 'reports', 'profile'],
-    description: '医疗管理相关权限'
+    routes: [
+      'Dashboard', 'DashboardModular',
+      'ElderlyList', 'ElderlyAdd', 'ElderlyEdit', 'ElderlyDetail', 'ElderlyModular',
+      'HealthWarning', 'HealthWarningModular', 'HealthRecords', 'HealthAssessment',
+      'EquipmentList', 'EquipmentMonitor',
+      'ReportStatistics', 'DataAnalysis', 'ModularDataAnalysis',
+      'DoctorList', 'DoctorModular', 'KeyPopulation',
+      'Profile'
+    ],
+    description: '医生角色，拥有医疗管理相关权限',
+    features: {
+      elderly: ['view', 'add', 'edit', 'export'],
+      health: ['view', 'add', 'edit', 'manage', 'export'],
+      assessment: ['view', 'add', 'edit'],
+      equipment: ['view', 'monitor'],
+      report: ['view', 'export'],
+      doctor: ['view', 'edit']
+    }
   },
   family: {
     name: '家属',
     permissions: [
-      'elderly:view',
-      'health:view',
-      'report:view'
+      'dashboard:view',
+      'elderly:view', // 只能查看关联的老人
+      'health:view', // 只能查看关联老人的健康信息
+      'health-warning:view', // 只能查看关联老人的预警
+      'report:view' // 只能查看基础报表
     ],
-    routes: ['dashboard', 'elderly', 'health-warning', 'profile'],
-    description: '查看老人信息和健康状况'
+    routes: [
+      'Dashboard', 'DashboardModular',
+      'ElderlyList', 'ElderlyDetail', 'ElderlyModular', // 只能查看，不能编辑
+      'HealthWarning', 'HealthWarningModular', 'HealthRecords',
+      'ReportStatistics', // 基础报表
+      'Profile'
+    ],
+    description: '家属角色，只能查看关联老人的信息和健康状况',
+    features: {
+      elderly: ['view'], // 只能查看关联老人
+      health: ['view'], // 只能查看关联老人的健康信息
+      report: ['view'] // 只能查看基础报表
+    }
   }
 }
 
@@ -222,9 +263,15 @@ export function filterMenusByRole(menus, userRole) {
     return []
   }
   
-  const allowedRoutes = ROLE_PERMISSIONS[userRole].routes
-  
   return menus.filter(menu => {
+    // 如果菜单项定义了roles属性，则检查当前用户角色是否在允许列表中
+    if (menu.roles && Array.isArray(menu.roles)) {
+      return menu.roles.includes(userRole)
+    }
+    
+    // 如果没有定义roles，则使用默认的角色路由配置
+    const allowedRoutes = ROLE_PERMISSIONS[userRole].routes
+    
     // 如果是管理员，显示所有菜单
     if (userRole === 'admin') {
       return true
@@ -233,4 +280,100 @@ export function filterMenusByRole(menus, userRole) {
     // 检查菜单是否在允许的路由中
     return allowedRoutes.includes(menu.name)
   })
+}
+
+/**
+ * 检查是否是管理员
+ * @returns {boolean}
+ */
+export function isAdmin() {
+  const userStore = useUserStore()
+  return userStore.userRole === 'admin'
+}
+
+/**
+ * 检查是否是医生
+ * @returns {boolean}
+ */
+export function isDoctor() {
+  const userStore = useUserStore()
+  return userStore.userRole === 'doctor'
+}
+
+/**
+ * 检查是否是家属
+ * @returns {boolean}
+ */
+export function isFamily() {
+  const userStore = useUserStore()
+  return userStore.userRole === 'family'
+}
+
+/**
+ * 检查是否可以编辑老人信息
+ * @returns {boolean}
+ */
+export function canEditElderly() {
+  return hasAnyPermission(['elderly:edit', 'elderly:add'])
+}
+
+/**
+ * 检查是否可以删除老人信息
+ * @returns {boolean}
+ */
+export function canDeleteElderly() {
+  return hasPermission('elderly:delete')
+}
+
+/**
+ * 检查是否可以处理健康预警
+ * @returns {boolean}
+ */
+export function canHandleHealthWarning() {
+  return hasPermission('health-warning:handle')
+}
+
+/**
+ * 检查是否可以管理用户
+ * @returns {boolean}
+ */
+export function canManageUsers() {
+  return hasAnyPermission(['user:add', 'user:edit', 'user:delete'])
+}
+
+/**
+ * 检查是否可以管理角色权限
+ * @returns {boolean}
+ */
+export function canManageRoles() {
+  return hasAnyPermission(['role:add', 'role:edit', 'role:delete', 'role:assign-permissions'])
+}
+
+/**
+ * 检查特定功能权限
+ * @param {string} module 模块名称 (elderly, health, user, role, etc.)
+ * @param {string} action 操作名称 (view, add, edit, delete, etc.)
+ * @returns {boolean}
+ */
+export function canAccess(module, action) {
+  const userStore = useUserStore()
+  const userRole = userStore.userRole
+  
+  if (!userRole || !ROLE_PERMISSIONS[userRole]) {
+    return false
+  }
+  
+  const roleConfig = ROLE_PERMISSIONS[userRole]
+  
+  // 管理员拥有所有权限
+  if (userRole === 'admin') {
+    return true
+  }
+  
+  // 检查具体功能权限
+  if (roleConfig.features && roleConfig.features[module]) {
+    return roleConfig.features[module].includes(action)
+  }
+  
+  return false
 }
