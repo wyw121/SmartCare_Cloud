@@ -92,7 +92,8 @@ export function canAccessRoute(routeName, userRole) {
   
   // 医生权限页面
   const doctorRoutes = [
-    'ElderlyList', 'ElderlyProfile', 'ElderlyAdd', 'ElderlyEdit',
+    'ElderlyList', 'ElderlyProfile', 'ElderlyAdd', 'ElderlyEdit', 'ElderlyDetail',
+    'ElderlyHealthRecords', 
     'HealthWarning', 'HealthWarningModular', 'HealthRecords', 'HealthAssessment',
     'EquipmentList', 'EquipmentMonitor',
     'ReportStatistics', 'DataAnalysis', 'ModularDataAnalysis',
@@ -105,7 +106,7 @@ export function canAccessRoute(routeName, userRole) {
   
   // 家属权限页面（查看权限）
   const familyRoutes = [
-    'ElderlyList', 'ElderlyProfile', // 只能查看
+    'ElderlyList', 'ElderlyProfile', 'ElderlyDetail', // 只能查看
     'HealthWarning', 'HealthRecords', // 只能查看相关老人的
     'ReportStatistics' // 基础报表查看
   ]
@@ -123,7 +124,8 @@ export function canAccessRoute(routeName, userRole) {
     return false
   }
   
-  return false
+  // 默认允许访问（对于开发环境和管理员）
+  return userRole === 'admin'
 }
 
 /**

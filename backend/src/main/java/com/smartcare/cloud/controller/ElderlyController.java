@@ -40,7 +40,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  */
 @Tag(name = "老人档案管理", description = "老人档案相关接口")
 @RestController
-@RequestMapping("/elderly")
+@RequestMapping("/api/elderly")
 @Validated
 public class ElderlyController {
 

@@ -34,7 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 健康检查接口允许匿名访问
                 .antMatchers("/actuator/**").permitAll()
                 // 开发环境：暂时开放主要业务接口以便前端测试
-                .antMatchers("/elderly/**", "/api/user/**", "/api/health-warning/**", "/api/doctor/**", "/api/reports/**").permitAll()
+                .antMatchers("/api/elderly/**", "/api/user/**", "/api/health-warning/**", "/api/doctor/**", "/api/reports/**").permitAll()
                 .antMatchers("/test/**", "/api/init/**", "/api/admin/**", "/api/temp/**").permitAll()
                 // 其他接口需要认证
                 .anyRequest().authenticated();

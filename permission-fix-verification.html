@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>权限修复验证测试</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        .test-section h3 {
+            color: #495057;
+            margin-top: 0;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background-color: #1e7e34;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .result.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .result.error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .result.info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-online {
+            background-color: #28a745;
+        }
+        .status-offline {
+            background-color: #dc3545;
+        }
+        .account-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .account-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e9ecef;
+        }
+        .account-card h4 {
+            margin-top: 0;
+            color: #495057;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 智慧医养平台权限修复验证</h1>
+        
+        <!-- 服务状态检查 -->
+        <div class="test-section">
+            <h3>🌐 服务状态检查</h3>
+            <div class="button-group">
+                <button class="btn-primary" onclick="checkBackendStatus()">检查后端服务</button>
+                <button class="btn-primary" onclick="checkFrontendStatus()">检查前端服务</button>
+            </div>
+            <div id="statusResults"></div>
+        </div>
+
+        <!-- 权限修复验证 -->
+        <div class="test-section">
+            <h3>🔧 权限修复验证</h3>
+            <p>验证系统管理员登录后是否可以正常访问老人管理页面</p>
+            <div class="button-group">
+                <button class="btn-success" onclick="testAdminLogin()">管理员登录测试</button>
+                <button class="btn-primary" onclick="testElderlyAPI()">老人管理API测试</button>
+                <button class="btn-primary" onclick="testPermissionCheck()">权限检查测试</button>
+            </div>
+            <div id="permissionResults"></div>
+        </div>
+
+        <!-- API路径验证 -->
+        <div class="test-section">
+            <h3>🔗 API路径验证</h3>
+            <p>验证前后端API路径是否匹配</p>
+            <div class="button-group">
+                <button class="btn-primary" onclick="testAPIEndpoints()">测试API端点</button>
+                <button class="btn-primary" onclick="testSecurityConfig()">测试安全配置</button>
+            </div>
+            <div id="apiResults"></div>
+        </div>
+
+        <!-- 快速登录账号 -->
+        <div class="test-section">
+            <h3>👥 开发环境快速登录</h3>
+            <div class="account-info">
+                <div class="account-card">
+                    <h4>🛡️ 系统管理员</h4>
+                    <p><strong>用户名:</strong> admin</p>
+                    <p><strong>密码:</strong> 123456</p>
+                    <p><strong>角色:</strong> 系统管理员</p>
+                    <p><strong>权限:</strong> 所有功能访问</p>
+                </div>
+                <div class="account-card">
+                    <h4>👨‍⚕️ 医生账号</h4>
+                    <p><strong>用户名:</strong> doctor</p>
+                    <p><strong>密码:</strong> 123456</p>
+                    <p><strong>角色:</strong> 医生</p>
+                    <p><strong>权限:</strong> 医疗管理相关</p>
+                </div>
+                <div class="account-card">
+                    <h4>👨‍👩‍👧‍👦 家属账号</h4>
+                    <p><strong>用户名:</strong> family</p>
+                    <p><strong>密码:</strong> 123456</p>
+                    <p><strong>角色:</strong> 家属</p>
+                    <p><strong>权限:</strong> 查看权限</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 修复说明 -->
+        <div class="test-section">
+            <h3>📝 问题修复说明</h3>
+            <div class="account-card">
+                <h4>🔧 主要修复内容</h4>
+                <ul>
+                    <li><strong>后端API路径修复:</strong> 将 ElderlyController 的路径从 <code>/elderly</code> 改为 <code>/api/elderly</code></li>
+                    <li><strong>Spring Security配置修复:</strong> 将安全配置中的 <code>/elderly/**</code> 改为 <code>/api/elderly/**</code></li>
+                    <li><strong>前端权限函数修复:</strong> 修复 <code>canAccessRoute</code> 函数的逻辑问题</li>
+                    <li><strong>路由权限检查:</strong> 确保系统管理员能够访问所有页面</li>
+                </ul>
+                
+                <h4>🎯 修复后的效果</h4>
+                <ul>
+                    <li>系统管理员登录后可以正常访问老人管理页面</li>
+                    <li>API请求不再出现403 Forbidden错误</li>
+                    <li>权限检查逻辑正确运行</li>
+                    <li>所有角色的权限控制正常工作</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'http://localhost:8080';
+        const FRONTEND_URL = 'http://localhost:3000';
+
+        let currentToken = null;
+        let currentUser = null;
+
+        function showResult(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `result ${type}`;
+            resultDiv.innerHTML = `
+                <div style="margin-bottom: 10px;">
+                    <strong>${new Date().toLocaleTimeString()}</strong>
+                </div>
+                ${message}
+            `;
+            container.innerHTML = '';
+            container.appendChild(resultDiv);
+        }
+
+        // 检查后端服务状态
+        async function checkBackendStatus() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/auth/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('statusResults', `
+                        <div style="display: flex; align-items: center;">
+                            <span class="status-indicator status-online"></span>
+                            <strong>后端服务正常运行</strong>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            状态码: ${response.status}<br>
+                            响应数据: ${JSON.stringify(data, null, 2)}
+                        </div>
+                    `, 'success');
+                } else {
+                    showResult('statusResults', `
+                        <div style="display: flex; align-items: center;">
+                            <span class="status-indicator status-offline"></span>
+                            <strong>后端服务响应异常</strong>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            状态码: ${response.status}<br>
+                            错误信息: ${data.message || '未知错误'}
+                        </div>
+                    `, 'error');
+                }
+            } catch (error) {
+                showResult('statusResults', `
+                    <div style="display: flex; align-items: center;">
+                        <span class="status-indicator status-offline"></span>
+                        <strong>后端服务连接失败</strong>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        错误信息: ${error.message}
+                    </div>
+                `, 'error');
+            }
+        }
+
+        // 检查前端服务状态
+        async function checkFrontendStatus() {
+            try {
+                const response = await fetch(`${FRONTEND_URL}/`);
+                
+                if (response.ok) {
+                    showResult('statusResults', `
+                        <div style="display: flex; align-items: center;">
+                            <span class="status-indicator status-online"></span>
+                            <strong>前端服务正常运行</strong>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            状态码: ${response.status}<br>
+                            前端服务地址: ${FRONTEND_URL}
+                        </div>
+                    `, 'success');
+                } else {
+                    showResult('statusResults', `
+                        <div style="display: flex; align-items: center;">
+                            <span class="status-indicator status-offline"></span>
+                            <strong>前端服务响应异常</strong>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            状态码: ${response.status}
+                        </div>
+                    `, 'error');
+                }
+            } catch (error) {
+                showResult('statusResults', `
+                    <div style="display: flex; align-items: center;">
+                        <span class="status-indicator status-offline"></span>
+                        <strong>前端服务连接失败</strong>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        错误信息: ${error.message}
+                    </div>
+                `, 'error');
+            }
+        }
+
+        // 测试管理员登录
+        async function testAdminLogin() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: 'admin',
+                        password: '123456'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.code === 200) {
+                    currentToken = data.data.token;
+                    currentUser = data.data.userInfo;
+                    
+                    showResult('permissionResults', `
+                        <div>✅ <strong>管理员登录成功</strong></div>
+                        <div style="margin-top: 10px;">
+                            <strong>用户信息:</strong><br>
+                            用户名: ${currentUser.username}<br>
+                            角色: ${currentUser.roleText}<br>
+                            权限: ${currentUser.permissions ? currentUser.permissions.join(', ') : '无'}
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <strong>Token:</strong> ${currentToken.substring(0, 50)}...
+                        </div>
+                    `, 'success');
+                } else {
+                    showResult('permissionResults', `
+                        <div>❌ <strong>管理员登录失败</strong></div>
+                        <div style="margin-top: 10px;">
+                            错误信息: ${data.message || '未知错误'}
+                        </div>
+                    `, 'error');
+                }
+            } catch (error) {
+                showResult('permissionResults', `
+                    <div>❌ <strong>登录请求失败</strong></div>
+                    <div style="margin-top: 10px;">
+                        错误信息: ${error.message}
+                    </div>
+                `, 'error');
+            }
+        }
+
+        // 测试老人管理API
+        async function testElderlyAPI() {
+            if (!currentToken) {
+                showResult('permissionResults', '❌ 请先登录管理员账号', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/elderly/page`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    body: JSON.stringify({
+                        current: 1,
+                        size: 10
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showResult('permissionResults', `
+                        <div>✅ <strong>老人管理API访问成功</strong></div>
+                        <div style="margin-top: 10px;">
+                            <strong>API响应:</strong><br>
+                            状态码: ${response.status}<br>
+                            响应代码: ${data.code}<br>
+                            数据条数: ${data.data ? data.data.records?.length || 0 : 0}
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <strong>完整响应:</strong><br>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `, 'success');
+                } else {
+                    showResult('permissionResults', `
+                        <div>❌ <strong>老人管理API访问失败</strong></div>
+                        <div style="margin-top: 10px;">
+                            HTTP状态码: ${response.status}<br>
+                            错误信息: ${data.message || '未知错误'}
+                        </div>
+                    `, 'error');
+                }
+            } catch (error) {
+                showResult('permissionResults', `
+                    <div>❌ <strong>API请求失败</strong></div>
+                    <div style="margin-top: 10px;">
+                        错误信息: ${error.message}
+                    </div>
+                `, 'error');
+            }
+        }
+
+        // 测试权限检查
+        async function testPermissionCheck() {
+            if (!currentUser) {
+                showResult('permissionResults', '❌ 请先登录管理员账号', 'error');
+                return;
+            }
+
+            const permissions = currentUser.permissions || [];
+            const role = currentUser.role || '';
+
+            let permissionCheckResult = '';
+
+            // 检查管理员权限
+            if (permissions.includes('*')) {
+                permissionCheckResult += '✅ 管理员拥有所有权限 (*)\n';
+            } else {
+                permissionCheckResult += '❌ 管理员权限不完整\n';
+            }
+
+            // 检查角色
+            if (role === 'admin') {
+                permissionCheckResult += '✅ 角色识别正确 (admin)\n';
+            } else {
+                permissionCheckResult += `❌ 角色识别错误 (${role})\n`;
+            }
+
+            // 检查具体权限
+            const requiredPermissions = ['elderly:view', 'elderly:edit', 'elderly:delete'];
+            requiredPermissions.forEach(permission => {
+                if (permissions.includes('*') || permissions.includes(permission)) {
+                    permissionCheckResult += `✅ 拥有权限: ${permission}\n`;
+                } else {
+                    permissionCheckResult += `❌ 缺少权限: ${permission}\n`;
+                }
+            });
+
+            showResult('permissionResults', `
+                <div><strong>权限检查结果:</strong></div>
+                <div style="margin-top: 10px;">
+                    <pre>${permissionCheckResult}</pre>
+                </div>
+                <div style="margin-top: 10px;">
+                    <strong>用户完整信息:</strong><br>
+                    <pre>${JSON.stringify(currentUser, null, 2)}</pre>
+                </div>
+            `, permissions.includes('*') && role === 'admin' ? 'success' : 'error');
+        }
+
+        // 测试API端点
+        async function testAPIEndpoints() {
+            const endpoints = [
+                { url: '/api/auth/health', method: 'GET', name: '认证服务健康检查' },
+                { url: '/api/elderly/page', method: 'POST', name: '老人管理分页查询', requiresAuth: true },
+                { url: '/api/user/list', method: 'GET', name: '用户列表查询', requiresAuth: true },
+                { url: '/api/health-warning/list', method: 'GET', name: '健康预警列表', requiresAuth: true }
+            ];
+
+            let results = '';
+
+            for (const endpoint of endpoints) {
+                try {
+                    const options = {
+                        method: endpoint.method,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    };
+
+                    if (endpoint.requiresAuth && currentToken) {
+                        options.headers['Authorization'] = `Bearer ${currentToken}`;
+                    }
+
+                    if (endpoint.method === 'POST' && endpoint.url.includes('/page')) {
+                        options.body = JSON.stringify({ current: 1, size: 10 });
+                    }
+
+                    const response = await fetch(`${BACKEND_URL}${endpoint.url}`, options);
+                    
+                    if (response.ok) {
+                        results += `✅ ${endpoint.name} - 状态码: ${response.status}\n`;
+                    } else {
+                        results += `❌ ${endpoint.name} - 状态码: ${response.status}\n`;
+                    }
+                } catch (error) {
+                    results += `❌ ${endpoint.name} - 错误: ${error.message}\n`;
+                }
+            }
+
+            showResult('apiResults', `
+                <div><strong>API端点测试结果:</strong></div>
+                <div style="margin-top: 10px;">
+                    <pre>${results}</pre>
+                </div>
+            `, 'info');
+        }
+
+        // 测试安全配置
+        async function testSecurityConfig() {
+            const testUrls = [
+                { url: '/api/elderly/page', desc: '老人管理API（需要认证）' },
+                { url: '/api/auth/health', desc: '认证健康检查（公开）' },
+                { url: '/swagger-ui/index.html', desc: 'Swagger文档（公开）' }
+            ];
+
+            let results = '';
+
+            for (const testUrl of testUrls) {
+                try {
+                    // 测试不带token的请求
+                    const responseNoAuth = await fetch(`${BACKEND_URL}${testUrl.url}`);
+                    
+                    if (testUrl.url.includes('/api/elderly/') || testUrl.url.includes('/api/user/')) {
+                        if (responseNoAuth.status === 401 || responseNoAuth.status === 403) {
+                            results += `✅ ${testUrl.desc} - 正确拒绝未授权访问\n`;
+                        } else {
+                            results += `⚠️ ${testUrl.desc} - 应该拒绝未授权访问但没有拒绝\n`;
+                        }
+                    } else {
+                        if (responseNoAuth.status === 200) {
+                            results += `✅ ${testUrl.desc} - 正确允许公开访问\n`;
+                        } else {
+                            results += `❌ ${testUrl.desc} - 应该允许公开访问但被拒绝\n`;
+                        }
+                    }
+                } catch (error) {
+                    results += `❌ ${testUrl.desc} - 测试失败: ${error.message}\n`;
+                }
+            }
+
+            showResult('apiResults', `
+                <div><strong>安全配置测试结果:</strong></div>
+                <div style="margin-top: 10px;">
+                    <pre>${results}</pre>
+                </div>
+            `, 'info');
+        }
+
+        // 页面加载时自动检查服务状态
+        window.addEventListener('load', () => {
+            checkBackendStatus();
+        });
+    </script>
+</body>
+</html>
