@@ -1,0 +1,496 @@
+/* 智慧医养平台 - 老人管理界面专用样式 */
+/* 基于按钮风格设计配置规范 v1.0 */
+
+/* 老人管理页面容器 */
+.elderly-management {
+  .page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    
+    .header-content {
+      padding: 20px;
+      
+      h2 {
+        margin: 0 0 8px 0;
+        color: white;
+        font-size: 24px;
+        font-weight: 600;
+      }
+      
+      p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 14px;
+      }
+    }
+  }
+  
+  /* 搜索卡片优化 */
+  .search-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    
+    .search-form {
+      padding: 16px;
+      
+      .el-form-item {
+        margin-right: 24px;
+        margin-bottom: 16px;
+        
+        .el-form-item__label {
+          color: #303133;
+          font-weight: 500;
+          width: auto;
+          margin-right: 8px;
+        }
+      }
+      
+      .el-button {
+        padding: 8px 16px;
+        font-size: 14px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          transform: translateY(-1px);
+        }
+        
+        &:active {
+          transform: scale(0.95);
+        }
+      }
+    }
+  }
+  
+  /* 工具栏卡片优化 */
+  .toolbar-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    
+    .toolbar {
+      padding: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      
+      .el-button {
+        padding: 8px 16px;
+        font-size: 14px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          transform: translateY(-1px);
+        }
+        
+        &:active {
+          transform: scale(0.95);
+        }
+      }
+    }
+  }
+  
+  /* 表格卡片优化 */
+  .table-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    
+    .el-table {
+      border-radius: 8px;
+      overflow: hidden;
+      
+      /* 表头样式 */
+      thead {
+        background-color: #f8f9fa;
+        
+        th {
+          background-color: #f8f9fa;
+          color: #303133;
+          font-weight: 600;
+          padding: 12px 0;
+          border-bottom: 2px solid #e4e7ed;
+        }
+      }
+      
+      /* 表格行样式 */
+      tbody {
+        tr {
+          transition: background-color 0.3s ease;
+          
+          &:hover {
+            background-color: #f5f7fa;
+          }
+          
+          td {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f2f5;
+            
+            .cell {
+              padding: 0 8px;
+              line-height: 1.4;
+            }
+          }
+        }
+      }
+      
+      /* 固定列样式优化 */
+      .el-table-fixed-column--right {
+        box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+        border-left: 1px solid #ebeef5;
+        background-color: #fafafa;
+        
+        th {
+          background-color: #f8f9fa;
+          font-weight: 600;
+          
+          .cell {
+            color: #303133;
+          }
+        }
+        
+        td {
+          background-color: white;
+          
+          .cell {
+            padding: 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+        }
+      }
+    }
+  }
+  
+  /* 分页器样式 */
+  .pagination-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding: 16px;
+    
+    .el-pagination {
+      .el-pager li {
+        border-radius: 4px;
+        margin: 0 2px;
+        
+        &:hover {
+          background-color: #f0f2f5;
+        }
+        
+        &.active {
+          background-color: #409eff;
+          color: white;
+        }
+      }
+      
+      .btn-prev,
+      .btn-next {
+        border-radius: 4px;
+        
+        &:hover {
+          background-color: #f0f2f5;
+        }
+      }
+    }
+  }
+  
+  /* 操作按钮专用样式 - 老人管理表格 */
+  .elderly-action-buttons {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 4px;
+    justify-content: center;
+    padding: 2px 0;
+    min-height: 32px;
+    overflow: hidden;
+    
+    .el-button {
+      margin: 0;
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 3px;
+      transition: all 0.3s ease;
+      min-width: 52px;
+      max-width: 66px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      
+      /* 提升点击体验 */
+      &:active {
+        transform: scale(0.95);
+      }
+      
+      /* 文本按钮样式优化 */
+      &.is-text {
+        &:hover {
+          background-color: rgba(64, 158, 255, 0.1);
+          transform: translateY(-1px);
+        }
+        
+        &.el-button--primary:hover {
+          background-color: rgba(64, 158, 255, 0.1);
+          color: #409eff;
+        }
+        
+        &.el-button--success:hover {
+          background-color: rgba(103, 194, 58, 0.1);
+          color: #67c23a;
+        }
+        
+        &.el-button--warning:hover {
+          background-color: rgba(230, 162, 60, 0.1);
+          color: #e6a23c;
+        }
+        
+        &.el-button--danger:hover {
+          background-color: rgba(245, 108, 108, 0.1);
+          color: #f56c6c;
+        }
+        
+        &.el-button--info:hover {
+          background-color: rgba(144, 147, 153, 0.1);
+          color: #909399;
+        }
+      }
+      
+      /* 禁用状态 */
+      &.is-disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        
+        &:hover {
+          transform: none !important;
+          background-color: transparent !important;
+        }
+      }
+    }
+  }
+  
+  /* 健康状态标签样式 */
+  .health-status-tag {
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+    
+    &.status-healthy {
+      background-color: #f0f9ff;
+      color: #1890ff;
+      border: 1px solid #91d5ff;
+    }
+    
+    &.status-subhealth {
+      background-color: #fff7e6;
+      color: #fa8c16;
+      border: 1px solid #ffd591;
+    }
+    
+    &.status-sick {
+      background-color: #fff2e8;
+      color: #fa541c;
+      border: 1px solid #ffbb96;
+    }
+    
+    &.status-serious {
+      background-color: #fff1f0;
+      color: #f5222d;
+      border: 1px solid #ffa39e;
+    }
+    
+    &.status-danger {
+      background-color: #fff0f6;
+      color: #eb2f96;
+      border: 1px solid #ffadd2;
+    }
+    
+    &.status-warning {
+      background-color: #fffbe6;
+      color: #faad14;
+      border: 1px solid #ffe58f;
+    }
+  }
+  
+  /* 照护等级标签样式 */
+  .care-level-tag {
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+    background-color: #f6ffed;
+    color: #52c41a;
+    border: 1px solid #b7eb8f;
+  }
+  
+  /* 性别标签样式 */
+  .gender-tag {
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+    
+    &.gender-male {
+      background-color: #e6f7ff;
+      color: #1890ff;
+      border: 1px solid #91d5ff;
+    }
+    
+    &.gender-female {
+      background-color: #fff0f6;
+      color: #eb2f96;
+      border: 1px solid #ffadd2;
+    }
+  }
+}
+
+/* 平板适配 (768px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .elderly-management {
+    .search-card .search-form {
+      padding: 12px;
+      
+      .el-form-item {
+        margin-right: 16px;
+        margin-bottom: 12px;
+      }
+    }
+    
+    .toolbar-card .toolbar {
+      padding: 12px;
+      gap: 8px;
+    }
+    
+    .elderly-action-buttons {
+      gap: 3px;
+      
+      .el-button {
+        padding: 3px 6px;
+        font-size: 11px;
+        min-width: 48px;
+        max-width: 58px;
+      }
+    }
+  }
+}
+
+/* 移动端适配 (≤768px) */
+@media (max-width: 768px) {
+  .elderly-management {
+    .page-header .header-content {
+      padding: 16px;
+      
+      h2 {
+        font-size: 20px;
+      }
+      
+      p {
+        font-size: 13px;
+      }
+    }
+    
+    .search-card .search-form {
+      padding: 12px;
+      
+      .el-form-item {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 16px;
+        
+        .el-input,
+        .el-select {
+          width: 100%;
+        }
+      }
+    }
+    
+    .toolbar-card .toolbar {
+      padding: 12px;
+      flex-direction: column;
+      gap: 8px;
+      
+      .el-button {
+        width: 100%;
+        justify-content: center;
+        min-height: 44px;
+      }
+    }
+    
+    .elderly-action-buttons {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 4px;
+      
+      .el-button {
+        width: 100%;
+        justify-content: center;
+        padding: 6px 10px;
+        font-size: 14px;
+        min-height: 44px;
+        max-width: none;
+      }
+    }
+    
+    .table-card {
+      .el-table {
+        font-size: 13px;
+        
+        th,
+        td {
+          padding: 8px 0;
+          
+          .cell {
+            padding: 0 4px;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* 小屏幕设备适配 (≤480px) */
+@media (max-width: 480px) {
+  .elderly-management {
+    .page-header .header-content {
+      padding: 12px;
+      
+      h2 {
+        font-size: 18px;
+      }
+      
+      p {
+        font-size: 12px;
+      }
+    }
+    
+    .search-card .search-form,
+    .toolbar-card .toolbar {
+      padding: 10px;
+    }
+    
+    .elderly-action-buttons .el-button {
+      font-size: 16px;
+      padding: 8px 12px;
+    }
+    
+    .table-card {
+      .el-table {
+        font-size: 12px;
+        
+        th,
+        td {
+          padding: 6px 0;
+          
+          .cell {
+            padding: 0 2px;
+          }
+        }
+      }
+    }
+  }
+}

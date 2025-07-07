@@ -131,14 +131,24 @@
         </el-table-column>
         <el-table-column prop="address" label="居住地址" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" width="160" />
-        <el-table-column label="操作" width="340" fixed="right">
+        <el-table-column label="操作" width="360" fixed="right">
           <template #default="scope">
-            <div class="action-buttons">
-              <el-button text type="primary" size="small" @click="handleView(scope.row)">查看</el-button>
-              <el-button text type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-              <el-button text type="success" size="small" @click="handleHealthRecords(scope.row)">健康档案</el-button>
-              <el-button text type="warning" size="small" @click="handleAssessmentReport(scope.row)">评估报告</el-button>
-              <el-button text type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
+            <div class="elderly-action-buttons">
+              <el-tooltip content="查看详情" placement="top">
+                <el-button text type="primary" size="small" @click="handleView(scope.row)">查看</el-button>
+              </el-tooltip>
+              <el-tooltip content="编辑信息" placement="top">
+                <el-button text type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+              </el-tooltip>
+              <el-tooltip content="健康档案管理" placement="top">
+                <el-button text type="success" size="small" @click="handleHealthRecords(scope.row)">健康</el-button>
+              </el-tooltip>
+              <el-tooltip content="评估报告查看" placement="top">
+                <el-button text type="warning" size="small" @click="handleAssessmentReport(scope.row)">评估</el-button>
+              </el-tooltip>
+              <el-tooltip content="删除老人档案" placement="top">
+                <el-button text type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
+              </el-tooltip>
             </div>
           </template>
         </el-table-column>
@@ -845,82 +855,11 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import '@/styles/elderly-management.scss';
+
 .elderly-management {
   padding: 20px;
-}
-
-.page-header {
-  margin-bottom: 20px;
-}
-
-.header-content h2 {
-  margin: 0 0 8px 0;
-  color: #303133;
-}
-
-.header-content p {
-  margin: 0;
-  color: #606266;
-  font-size: 14px;
-}
-
-.search-card {
-  margin-bottom: 20px;
-}
-
-.search-form {
-  margin-bottom: 0;
-}
-
-.search-form .el-form-item {
-  margin-right: 20px;
-  margin-bottom: 16px;
-}
-
-.search-form .el-form-item__label {
-  width: auto;
-  margin-right: 8px;
-}
-
-/* 健康状态选择器样式优化 */
-.search-form .el-select {
-  min-width: 150px;
-}
-
-.search-form .el-select .el-input__inner {
-  text-align: left;
-}
-
-.toolbar-card {
-  margin-bottom: 20px;
-}
-
-.toolbar {
-  display: flex;
-  gap: 12px;
-}
-
-.table-card {
-  margin-bottom: 20px;
-}
-
-.action-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  justify-content: flex-start;
-}
-
-.action-buttons .el-button {
-  margin: 0;
-}
-
-.pagination-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
 }
 
 .dialog-footer {
