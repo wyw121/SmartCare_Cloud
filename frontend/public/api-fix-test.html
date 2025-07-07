@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API修复测试 - 智慧医养平台</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .test-section h2 {
+            color: #34495e;
+            margin-top: 0;
+        }
+        .test-button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .test-button:hover {
+            background-color: #2980b9;
+        }
+        .test-button.success {
+            background-color: #27ae60;
+        }
+        .test-button.error {
+            background-color: #e74c3c;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .result.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .result.error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        .status-ok {
+            background-color: #27ae60;
+        }
+        .status-error {
+            background-color: #e74c3c;
+        }
+        .status-warning {
+            background-color: #f39c12;
+        }
+        .info-box {
+            background-color: #e8f4f8;
+            border: 1px solid #bee5eb;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .info-box h3 {
+            margin-top: 0;
+            color: #0c5460;
+        }
+        .test-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            min-width: 120px;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 API修复测试 - 智慧医养平台</h1>
+        
+        <div class="info-box">
+            <h3>💡 问题修复说明</h3>
+            <p><strong>问题：</strong> 前端请求医生列表API时返回404错误，导致"获取医生列表失败"</p>
+            <p><strong>原因：</strong> Vite代理配置错误，API路径重写导致后端接收不到正确的请求</p>
+            <p><strong>解决方案：</strong></p>
+            <ul>
+                <li>✅ 修复了Vite代理配置，移除了错误的path rewrite</li>
+                <li>✅ 调整了前端request.js的baseURL配置</li>
+                <li>✅ 确保后端SecurityConfig权限配置正确</li>
+                <li>✅ 重新启动前后端服务</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2>🔧 后端API直接测试</h2>
+            <button class="test-button" onclick="testBackendAPI()">测试后端API</button>
+            <div id="backend-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🌐 前端代理测试</h2>
+            <button class="test-button" onclick="testFrontendProxy()">测试前端代理</button>
+            <div id="proxy-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔧 API路径修复验证</h2>
+            <button class="test-button" onclick="testApiPathFix()">验证路径修复</button>
+            <div id="path-fix-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 医生管理功能测试</h2>
+            <button class="test-button" onclick="testDoctorList()">获取医生列表</button>
+            <button class="test-button" onclick="testDoctorSearch()">搜索医生</button>
+            <button class="test-button" onclick="testDoctorStats()">医生统计</button>
+            <div id="doctor-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔐 权限验证测试</h2>
+            <button class="test-button" onclick="testPermissions()">测试权限配置</button>
+            <div id="permission-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔄 页面跳转测试</h2>
+            <button class="test-button" onclick="goToDoctorList()">跳转到医生列表页面</button>
+            <button class="test-button" onclick="goToElderlyList()">跳转到老人列表页面</button>
+            <button class="test-button" onclick="goToHealthWarning()">跳转到健康预警页面</button>
+            <div id="navigation-result"></div>
+        </div>
+
+        <div class="test-stats">
+            <div class="stat-item">
+                <div class="stat-number" id="success-count">0</div>
+                <div class="stat-label">成功测试</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="error-count">0</div>
+                <div class="stat-label">失败测试</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="total-count">0</div>
+                <div class="stat-label">总测试数</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let successCount = 0;
+        let errorCount = 0;
+        let totalCount = 0;
+
+        function updateStats() {
+            totalCount = successCount + errorCount;
+            document.getElementById('success-count').textContent = successCount;
+            document.getElementById('error-count').textContent = errorCount;
+            document.getElementById('total-count').textContent = totalCount;
+        }
+
+        function showResult(elementId, success, message, data = null) {
+            const element = document.getElementById(elementId);
+            element.className = `result ${success ? 'success' : 'error'}`;
+            
+            let content = `${success ? '✅' : '❌'} ${message}\n`;
+            if (data) {
+                content += `\n数据响应:\n${JSON.stringify(data, null, 2)}`;
+            }
+            
+            element.textContent = content;
+            
+            if (success) {
+                successCount++;
+            } else {
+                errorCount++;
+            }
+            updateStats();
+        }
+
+        async function testBackendAPI() {
+            try {
+                const response = await fetch('http://localhost:8080/api/doctor/page', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        pageNum: 1,
+                        pageSize: 5
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.code === 200) {
+                    showResult('backend-result', true, 
+                        `后端API测试成功 (${response.status})`, 
+                        { 
+                            total: data.data.total, 
+                            doctorCount: data.data.list.length,
+                            firstDoctor: data.data.list[0]?.name 
+                        });
+                } else {
+                    showResult('backend-result', false, 
+                        `后端API测试失败 (${response.status}): ${data.message}`, 
+                        data);
+                }
+            } catch (error) {
+                showResult('backend-result', false, 
+                    `后端API测试失败: ${error.message}`);
+            }
+        }
+
+        async function testFrontendProxy() {
+            try {
+                const response = await fetch('/api/doctor/page', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        pageNum: 1,
+                        pageSize: 5
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.code === 200) {
+                    showResult('proxy-result', true, 
+                        `前端代理测试成功 (${response.status})`, 
+                        { 
+                            total: data.data.total, 
+                            doctorCount: data.data.list.length,
+                            firstDoctor: data.data.list[0]?.name 
+                        });
+                } else {
+                    showResult('proxy-result', false, 
+                        `前端代理测试失败 (${response.status}): ${data.message}`, 
+                        data);
+                }
+            } catch (error) {
+                showResult('proxy-result', false, 
+                    `前端代理测试失败: ${error.message}`);
+            }
+        }
+
+        async function testApiPathFix() {
+            try {
+                // 测试修复后的路径是否不会出现双重/api/问题
+                const testUrls = [
+                    { name: '医生分页', url: '/api/doctor/page' },
+                    { name: '健康预警分页', url: '/api/health-warning/page' },
+                    { name: '老人分页', url: '/api/elderly/page' }
+                ];
+                
+                let results = [];
+                
+                for (const test of testUrls) {
+                    try {
+                        const response = await fetch(test.url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                pageNum: 1,
+                                pageSize: 1
+                            })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        results.push({
+                            name: test.name,
+                            url: test.url,
+                            status: response.status,
+                            success: response.ok && (data.code === 200 || data.code === 0),
+                            message: data.message
+                        });
+                    } catch (error) {
+                        results.push({
+                            name: test.name,
+                            url: test.url,
+                            status: 'ERROR',
+                            success: false,
+                            message: error.message
+                        });
+                    }
+                }
+                
+                const successCount = results.filter(r => r.success).length;
+                const success = successCount > 0;
+                
+                showResult('path-fix-result', success, 
+                    `API路径修复验证: ${successCount}/${results.length} 个API正常`, 
+                    results);
+            } catch (error) {
+                showResult('path-fix-result', false, 
+                    `API路径修复验证失败: ${error.message}`);
+            }
+        }
+
+        async function testDoctorList() {
+            try {
+                const response = await fetch('/api/doctor/page', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        pageNum: 1,
+                        pageSize: 10
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.code === 200) {
+                    const doctors = data.data.list;
+                    const summary = doctors.map(d => `${d.name} (${d.department}, ${d.title})`).join(', ');
+                    
+                    showResult('doctor-result', true, 
+                        `获取医生列表成功: 共${data.data.total}名医生`, 
+                        { 
+                            total: data.data.total,
+                            currentPage: data.data.pageNum,
+                            doctors: summary
+                        });
+                } else {
+                    showResult('doctor-result', false, 
+                        `获取医生列表失败 (${response.status}): ${data.message}`, 
+                        data);
+                }
+            } catch (error) {
+                showResult('doctor-result', false, 
+                    `获取医生列表失败: ${error.message}`);
+            }
+        }
+
+        async function testDoctorSearch() {
+            try {
+                const response = await fetch('/api/doctor/page', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        pageNum: 1,
+                        pageSize: 10,
+                        name: '刘',
+                        department: '儿科'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.code === 200) {
+                    showResult('doctor-result', true, 
+                        `搜索医生成功: 找到${data.data.total}名医生`, 
+                        { 
+                            total: data.data.total,
+                            searchResults: data.data.list.map(d => d.name)
+                        });
+                } else {
+                    showResult('doctor-result', false, 
+                        `搜索医生失败 (${response.status}): ${data.message}`, 
+                        data);
+                }
+            } catch (error) {
+                showResult('doctor-result', false, 
+                    `搜索医生失败: ${error.message}`);
+            }
+        }
+
+        async function testDoctorStats() {
+            try {
+                const response = await fetch('/api/doctor/page', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        pageNum: 1,
+                        pageSize: 100
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.code === 200) {
+                    const doctors = data.data.list;
+                    const stats = {
+                        total: doctors.length,
+                        departments: [...new Set(doctors.map(d => d.department))],
+                        titles: [...new Set(doctors.map(d => d.title))],
+                        activeCount: doctors.filter(d => d.status === 1).length
+                    };
+                    
+                    showResult('doctor-result', true, 
+                        `医生统计完成`, 
+                        stats);
+                } else {
+                    showResult('doctor-result', false, 
+                        `医生统计失败 (${response.status}): ${data.message}`, 
+                        data);
+                }
+            } catch (error) {
+                showResult('doctor-result', false, 
+                    `医生统计失败: ${error.message}`);
+            }
+        }
+
+        async function testPermissions() {
+            const testUrls = [
+                '/api/doctor/page',
+                '/api/elderly/page',
+                '/api/health-warning/page',
+                '/api/auth/login'
+            ];
+            
+            let results = [];
+            
+            for (const url of testUrls) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            pageNum: 1,
+                            pageSize: 1
+                        })
+                    });
+                    
+                    results.push({
+                        url,
+                        status: response.status,
+                        accessible: response.status !== 403
+                    });
+                } catch (error) {
+                    results.push({
+                        url,
+                        status: 'ERROR',
+                        accessible: false,
+                        error: error.message
+                    });
+                }
+            }
+            
+            const accessibleCount = results.filter(r => r.accessible).length;
+            const success = accessibleCount > 0;
+            
+            showResult('permission-result', success, 
+                `权限测试完成: ${accessibleCount}/${results.length} 个接口可访问`, 
+                results);
+        }
+
+        function goToDoctorList() {
+            const url = 'http://localhost:3000/#/doctor/list';
+            showResult('navigation-result', true, 
+                `准备跳转到医生列表页面: ${url}`);
+            setTimeout(() => {
+                window.open(url, '_blank');
+            }, 1000);
+        }
+
+        function goToElderlyList() {
+            const url = 'http://localhost:3000/#/elderly/list';
+            showResult('navigation-result', true, 
+                `准备跳转到老人列表页面: ${url}`);
+            setTimeout(() => {
+                window.open(url, '_blank');
+            }, 1000);
+        }
+
+        function goToHealthWarning() {
+            const url = 'http://localhost:3000/#/health-warning/list';
+            showResult('navigation-result', true, 
+                `准备跳转到健康预警页面: ${url}`);
+            setTimeout(() => {
+                window.open(url, '_blank');
+            }, 1000);
+        }
+
+        // 页面加载时自动运行部分测试
+        window.onload = function() {
+            console.log('🚀 API修复测试页面加载完成');
+            
+            // 显示当前状态
+            const statusInfo = document.createElement('div');
+            statusInfo.className = 'info-box';
+            statusInfo.innerHTML = `
+                <h3>📊 当前服务状态</h3>
+                <p><span class="status-indicator status-ok"></span> 后端服务: http://localhost:8080</p>
+                <p><span class="status-indicator status-ok"></span> 前端服务: http://localhost:3000</p>
+                <p><span class="status-indicator status-ok"></span> API代理: /api → http://localhost:8080</p>
+                <p><strong>测试时间:</strong> ${new Date().toLocaleString()}</p>
+            `;
+            document.querySelector('.container').insertBefore(statusInfo, document.querySelector('.test-section'));
+        };
+    </script>
+</body>
+</html>

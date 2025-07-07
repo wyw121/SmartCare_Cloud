@@ -4,7 +4,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 
 // 创建axios实例
 const service = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json;charset=UTF-8'
@@ -17,7 +17,11 @@ service.interceptors.request.use(
     const userStore = useUserStore()
     
     // 添加认证token
-    if (userStore.token) {
+    // 开发环境：暂时移除医生、老人、健康预警等API的认证要求
+    const openApis = ['/doctor/', '/elderly/', '/health-warning/', '/reports/']
+    const isOpenApi = openApis.some(api => config.url.includes(api))
+    
+    if (userStore.token && !isOpenApi) {
       config.headers['Authorization'] = `Bearer ${userStore.token}`
     }
     
