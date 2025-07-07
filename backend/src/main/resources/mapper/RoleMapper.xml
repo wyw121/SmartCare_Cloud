@@ -72,4 +72,17 @@
   <select id="countUsersByRoleId" resultType="java.lang.Integer"> SELECT COUNT(1) FROM sys_user_role
     ur INNER JOIN sys_user u ON ur.user_id = u.id WHERE ur.role_id = #{roleId} AND u.is_deleted = 0 </select>
 
+  <!-- 分页查询角色列表 -->
+  <select id="selectRolePage" resultMap="BaseResultMap"> SELECT <include refid="Base_Column_List" />
+    FROM sys_role WHERE is_deleted = 0 <if test="keyword != null and keyword != ''"> AND (role_name
+    LIKE CONCAT('%', #{keyword}, '%') OR role_code LIKE CONCAT('%', #{keyword}, '%') OR description
+    LIKE CONCAT('%', #{keyword}, '%')) </if>
+    <if test="status != null"> AND status = #{status} </if>
+    ORDER BY sort_order ASC, create_time DESC </select>
+
+  <!-- 批量插入角色权限关联 -->
+  <insert id="insertRolePermissions"> INSERT INTO sys_role_permission (role_id, permission_id,
+    create_time, create_by) VALUES <foreach collection="permissionIds" item="permissionId"
+      separator=","> (#{roleId}, #{permissionId}, NOW(), 'system') </foreach>
+  </insert>
 </mapper>
