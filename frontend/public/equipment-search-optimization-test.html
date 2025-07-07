@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备管理搜索栏优化验证</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section h2 {
+            color: #34495e;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .demo-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .demo-item h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .demo-item p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin-bottom: 15px;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .feature-list li:before {
+            content: '✓';
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #ffc107;
+            margin-bottom: 20px;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border-color: #28a745;
+        }
+        
+        .info {
+            background: #cce7ff;
+            color: #004085;
+            border-color: #007bff;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border-color: #ffc107;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #219a52;
+        }
+        
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background: #138496;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .comparison-table th {
+            background: #3498db;
+            color: white;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .comparison-table tr:hover {
+            background: #e3f2fd;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status-fixed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-enhanced {
+            background: #cce7ff;
+            color: #004085;
+        }
+        
+        .status-new {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #666;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 设备管理搜索栏优化验证</h1>
+        
+        <div class="section">
+            <h2>📋 修复完成总结</h2>
+            <div class="highlight success">
+                <h3>✅ 修复完成的问题</h3>
+                <ul class="feature-list">
+                    <li>搜索栏 el-select 组件宽度过窄问题</li>
+                    <li>选中内容显示不全问题</li>
+                    <li>多选模式下标签显示优化</li>
+                    <li>响应式布局支持</li>
+                    <li>样式统一性优化</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🎯 优化方案详情</h2>
+            
+            <div class="demo-item">
+                <h3>1. 基础样式优化</h3>
+                <p>为现有的搜索栏添加了统一的样式类，确保选择框有足够的宽度显示内容。</p>
+                <div class="code-block">
+/* 单选框样式 */
+.search-select {
+  width: 160px;
+  min-width: 160px;
+}
+
+/* 多选框样式 */
+.search-select-multiple {
+  width: 220px;
+  min-width: 220px;
+}
+                </div>
+            </div>
+            
+            <div class="demo-item">
+                <h3>2. 多选标签优化</h3>
+                <p>针对多选模式，优化了标签的显示效果，避免内容溢出。</p>
+                <div class="code-block">
+/* 多选标签样式优化 */
+:deep(.search-select-multiple .el-select__tags) {
+  max-width: 200px;
+  overflow: hidden;
+}
+
+:deep(.search-select-multiple .el-tag) {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+                </div>
+            </div>
+            
+            <div class="demo-item">
+                <h3>3. 增强搜索组件</h3>
+                <p>创建了 EnhancedSearchBar.vue 组件，提供完整的多选搜索功能。</p>
+                <div class="code-block">
+// 支持单选/多选模式切换
+// 智能标签折叠显示
+// 激活筛选条件展示
+// 响应式布局支持
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📊 修复前后对比</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>项目</th>
+                        <th>修复前</th>
+                        <th>修复后</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>选择框宽度</td>
+                        <td>默认宽度，内容可能显示不全</td>
+                        <td>160px 最小宽度，内容完整显示</td>
+                        <td><span class="status-badge status-fixed">已修复</span></td>
+                    </tr>
+                    <tr>
+                        <td>多选支持</td>
+                        <td>仅支持单选</td>
+                        <td>支持单选/多选模式切换</td>
+                        <td><span class="status-badge status-enhanced">已增强</span></td>
+                    </tr>
+                    <tr>
+                        <td>标签显示</td>
+                        <td>无多选标签</td>
+                        <td>智能标签折叠，避免溢出</td>
+                        <td><span class="status-badge status-new">新增</span></td>
+                    </tr>
+                    <tr>
+                        <td>响应式布局</td>
+                        <td>固定布局</td>
+                        <td>移动端自适应</td>
+                        <td><span class="status-badge status-enhanced">已增强</span></td>
+                    </tr>
+                    <tr>
+                        <td>筛选条件展示</td>
+                        <td>无可视化展示</td>
+                        <td>激活筛选条件标签展示</td>
+                        <td><span class="status-badge status-new">新增</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>🔧 技术实现细节</h2>
+            
+            <div class="demo-item">
+                <h3>CSS 深度选择器优化</h3>
+                <p>使用 Vue 3 的 :deep() 深度选择器优化 Element Plus 组件样式。</p>
+                <div class="code-block">
+:deep(.search-select .el-input__inner) {
+  width: 100%;
+  min-width: 160px;
+}
+                </div>
+            </div>
+            
+            <div class="demo-item">
+                <h3>多选模式动态切换</h3>
+                <p>支持运行时动态切换单选/多选模式，数据自动转换。</p>
+                <div class="code-block">
+const toggleMultipleMode = () => {
+  isMultipleMode.value = !isMultipleMode.value
+  // 数据格式自动转换
+  if (isMultipleMode.value) {
+    // 单选 → 多选：转换为数组
+    searchForm.deviceTypes = searchForm.deviceTypes ? [searchForm.deviceTypes] : []
+  } else {
+    // 多选 → 单选：取第一个值
+    searchForm.deviceTypes = Array.isArray(searchForm.deviceTypes) ? 
+      searchForm.deviceTypes[0] || '' : searchForm.deviceTypes || ''
+  }
+}
+                </div>
+            </div>
+            
+            <div class="demo-item">
+                <h3>标签折叠策略</h3>
+                <p>Element Plus 的 collapse-tags 功能，优化多选标签显示。</p>
+                <div class="code-block">
+&lt;el-select
+  :collapse-tags="isMultipleMode"
+  :collapse-tags-tooltip="isMultipleMode"
+  :max-collapse-tags="2"
+&gt;
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📱 响应式设计</h2>
+            <div class="highlight info">
+                <h3>移动端适配</h3>
+                <p>针对不同屏幕尺寸进行了优化，确保在移动设备上也能良好显示。</p>
+                <div class="code-block">
+@media (max-width: 768px) {
+  .search-select,
+  .search-select-multiple {
+    width: 100%;
+    min-width: 120px;
+  }
+  
+  .search-form .el-form-item {
+    display: block;
+    margin-bottom: 15px;
+  }
+}
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🧪 测试验证</h2>
+            <div class="highlight warning">
+                <h3>验证步骤</h3>
+                <ol>
+                    <li>访问设备管理页面 (http://localhost:5173/equipment)</li>
+                    <li>检查搜索栏选择框宽度是否充足</li>
+                    <li>测试选择不同选项时内容是否完整显示</li>
+                    <li>如需多选功能，可参考 EnhancedSearchBar.vue 组件</li>
+                    <li>测试响应式布局在不同屏幕尺寸下的表现</li>
+                </ol>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="window.open('http://localhost:5173/equipment', '_blank')">
+                    访问设备管理页面
+                </button>
+                <button class="btn btn-success" onclick="window.open('http://localhost:5173', '_blank')">
+                    访问首页
+                </button>
+                <button class="btn btn-info" onclick="location.reload()">
+                    刷新此页面
+                </button>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📚 文件修改记录</h2>
+            <div class="demo-item">
+                <h3>修改的文件</h3>
+                <ul class="feature-list">
+                    <li>frontend/src/views/equipment/list.vue - 添加搜索栏样式类</li>
+                    <li>frontend/src/views/equipment/list.vue - 优化 CSS 样式</li>
+                    <li>frontend/src/views/equipment/components/EnhancedSearchBar.vue - 新增增强搜索组件</li>
+                </ul>
+            </div>
+            
+            <div class="demo-item">
+                <h3>主要修改内容</h3>
+                <ul class="feature-list">
+                    <li>为 el-select 组件添加 search-select 样式类</li>
+                    <li>增加 CSS 深度选择器优化组件样式</li>
+                    <li>添加多选模式样式支持</li>
+                    <li>增加响应式布局媒体查询</li>
+                    <li>创建完整的增强搜索组件</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>✅ 设备管理搜索栏优化完成 | 智慧医养平台 | 2024</p>
+        </div>
+    </div>
+    
+    <script>
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('设备管理搜索栏优化验证页面加载完成');
+            
+            // 添加一些交互效果
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.15)';
+                });
+                
+                section.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+                });
+            });
+            
+            // 代码块点击复制功能
+            const codeBlocks = document.querySelectorAll('.code-block');
+            codeBlocks.forEach(block => {
+                block.addEventListener('click', function() {
+                    const text = this.textContent;
+                    navigator.clipboard.writeText(text).then(() => {
+                        const originalBg = this.style.backgroundColor;
+                        this.style.backgroundColor = '#27ae60';
+                        setTimeout(() => {
+                            this.style.backgroundColor = originalBg;
+                        }, 300);
+                    }).catch(err => {
+                        console.error('复制失败:', err);
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

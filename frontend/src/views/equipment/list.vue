@@ -14,7 +14,13 @@
         <el-col :span="16">
           <el-form inline>
             <el-form-item label="设备类型">
-              <el-select v-model="searchForm.deviceType" placeholder="请选择设备类型" clearable @change="handleSearch">
+              <el-select 
+                v-model="searchForm.deviceType" 
+                placeholder="请选择设备类型" 
+                clearable 
+                class="search-select"
+                @change="handleSearch"
+              >
                 <el-option label="智能血压计" value="BLOOD_PRESSURE" />
                 <el-option label="血糖仪" value="BLOOD_GLUCOSE" />
                 <el-option label="智能手环" value="SMART_WATCH" />
@@ -27,7 +33,13 @@
               </el-select>
             </el-form-item>
             <el-form-item label="设备状态">
-              <el-select v-model="searchForm.status" placeholder="请选择设备状态" clearable @change="handleSearch">
+              <el-select 
+                v-model="searchForm.status" 
+                placeholder="请选择设备状态" 
+                clearable 
+                class="search-select"
+                @change="handleSearch"
+              >
                 <el-option label="在线" value="ONLINE" />
                 <el-option label="离线" value="OFFLINE" />
                 <el-option label="故障" value="FAULT" />
@@ -670,5 +682,61 @@ onMounted(() => {
 
 :deep(.el-table--striped .el-table__body tr.el-table__row--striped td) {
   background-color: #fafafa;
+}
+
+/* 搜索栏样式优化 */
+.search-select {
+  width: 160px;
+  min-width: 160px;
+}
+
+/* 多选框样式优化 */
+.search-select-multiple {
+  width: 200px;
+  min-width: 200px;
+}
+
+:deep(.search-select .el-input__inner) {
+  width: 100%;
+  min-width: 160px;
+}
+
+:deep(.search-select-multiple .el-input__inner) {
+  width: 100%;
+  min-width: 200px;
+}
+
+/* 多选标签样式优化 */
+:deep(.search-select-multiple .el-select__tags) {
+  max-width: 180px;
+  overflow: hidden;
+}
+
+:deep(.search-select-multiple .el-tag) {
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 输入框高度自适应 */
+:deep(.search-select-multiple .el-input) {
+  height: auto;
+  min-height: 32px;
+}
+
+:deep(.search-select-multiple .el-input__inner) {
+  height: auto;
+  min-height: 32px;
+  line-height: 1.5;
+}
+
+/* 响应式布局优化 */
+@media (max-width: 768px) {
+  .search-select,
+  .search-select-multiple {
+    width: 100%;
+    min-width: 120px;
+  }
 }
 </style>
