@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>侧边栏菜单调试</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .debug-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+        .debug-section h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 14px;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin: 2px;
+        }
+        .status.success { background: #d5f4e6; color: #27ae60; }
+        .status.error { background: #fdf2f2; color: #e74c3c; }
+        .status.warning { background: #fef9e7; color: #f39c12; }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .menu-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background: white;
+        }
+        .menu-item.allowed {
+            border-left: 4px solid #27ae60;
+            background: #d5f4e6;
+        }
+        .menu-item.denied {
+            border-left: 4px solid #e74c3c;
+            background: #fdf2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 侧边栏菜单显示调试</h1>
+        
+        <div class="debug-section">
+            <h3>📊 预定义菜单配置</h3>
+            <div id="menuConfig"></div>
+        </div>
+        
+        <div class="debug-section">
+            <h3>👤 当前用户信息</h3>
+            <div id="userInfo"></div>
+        </div>
+        
+        <div class="debug-section">
+            <h3>🔐 权限检查结果</h3>
+            <div id="permissionCheck"></div>
+        </div>
+        
+        <div class="debug-section">
+            <h3>📋 最终菜单列表</h3>
+            <div id="finalMenu"></div>
+        </div>
+        
+        <div class="debug-section">
+            <h3>🔧 操作工具</h3>
+            <button onclick="debugMenus()">调试菜单显示</button>
+            <button onclick="clearStorage()">清除本地存储</button>
+            <button onclick="simulateAdminLogin()">模拟管理员登录</button>
+            <button onclick="window.open('http://localhost:3001', '_blank')">打开前端页面</button>
+        </div>
+    </div>
+
+    <script>
+        // 模拟前端的菜单配置
+        const menuItems = [
+            {
+                path: '/dashboard',
+                name: 'dashboard',
+                meta: { title: '首页仪表板', icon: 'DataBoard' },
+                roles: ['admin', 'doctor', 'family']
+            },
+            {
+                path: '/elderly',
+                name: 'elderly',
+                meta: { title: '老人档案管理', icon: 'User' },
+                roles: ['admin', 'doctor', 'family']
+            },
+            {
+                path: '/doctor',
+                name: 'doctor',
+                meta: { title: '医生管理', icon: 'Avatar' },
+                roles: ['admin', 'doctor']
+            },
+            {
+                path: '/health-warning',
+                name: 'health-warning',
+                meta: { title: '健康预警', icon: 'Warning' },
+                roles: ['admin', 'doctor', 'family']
+            },
+            {
+                path: '/equipment',
+                name: 'equipment',
+                meta: { title: '设备管理', icon: 'Monitor' },
+                roles: ['admin', 'doctor', 'family']
+            },
+            {
+                path: '/reports',
+                name: 'reports',
+                meta: { title: '报表统计', icon: 'DataAnalysis' },
+                roles: ['admin', 'doctor', 'family']
+            },
+            {
+                path: '/system',
+                name: 'system',
+                meta: { title: '系统管理', icon: 'Setting' },
+                roles: ['admin']
+            }
+        ];
+
+        function getCurrentUser() {
+            try {
+                const userInfo = localStorage.getItem('userInfo');
+                if (userInfo) {
+                    return JSON.parse(userInfo);
+                }
+                // 模拟开发环境自动登录
+                return {
+                    id: 1,
+                    username: 'admin',
+                    name: '系统管理员',
+                    role: 'admin',
+                    roleText: '系统管理员',
+                    permissions: ['*']
+                };
+            } catch (error) {
+                console.error('获取用户信息失败:', error);
+                return null;
+            }
+        }
+
+        function filterMenusByRole(menus, userRole) {
+            return menus.filter(menu => {
+                if (menu.roles && Array.isArray(menu.roles)) {
+                    return menu.roles.includes(userRole);
+                }
+                return true;
+            });
+        }
+
+        function debugMenus() {
+            const currentUser = getCurrentUser();
+            
+            // 显示菜单配置
+            document.getElementById('menuConfig').innerHTML = `
+                <pre>${JSON.stringify(menuItems, null, 2)}</pre>
+            `;
+            
+            // 显示用户信息
+            if (currentUser) {
+                document.getElementById('userInfo').innerHTML = `
+                    <div class="status success">用户已登录</div>
+                    <pre>${JSON.stringify(currentUser, null, 2)}</pre>
+                `;
+            } else {
+                document.getElementById('userInfo').innerHTML = `
+                    <div class="status error">用户未登录</div>
+                `;
+                return;
+            }
+            
+            // 检查每个菜单的权限
+            let permissionHtml = '';
+            menuItems.forEach(menu => {
+                const hasAccess = menu.roles ? menu.roles.includes(currentUser.role) : true;
+                const statusClass = hasAccess ? 'success' : 'error';
+                const statusText = hasAccess ? '允许访问' : '拒绝访问';
+                
+                permissionHtml += `
+                    <div class="menu-item ${hasAccess ? 'allowed' : 'denied'}">
+                        <strong>${menu.meta.title}</strong> (${menu.path})
+                        <span class="status ${statusClass}">${statusText}</span>
+                        <br>
+                        <small>要求角色: ${menu.roles ? menu.roles.join(', ') : '无限制'} | 当前角色: ${currentUser.role}</small>
+                    </div>
+                `;
+            });
+            document.getElementById('permissionCheck').innerHTML = permissionHtml;
+            
+            // 显示最终菜单
+            const finalMenus = filterMenusByRole(menuItems, currentUser.role);
+            document.getElementById('finalMenu').innerHTML = `
+                <p><strong>应该显示的菜单数量:</strong> ${finalMenus.length} / ${menuItems.length}</p>
+                <div class="status ${finalMenus.some(m => m.name === 'equipment') ? 'success' : 'error'}">
+                    设备管理菜单: ${finalMenus.some(m => m.name === 'equipment') ? '应该显示' : '不应该显示'}
+                </div>
+                <pre>${JSON.stringify(finalMenus, null, 2)}</pre>
+            `;
+        }
+
+        function clearStorage() {
+            localStorage.clear();
+            sessionStorage.clear();
+            alert('本地存储已清除，请刷新页面重新登录');
+        }
+
+        function simulateAdminLogin() {
+            const adminData = {
+                id: 1,
+                username: 'admin',
+                name: '系统管理员',
+                role: 'admin',
+                roleText: '系统管理员',
+                permissions: ['*']
+            };
+            
+            localStorage.setItem('token', `mock_token_admin_${Date.now()}`);
+            localStorage.setItem('userInfo', JSON.stringify(adminData));
+            
+            alert('已模拟管理员登录，请刷新前端页面查看菜单');
+            debugMenus();
+        }
+
+        // 页面加载时自动调试
+        window.onload = function() {
+            debugMenus();
+        };
+    </script>
+</body>
+</html>

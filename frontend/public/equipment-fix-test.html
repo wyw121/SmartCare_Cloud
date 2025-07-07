@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备管理页面修复验证</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .fix-section {
+            margin: 30px 0;
+            padding: 20px;
+            border-left: 4px solid #67c23a;
+            background: #f0f9ff;
+        }
+        .test-links {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .test-link {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #409eff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background 0.3s;
+            font-weight: 500;
+        }
+        .test-link:hover {
+            background: #337ecc;
+        }
+        .success {
+            background: #f0f9ff;
+            color: #0891b2;
+            border: 1px solid #0891b2;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .error-info {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #dc2626;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .technical-details {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        code {
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        ul li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 设备管理页面修复验证</h1>
+        
+        <div class="success">
+            ✅ <strong>图标导入错误已修复</strong><br>
+            已将所有不存在的 <code>Copy</code> 图标替换为 <code>DocumentCopy</code> 图标
+        </div>
+
+        <div class="fix-section">
+            <h2>🛠️ 修复内容</h2>
+            <ul>
+                <li>✅ 修复了 DeviceIntegrationDetail.vue 中的图标导入错误</li>
+                <li>✅ 将 <code>Copy</code> 图标替换为 <code>DocumentCopy</code></li>
+                <li>✅ 修复了所有复制按钮的图标引用</li>
+                <li>✅ 保持了功能的完整性和一致性</li>
+            </ul>
+        </div>
+
+        <div class="fix-section">
+            <h2>🧪 测试页面</h2>
+            <p>点击下方链接测试设备管理功能：</p>
+            <div class="test-links">
+                <a href="/equipment/" class="test-link">设备管理首页</a>
+                <a href="/equipment/list" class="test-link">设备列表</a>
+                <a href="/equipment/monitor" class="test-link">设备监控</a>
+                <a href="/login" class="test-link">登录页面</a>
+                <a href="/dashboard" class="test-link">仪表板</a>
+            </div>
+        </div>
+
+        <div class="technical-details">
+            <h3>🔍 技术细节</h3>
+            <p><strong>错误原因：</strong></p>
+            <ul>
+                <li><code>Copy</code> 图标在 Element Plus Icons Vue 包中不存在</li>
+                <li>导致 SyntaxError: 模块没有提供 'Copy' 导出</li>
+                <li>影响路由导航和页面渲染</li>
+            </ul>
+            
+            <p><strong>解决方案：</strong></p>
+            <ul>
+                <li>使用 <code>DocumentCopy</code> 图标替代 <code>Copy</code></li>
+                <li>保持复制功能的语义一致性</li>
+                <li>修改所有相关的图标引用</li>
+            </ul>
+
+            <p><strong>修改文件：</strong></p>
+            <ul>
+                <li><code>frontend/src/views/equipment/components/DeviceIntegrationDetail.vue</code></li>
+            </ul>
+        </div>
+
+        <div class="success">
+            <h3>✅ 验证步骤</h3>
+            <ol>
+                <li>点击侧边栏的"设备管理"菜单</li>
+                <li>检查页面是否正常加载，无控制台错误</li>
+                <li>验证设备接入指南的复制按钮是否正常显示</li>
+                <li>测试复制功能是否正常工作</li>
+            </ol>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <p><strong>当前URL:</strong> <span id="currentUrl"></span></p>
+            <p><strong>当前时间:</strong> <span id="currentTime"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // 更新页面信息
+        function updateInfo() {
+            document.getElementById('currentUrl').textContent = window.location.href;
+            document.getElementById('currentTime').textContent = new Date().toLocaleString('zh-CN');
+        }
+        
+        updateInfo();
+        setInterval(updateInfo, 1000);
+
+        // 监听链接点击
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('test-link')) {
+                console.log('🔍 测试链接点击:', e.target.href);
+            }
+        });
+
+        console.log('✅ 设备管理页面修复验证页面加载完成');
+        console.log('🔧 图标导入错误已修复: Copy -> DocumentCopy');
+    </script>
+</body>
+</html>

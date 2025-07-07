@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备管理功能测试</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+        .test-section h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success {
+            border-left: 4px solid #27ae60;
+            background: #d5f4e6;
+        }
+        .error {
+            border-left: 4px solid #e74c3c;
+            background: #fdf2f2;
+        }
+        .info {
+            border-left: 4px solid #f39c12;
+            background: #fef9e7;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .status.online { background: #d5f4e6; color: #27ae60; }
+        .status.offline { background: #fdf2f2; color: #e74c3c; }
+        .links {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .links a {
+            display: inline-block;
+            margin: 0 15px;
+            padding: 10px 20px;
+            background: #34495e;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .links a:hover {
+            background: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 智慧医养平台 - 设备管理功能测试</h1>
+        
+        <div class="test-section">
+            <h3>🔧 后端API测试</h3>
+            <button onclick="testEquipmentList()">测试设备列表</button>
+            <button onclick="testEquipmentStatistics()">测试设备统计</button>
+            <button onclick="testEquipmentTypeStats()">测试类型统计</button>
+            <button onclick="testEquipmentDetail(1)">测试设备详情</button>
+            <button onclick="testCreateEquipment()">测试创建设备</button>
+            <div id="apiResult" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 设备数据展示</h3>
+            <button onclick="showEquipmentData()">显示设备数据</button>
+            <div id="equipmentData" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔗 接入参数测试</h3>
+            <button onclick="testIntegrationParams('BLOOD_PRESSURE')">血压计参数</button>
+            <button onclick="testIntegrationParams('BLOOD_GLUCOSE')">血糖仪参数</button>
+            <button onclick="testIntegrationParams('SMART_WATCH')">智能手环参数</button>
+            <button onclick="testIntegrationParams('ECG_MONITOR')">心电监护仪参数</button>
+            <div id="paramsResult" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="links">
+            <a href="http://localhost:3001" target="_blank">前端页面 (Vue)</a>
+            <a href="http://localhost:8080/swagger-ui/" target="_blank">API文档 (Swagger)</a>
+            <a href="http://localhost:3001/equipment/list" target="_blank">设备管理页面</a>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api';
+
+        function showResult(elementId, content, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = content;
+            element.className = `result ${type}`;
+            element.style.display = 'block';
+        }
+
+        function formatJson(obj) {
+            return JSON.stringify(obj, null, 2);
+        }
+
+        async function apiRequest(url, options = {}) {
+            try {
+                const response = await fetch(`${API_BASE}${url}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        async function testEquipmentList() {
+            try {
+                showResult('apiResult', '正在请求设备列表...', 'info');
+                const data = await apiRequest('/equipment/list?current=1&size=10');
+                showResult('apiResult', 
+                    `✅ 设备列表获取成功！\n\n${formatJson(data)}`, 
+                    'success'
+                );
+            } catch (error) {
+                showResult('apiResult', 
+                    `❌ 设备列表获取失败：\n\n${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        async function testEquipmentStatistics() {
+            try {
+                showResult('apiResult', '正在请求设备统计...', 'info');
+                const data = await apiRequest('/equipment/statistics');
+                showResult('apiResult', 
+                    `✅ 设备统计获取成功！\n\n${formatJson(data)}`, 
+                    'success'
+                );
+            } catch (error) {
+                showResult('apiResult', 
+                    `❌ 设备统计获取失败：\n\n${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        async function testEquipmentTypeStats() {
+            try {
+                showResult('apiResult', '正在请求类型统计...', 'info');
+                const data = await apiRequest('/equipment/type-statistics');
+                showResult('apiResult', 
+                    `✅ 类型统计获取成功！\n\n${formatJson(data)}`, 
+                    'success'
+                );
+            } catch (error) {
+                showResult('apiResult', 
+                    `❌ 类型统计获取失败：\n\n${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        async function testEquipmentDetail(id) {
+            try {
+                showResult('apiResult', `正在请求设备详情 (ID: ${id})...`, 'info');
+                const data = await apiRequest(`/equipment/${id}`);
+                showResult('apiResult', 
+                    `✅ 设备详情获取成功！\n\n${formatJson(data)}`, 
+                    'success'
+                );
+            } catch (error) {
+                showResult('apiResult', 
+                    `❌ 设备详情获取失败：\n\n${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        async function testCreateEquipment() {
+            try {
+                const equipmentData = {
+                    deviceId: 'TEST001',
+                    deviceName: '测试设备-001',
+                    deviceType: 'BLOOD_PRESSURE',
+                    brand: '测试品牌',
+                    model: 'TEST-MODEL',
+                    manufacturer: '测试制造商',
+                    status: 'ONLINE',
+                    location: '测试位置',
+                    protocol: 'WIFI',
+                    description: '这是一个测试设备'
+                };
+                
+                showResult('apiResult', '正在创建测试设备...', 'info');
+                const data = await apiRequest('/equipment', {
+                    method: 'POST',
+                    body: JSON.stringify(equipmentData)
+                });
+                showResult('apiResult', 
+                    `✅ 设备创建成功！\n\n请求数据：\n${formatJson(equipmentData)}\n\n响应数据：\n${formatJson(data)}`, 
+                    'success'
+                );
+            } catch (error) {
+                showResult('apiResult', 
+                    `❌ 设备创建失败：\n\n${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        async function testIntegrationParams(deviceType) {
+            try {
+                showResult('paramsResult', `正在请求 ${deviceType} 接入参数...`, 'info');
+                const data = await apiRequest(`/equipment/integration-params/${deviceType}`);
+                showResult('paramsResult', 
+                    `✅ ${deviceType} 接入参数获取成功！\n\n${formatJson(data)}`, 
+                    'success'
+                );
+            } catch (error) {
+                showResult('paramsResult', 
+                    `❌ ${deviceType} 接入参数获取失败：\n\n${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        async function showEquipmentData() {
+            try {
+                showResult('equipmentData', '正在加载设备数据...', 'info');
+                const listData = await apiRequest('/equipment/list?current=1&size=100');
+                
+                if (listData.code === 200 && listData.data && listData.data.records) {
+                    const devices = listData.data.records;
+                    let html = '<h4>📋 设备列表总览</h4>';
+                    html += `<p><strong>总数：</strong>${listData.data.total} 台设备</p>`;
+                    
+                    // 按类型分组统计
+                    const typeStats = {};
+                    const statusStats = {};
+                    devices.forEach(device => {
+                        typeStats[device.deviceType] = (typeStats[device.deviceType] || 0) + 1;
+                        statusStats[device.status] = (statusStats[device.status] || 0) + 1;
+                    });
+                    
+                    html += '<h5>🔧 设备类型分布：</h5>';
+                    Object.entries(typeStats).forEach(([type, count]) => {
+                        html += `<span class="status info">${type}: ${count}台</span>`;
+                    });
+                    
+                    html += '<h5>📊 设备状态分布：</h5>';
+                    Object.entries(statusStats).forEach(([status, count]) => {
+                        const statusClass = status === 'ONLINE' ? 'online' : 'offline';
+                        html += `<span class="status ${statusClass}">${status}: ${count}台</span>`;
+                    });
+                    
+                    html += '<h5>📱 设备详情：</h5>';
+                    html += '<table style="width:100%; border-collapse: collapse; margin-top: 10px;">';
+                    html += '<tr style="background: #f8f9fa; border-bottom: 1px solid #ddd;"><th style="padding: 8px; text-align: left;">设备名称</th><th style="padding: 8px; text-align: left;">类型</th><th style="padding: 8px; text-align: left;">品牌</th><th style="padding: 8px; text-align: left;">状态</th><th style="padding: 8px; text-align: left;">位置</th></tr>';
+                    
+                    devices.slice(0, 10).forEach(device => {
+                        const statusClass = device.status === 'ONLINE' ? 'online' : 'offline';
+                        html += `<tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 8px;">${device.deviceName}</td>
+                            <td style="padding: 8px;">${device.deviceType}</td>
+                            <td style="padding: 8px;">${device.brand || '-'}</td>
+                            <td style="padding: 8px;"><span class="status ${statusClass}">${device.status}</span></td>
+                            <td style="padding: 8px;">${device.location || '-'}</td>
+                        </tr>`;
+                    });
+                    html += '</table>';
+                    
+                    if (devices.length > 10) {
+                        html += `<p style="margin-top: 10px; color: #666;">注：仅显示前10条记录，共${devices.length}条</p>`;
+                    }
+                    
+                    showResult('equipmentData', html, 'success');
+                } else {
+                    showResult('equipmentData', '❌ 未获取到设备数据', 'error');
+                }
+            } catch (error) {
+                showResult('equipmentData', 
+                    `❌ 设备数据加载失败：\n\n${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        // 页面加载时自动测试连接
+        window.onload = function() {
+            setTimeout(() => {
+                console.log('🔧 自动测试后端连接...');
+                testEquipmentList();
+            }, 1000);
+        };
+    </script>
+</body>
+</html>

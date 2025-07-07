@@ -250,13 +250,13 @@ export const health = {
 }
 
 /**
- * 设备管理相关API
+ * 设备管理API
  */
 export const equipment = {
   // 获取设备列表
   getList(params) {
     return request({
-      url: '/equipment',
+      url: '/equipment/list',
       method: 'get',
       params
     })
@@ -270,7 +270,7 @@ export const equipment = {
     })
   },
 
-  // 新增设备
+  // 创建设备
   create(data) {
     return request({
       url: '/equipment',
@@ -296,20 +296,72 @@ export const equipment = {
     })
   },
 
-  // 获取设备状态
-  getStatus(id) {
+  // 批量删除设备
+  batchDelete(ids) {
     return request({
-      url: `/equipment/${id}/status`,
+      url: '/equipment/batch',
+      method: 'delete',
+      data: { ids }
+    })
+  },
+
+  // 获取设备统计信息
+  getStatistics() {
+    return request({
+      url: '/equipment/statistics',
       method: 'get'
     })
   },
 
-  // 设备控制
-  control(id, action) {
+  // 获取设备类型统计
+  getTypeStatistics() {
     return request({
-      url: `/equipment/${id}/control`,
-      method: 'post',
-      data: { action }
+      url: '/equipment/type-statistics',
+      method: 'get'
+    })
+  },
+
+  // 获取设备接入参数
+  getIntegrationParams(deviceType) {
+    return request({
+      url: `/equipment/integration-params/${deviceType}`,
+      method: 'get'
+    })
+  },
+
+  // 测试设备连接
+  testConnection(id) {
+    return request({
+      url: `/equipment/${id}/test-connection`,
+      method: 'post'
+    })
+  },
+
+  // 更新设备状态
+  updateStatus(id, status) {
+    return request({
+      url: `/equipment/${id}/status`,
+      method: 'put',
+      data: { status }
+    })
+  },
+
+  // 获取设备日志
+  getLogs(id, params) {
+    return request({
+      url: `/equipment/${id}/logs`,
+      method: 'get',
+      params
+    })
+  },
+
+  // 导出设备列表
+  export(params) {
+    return request({
+      url: '/equipment/export',
+      method: 'get',
+      params,
+      responseType: 'blob'
     })
   }
 }
@@ -356,7 +408,7 @@ export const reports = {
 }
 
 /**
- * 系统管理相关API
+ * 系统管理API
  */
 export const system = {
   // 用户管理

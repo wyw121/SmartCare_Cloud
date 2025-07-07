@@ -28,9 +28,8 @@
 <script>
 import { useAppStore } from '@/store/app'
 import { useUserStore } from '@/store/user'
-import { filterMenusByRole } from '@/utils/permission'
 import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import SidebarItem from './SidebarItem.vue'
 
 export default {
@@ -40,7 +39,6 @@ export default {
   },
   setup() {
     const route = useRoute()
-    const router = useRouter()
     const appStore = useAppStore()
     const userStore = useUserStore()
 
@@ -56,8 +54,11 @@ export default {
 
     // 基于角色过滤路由
     const routes = computed(() => {
-      const allRoutes = router.getRoutes()
       const userRole = userStore.userRole
+      
+      // 调试输出
+      console.log('🔍 侧边栏调试 - 当前用户角色:', userRole)
+      console.log('🔍 侧边栏调试 - 用户信息:', userStore.userInfo)
       
       // 预定义的菜单结构 - 基于实际路由配置
       const menuItems = [
@@ -89,7 +90,7 @@ export default {
           path: '/equipment',
           name: 'equipment',
           meta: { title: '设备管理', icon: 'Monitor' },
-          roles: ['admin', 'doctor']
+          roles: ['admin', 'doctor', 'family']
         },
         {
           path: '/reports',
@@ -106,7 +107,20 @@ export default {
       ]
       
       // 根据角色过滤菜单
-      return filterMenusByRole(menuItems, userRole)
+      const filteredMenus = menuItems.filter(menu => {
+        // 如果菜单项定义了roles属性，则检查当前用户角色是否在允许列表中
+        if (menu.roles && Array.isArray(menu.roles)) {
+          return menu.roles.includes(userRole)
+        }
+        
+        // 如果没有定义roles，默认允许访问
+        return true
+      })
+      
+      console.log('🔍 侧边栏调试 - 过滤后的菜单:', filteredMenus)
+      console.log('🔍 侧边栏调试 - 设备管理菜单是否显示:', filteredMenus.some(m => m.name === 'equipment'))
+      
+      return filteredMenus
     })
 
     return {
