@@ -77,7 +77,7 @@ export default {
           meta: { title: '医生管理', icon: 'Avatar' }
         },
         {
-          path: '/health-warning',
+          path: '/health/warning',
           name: 'health-warning',
           meta: { title: '健康预警', icon: 'Warning' }
         },

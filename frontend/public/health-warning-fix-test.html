@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康预警修复验证</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-item {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .test-item h3 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        .test-link {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .test-link:hover {
+            background: #0056b3;
+        }
+        .code-block {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        .fix-item {
+            padding: 10px;
+            margin: 10px 0;
+            background: #e8f5e8;
+            border-left: 4px solid #52c41a;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 健康预警功能修复验证</h1>
+        
+        <div class="test-item">
+            <h3>修复内容总结</h3>
+            <p><strong>主要问题：</strong>侧边栏健康预警菜单路径配置错误，导致路由跳转失败和API导入错误。</p>
+            
+            <div class="fix-item">
+                <strong>✅ 修复1：</strong>重新生成 <code>healthWarning.js</code> API文件，解决字符编码问题
+            </div>
+            
+            <div class="fix-item">
+                <strong>✅ 修复2：</strong>确保所有必要的API函数都正确导出，包括 <code>deleteHealthWarning</code>
+            </div>
+            
+            <div class="fix-item">
+                <strong>✅ 修复3：</strong>添加了 <code>updateHealthWarningStatus</code> 函数别名
+            </div>
+            
+            <div class="fix-item">
+                <strong>✅ 修复4：</strong>修复了侧边栏路径配置：<code>/health-warning</code> → <code>/health/warning</code>
+            </div>
+        </div>
+
+        <div class="test-item">
+            <h3>测试验证</h3>
+            <p>点击以下链接测试健康预警功能是否正常：</p>
+            <a href="/" class="test-link">首页</a>
+            <a href="/health/warning" class="test-link">健康预警（修复后）</a>
+            <a href="/dashboard" class="test-link">仪表板</a>
+        </div>
+
+        <div class="test-item">
+            <h3>路由配置对比</h3>
+            <div class="code-block">
+                <strong>修复前：</strong><br>
+                - 侧边栏菜单：/health-warning<br>
+                - 实际路由：/health/warning<br>
+                - 结果：路径不匹配，跳转失败<br><br>
+                
+                <strong>修复后：</strong><br>
+                - 侧边栏菜单：/health/warning<br>
+                - 实际路由：/health/warning<br>
+                - 结果：路径匹配，跳转成功
+            </div>
+        </div>
+
+        <div class="test-item">
+            <h3>API导入检查</h3>
+            <div class="code-block">
+                <strong>确保以下函数正确导入：</strong><br>
+                ✅ deleteHealthWarning<br>
+                ✅ deleteHealthWarningBatch<br>
+                ✅ getHealthWarningPageList<br>
+                ✅ getWarningLevelStatistics<br>
+                ✅ handleHealthWarning<br>
+                ✅ updateHealthWarningStatus
+            </div>
+        </div>
+
+        <div class="test-item">
+            <h3>验证步骤</h3>
+            <ol>
+                <li>确保前端服务器正在运行（http://localhost:3000）</li>
+                <li>登录系统（如果需要）</li>
+                <li>点击左侧菜单栏的"健康预警"</li>
+                <li>检查页面是否正常加载，没有控制台错误</li>
+                <li>测试页面功能（数据加载、操作按钮等）</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        console.log('健康预警修复验证页面加载完成');
+        console.log('当前页面路径:', window.location.pathname);
+        
+        // 测试路由
+        if (window.location.pathname === '/health-warning-fix-test.html') {
+            console.log('✅ 测试页面路径正确');
+        }
+    </script>
+</body>
+</html>
