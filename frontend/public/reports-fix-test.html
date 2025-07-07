@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>报表统计权限修复测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-item {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .test-item h3 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        .test-link {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .test-link:hover {
+            background: #0056b3;
+        }
+        .code-block {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        .fix-item {
+            padding: 10px;
+            margin: 10px 0;
+            background: #e8f5e8;
+            border-left: 4px solid #52c41a;
+            border-radius: 4px;
+        }
+        .error-item {
+            padding: 10px;
+            margin: 10px 0;
+            background: #ffe6e6;
+            border-left: 4px solid #f5222d;
+            border-radius: 4px;
+        }
+        .api-test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #fff7e6;
+            border-radius: 5px;
+            border-left: 4px solid #fa8c16;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 报表统计权限修复测试</h1>
+        
+        <div class="test-item">
+            <h3>问题分析</h3>
+            <div class="error-item">
+                <strong>❌ 原始问题：</strong>报表统计页面所有API请求都返回403 Forbidden错误
+            </div>
+            <div class="code-block">
+                <strong>错误日志：</strong><br>
+                GET http://localhost:3000/api/api/reports/health-status 403 (Forbidden)<br>
+                GET http://localhost:3000/api/api/reports/overview 403 (Forbidden)<br>
+                GET http://localhost:3000/api/api/reports/equipment-usage 403 (Forbidden)<br>
+                ...
+            </div>
+        </div>
+
+        <div class="test-item">
+            <h3>修复内容</h3>
+            <div class="fix-item">
+                <strong>✅ 修复1：</strong>移除request.js中对 <code>/reports/</code> 路径的openApi配置，确保报表API需要认证
+            </div>
+            <div class="fix-item">
+                <strong>✅ 修复2：</strong>修复reports.js中的重复API路径问题（去除额外的 <code>/api</code> 前缀）
+            </div>
+            <div class="fix-item">
+                <strong>✅ 修复3：</strong>创建完整的Mock数据支持，包含所有报表统计功能
+            </div>
+            <div class="fix-item">
+                <strong>✅ 修复4：</strong>为所有报表API函数添加Mock数据支持
+            </div>
+        </div>
+
+        <div class="test-item">
+            <h3>修复前后对比</h3>
+            <div class="code-block">
+                <strong>修复前：</strong><br>
+                - 请求URL：/api/api/reports/health-status（重复前缀）<br>
+                - 认证头：无（被错误地标记为openApi）<br>
+                - 结果：403 Forbidden<br><br>
+                
+                <strong>修复后：</strong><br>
+                - 请求URL：/api/reports/health-status（正确路径）<br>
+                - 认证头：Bearer token（正确添加）<br>
+                - 结果：正常响应或Mock数据
+            </div>
+        </div>
+
+        <div class="api-test-section">
+            <h3>API测试验证</h3>
+            <p>修复后的API路径：</p>
+            <ul>
+                <li>✅ /api/reports/overview - 数据概览统计</li>
+                <li>✅ /api/reports/health-status - 健康状况统计</li>
+                <li>✅ /api/reports/warning-analysis - 预警统计分析</li>
+                <li>✅ /api/reports/medical-service - 医疗服务统计</li>
+                <li>✅ /api/reports/trend-analysis - 趋势分析数据</li>
+                <li>✅ /api/reports/care-level - 照护等级统计</li>
+                <li>✅ /api/reports/equipment-usage - 设备使用统计</li>
+            </ul>
+        </div>
+
+        <div class="test-item">
+            <h3>测试验证</h3>
+            <p>点击以下链接测试报表统计功能：</p>
+            <a href="/reports/statistics" class="test-link">报表统计页面</a>
+            <a href="/dashboard" class="test-link">仪表板</a>
+            <a href="/" class="test-link">首页</a>
+        </div>
+
+        <div class="test-item">
+            <h3>验证步骤</h3>
+            <ol>
+                <li>确保前端服务器正在运行（http://localhost:3000）</li>
+                <li>登录系统，获取有效的认证token</li>
+                <li>访问报表统计页面（/reports/statistics）</li>
+                <li>检查浏览器控制台是否还有403错误</li>
+                <li>验证各个统计图表是否正常显示</li>
+                <li>测试各项功能是否正常工作</li>
+            </ol>
+        </div>
+
+        <div class="test-item">
+            <h3>Mock数据支持</h3>
+            <p>如果后端API暂时不可用，可以启用Mock数据：</p>
+            <div class="code-block">
+                // 在 reports.js 中修改
+                const isDev = true; // 启用Mock数据
+            </div>
+            <p>Mock数据包含：</p>
+            <ul>
+                <li>数据概览统计</li>
+                <li>健康状况分布</li>
+                <li>预警趋势分析</li>
+                <li>医疗服务统计</li>
+                <li>设备使用情况</li>
+                <li>照护等级分布</li>
+                <li>地区分布数据</li>
+                <li>服务质量评分</li>
+                <li>AI洞察报告</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        console.log('报表统计权限修复测试页面加载完成');
+        console.log('当前页面路径:', window.location.pathname);
+        
+        // 测试API路径
+        const apiPaths = [
+            '/api/reports/overview',
+            '/api/reports/health-status',
+            '/api/reports/warning-analysis',
+            '/api/reports/medical-service',
+            '/api/reports/trend-analysis',
+            '/api/reports/care-level',
+            '/api/reports/equipment-usage'
+        ];
+        
+        console.log('修复后的API路径:', apiPaths);
+        
+        // 检查是否存在认证token
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        if (token) {
+            console.log('✅ 发现认证token，API请求应该包含认证头');
+        } else {
+            console.log('⚠️ 未发现认证token，请先登录系统');
+        }
+    </script>
+</body>
+</html>

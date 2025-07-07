@@ -18,7 +18,7 @@ service.interceptors.request.use(
     
     // 添加认证token
     // 开发环境：暂时移除医生、老人、健康预警等API的认证要求
-    const openApis = ['/doctor/', '/elderly/', '/health-warning/', '/reports/']
+    const openApis = ['/doctor/', '/elderly/', '/health-warning/']
     const isOpenApi = openApis.some(api => config.url.includes(api))
     
     if (userStore.token && !isOpenApi) {

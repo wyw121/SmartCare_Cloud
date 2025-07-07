@@ -1,15 +1,34 @@
 import request from '@/utils/request'
+import {
+  mockOverviewStatistics,
+  mockHealthStatusStatistics,
+  mockWarningAnalysis,
+  mockMedicalServiceStatistics,
+  mockCareLevelStatistics,
+  mockEquipmentUsageStatistics,
+  mockTrendAnalysis,
+  mockRegionDistribution,
+  mockServiceQuality,
+  mockAIInsights,
+  mockStatisticsData
+} from './mockReports'
 
 /**
  * 报表分析相关API
  */
 
+// 开发模式控制
+const isDev = false; // 是否使用Mock数据，生产环境设为false
+
 /**
  * 获取数据概览统计
  */
 export function getOverviewStatistics() {
+  if (isDev) {
+    return Promise.resolve(mockOverviewStatistics)
+  }
   return request({
-    url: '/api/reports/overview',
+    url: '/reports/overview',
     method: 'get'
   })
 }
@@ -18,8 +37,11 @@ export function getOverviewStatistics() {
  * 获取健康状况统计
  */
 export function getHealthStatusStatistics() {
+  if (isDev) {
+    return Promise.resolve(mockHealthStatusStatistics)
+  }
   return request({
-    url: '/api/reports/health-status',
+    url: '/reports/health-status',
     method: 'get'
   })
 }
@@ -28,8 +50,11 @@ export function getHealthStatusStatistics() {
  * 获取预警统计分析
  */
 export function getWarningAnalysis() {
+  if (isDev) {
+    return Promise.resolve(mockWarningAnalysis)
+  }
   return request({
-    url: '/api/reports/warning-analysis',
+    url: '/reports/warning-analysis',
     method: 'get'
   })
 }
@@ -38,8 +63,11 @@ export function getWarningAnalysis() {
  * 获取医疗服务统计
  */
 export function getMedicalServiceStatistics() {
+  if (isDev) {
+    return Promise.resolve(mockMedicalServiceStatistics)
+  }
   return request({
-    url: '/api/reports/medical-service',
+    url: '/reports/medical-service',
     method: 'get'
   })
 }
@@ -49,8 +77,11 @@ export function getMedicalServiceStatistics() {
  * @param {string} timeRange - 时间范围
  */
 export function getTrendAnalysis(timeRange = '30') {
+  if (isDev) {
+    return Promise.resolve(mockTrendAnalysis)
+  }
   return request({
-    url: '/api/reports/trend-analysis',
+    url: '/reports/trend-analysis',
     method: 'get',
     params: { timeRange }
   })
@@ -60,8 +91,11 @@ export function getTrendAnalysis(timeRange = '30') {
  * 获取照护等级统计
  */
 export function getCareLevelStatistics() {
+  if (isDev) {
+    return Promise.resolve(mockCareLevelStatistics)
+  }
   return request({
-    url: '/api/reports/care-level',
+    url: '/reports/care-level',
     method: 'get'
   })
 }
@@ -70,8 +104,11 @@ export function getCareLevelStatistics() {
  * 获取设备使用统计
  */
 export function getEquipmentUsageStatistics() {
+  if (isDev) {
+    return Promise.resolve(mockEquipmentUsageStatistics)
+  }
   return request({
-    url: '/api/reports/equipment-usage',
+    url: '/reports/equipment-usage',
     method: 'get'
   })
 }
@@ -80,6 +117,9 @@ export function getEquipmentUsageStatistics() {
  * 获取地区分布数据
  */
 export function getRegionDistribution() {
+  if (isDev) {
+    return Promise.resolve(mockRegionDistribution)
+  }
   return request({
     url: '/reports/region-distribution',
     method: 'get'
@@ -90,6 +130,9 @@ export function getRegionDistribution() {
  * 获取服务质量评分
  */
 export function getServiceQuality() {
+  if (isDev) {
+    return Promise.resolve(mockServiceQuality)
+  }
   return request({
     url: '/reports/service-quality',
     method: 'get'
@@ -131,6 +174,9 @@ export function exportAnalysisData(params) {
  * 获取AI洞察报告
  */
 export function getAIInsights() {
+  if (isDev) {
+    return Promise.resolve(mockAIInsights)
+  }
   return request({
     url: '/reports/ai-insights',
     method: 'get'
@@ -155,6 +201,9 @@ export function generateAIInsights(params) {
  * 获取报表统计数据
  */
 export function getStatisticsData() {
+  if (isDev) {
+    return Promise.resolve(mockStatisticsData)
+  }
   return request({
     url: '/reports/statistics',
     method: 'get'
