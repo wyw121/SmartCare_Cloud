@@ -35,6 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/actuator/**").permitAll()
                 // 开发环境：暂时开放主要业务接口以便前端测试
                 .antMatchers("/api/elderly/**", "/api/user/**", "/api/health-warning/**", "/api/doctor/**", "/api/reports/**").permitAll()
+                .antMatchers("/api/family/**").permitAll() // 家属专用API
                 .antMatchers("/api/system/**").permitAll()
                 .antMatchers("/test/**", "/api/init/**", "/api/admin/**", "/api/temp/**").permitAll()
                 // 其他接口需要认证

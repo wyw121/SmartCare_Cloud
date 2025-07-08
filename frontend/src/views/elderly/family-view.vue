@@ -45,59 +45,72 @@
           v-for="elderly in elderlyList" 
           :key="elderly.id" 
           class="elderly-card"
-          @click="handleViewDetail(elderly)"
+          shadow="hover"
         >
-          <div class="elderly-info">
-            <!-- 头像和基本信息 -->
-            <div class="elderly-header">
-              <div class="avatar-section">
+          <template #header>
+            <div class="card-header">
+              <div class="elderly-info">
                 <el-avatar 
-                  :size="60" 
-                  :src="elderly.avatar"
+                  :size="50" 
+                  :src="elderly.avatar" 
+                  :icon="elderly.gender === 1 ? 'el-icon-male' : 'el-icon-female'"
                   class="elderly-avatar"
-                >
-                  <i class="el-icon-user-solid"></i>
-                </el-avatar>
-                <div class="relationship-tag">
-                  <el-tag size="small" type="info">
-                    {{ elderly.relationship || '家属' }}
-                  </el-tag>
+                ></el-avatar>
+                <div class="basic-info">
+                  <h4>{{ elderly.name }}</h4>
+                  <p class="age-gender">
+                    {{ calculateAge(elderly.birthDate) }}岁 
+                    {{ elderly.gender === 1 ? '男' : '女' }}
+                  </p>
                 </div>
               </div>
-              <div class="basic-info">
-                <h4 class="elderly-name">{{ elderly.name }}</h4>
-                <div class="elderly-details">
-                  <span class="age">{{ calculateAge(elderly.birthDate) }}岁</span>
-                  <span class="gender">{{ elderly.gender === 1 ? '男' : '女' }}</span>
-                </div>
-                <div class="contact-info">
-                  <i class="el-icon-phone"></i>
-                  {{ elderly.phone || '未设置' }}
-                </div>
-              </div>
-            </div>
-
-            <!-- 健康状态 -->
-            <div class="health-status">
-              <div class="status-header">
-                <span class="status-label">健康状态</span>
+              <div class="status-badges">
                 <el-tag 
-                  :type="getHealthStatusType(elderly.healthStatus)"
-                  class="status-tag"
+                  :type="getHealthStatusType(elderly.healthStatus)" 
+                  size="small"
                 >
                   {{ getHealthStatusText(elderly.healthStatus) }}
                 </el-tag>
+                <el-tag 
+                  v-if="elderly.warnings && elderly.warnings.length > 0"
+                  type="warning" 
+                  size="small"
+                >
+                  {{ elderly.warnings.length }}条预警
+                </el-tag>
               </div>
-              
-              <!-- 最近体征数据 -->
-              <div class="vital-signs" v-if="elderly.latestVitals">
+            </div>
+          </template>
+
+          <!-- 卡片内容 -->
+          <div class="card-content">
+            <!-- 基本信息 -->
+            <div class="info-section">
+              <div class="info-item">
+                <span class="label">房间号：</span>
+                <span class="value">{{ elderly.roomNumber || '未分配' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">护理等级：</span>
+                <span class="value">{{ getCareLevel(elderly.careLevel) }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">我的关系：</span>
+                <span class="value">{{ elderly.relationship || '家属' }}</span>
+              </div>
+            </div>
+
+            <!-- 健康状况 -->
+            <div class="health-section" v-if="elderly.latestVitals">
+              <h5>最新体征</h5>
+              <div class="vitals-grid">
                 <div class="vital-item">
                   <span class="vital-label">血压</span>
                   <span class="vital-value">{{ elderly.latestVitals.bloodPressure || '--' }}</span>
                 </div>
                 <div class="vital-item">
                   <span class="vital-label">心率</span>
-                  <span class="vital-value">{{ elderly.latestVitals.heartRate || '--' }}次/分</span>
+                  <span class="vital-value">{{ elderly.latestVitals.heartRate || '--' }} bpm</span>
                 </div>
                 <div class="vital-item">
                   <span class="vital-label">体温</span>
@@ -107,159 +120,112 @@
             </div>
 
             <!-- 预警信息 -->
-            <div class="warnings" v-if="elderly.warnings && elderly.warnings.length > 0">
-              <div class="warnings-header">
-                <i class="el-icon-warning"></i>
-                <span>健康提醒</span>
-              </div>
+            <div class="warning-section" v-if="elderly.warnings && elderly.warnings.length > 0">
+              <h5>健康预警</h5>
               <div class="warning-list">
                 <div 
                   v-for="warning in elderly.warnings.slice(0, 2)" 
                   :key="warning.id"
                   class="warning-item"
                 >
-                  <el-tag type="warning" size="small">{{ warning.message }}</el-tag>
+                  <el-icon class="warning-icon"><Warning /></el-icon>
+                  <span class="warning-text">{{ warning.message }}</span>
+                </div>
+                <div v-if="elderly.warnings.length > 2" class="more-warnings">
+                  还有{{ elderly.warnings.length - 2 }}条预警...
                 </div>
               </div>
             </div>
+          </div>
 
-            <!-- 操作按钮 -->
+          <!-- 操作按钮 -->
+          <template #footer>
             <div class="card-actions">
               <el-button 
                 type="primary" 
                 size="small" 
-                @click.stop="handleViewDetail(elderly)"
+                @click="viewElderlyDetail(elderly)"
+                :icon="View"
               >
-                <i class="el-icon-view"></i>
                 查看详情
               </el-button>
               <el-button 
                 type="success" 
                 size="small" 
-                @click.stop="handleViewHealth(elderly)"
+                @click="viewHealthRecord(elderly)"
+                :icon="Document"
               >
-                <i class="el-icon-monitor"></i>
                 健康档案
+              </el-button>
+              <el-button 
+                v-if="elderly.warnings && elderly.warnings.length > 0"
+                type="warning" 
+                size="small" 
+                @click="viewWarnings(elderly)"
+                :icon="Bell"
+              >
+                查看预警
               </el-button>
               <el-button 
                 type="info" 
                 size="small" 
-                @click.stop="handleContact(elderly)"
+                @click="contactMedical(elderly)"
+                :icon="Message"
               >
-                <i class="el-icon-chat-dot-round"></i>
                 联系医护
               </el-button>
             </div>
-
-            <!-- 最后更新时间 -->
-            <div class="update-time">
-              <i class="el-icon-time"></i>
-              最后更新：{{ formatTime(elderly.updateTime) }}
-            </div>
-          </div>
+          </template>
         </el-card>
       </div>
 
       <!-- 空状态 -->
-      <div v-if="elderlyList.length === 0" class="empty-state">
-        <el-empty 
-          :image-size="200"
-          description="暂无关联的长辈信息"
-        >
-          <el-button type="primary" @click="handleRequestAccess">
-            申请关联长辈
-          </el-button>
-        </el-empty>
+      <el-empty 
+        v-if="!loading && elderlyList.length === 0"
+        description="暂无关联长辈信息"
+        :image-size="100"
+      >
+        <el-button type="primary" @click="loadElderlyList">刷新数据</el-button>
+      </el-empty>
+
+      <!-- 加载状态 -->
+      <div v-if="loading" class="loading-container">
+        <el-skeleton :rows="3" animated />
       </div>
     </div>
 
-    <!-- 快速联系区域 -->
-    <el-card class="quick-contact">
-      <div class="contact-header">
-        <h3>
-          <i class="el-icon-service"></i>
-          快速联系
-        </h3>
-      </div>
-      <div class="contact-options">
-        <el-button type="primary" @click="handleEmergencyCall">
-          <i class="el-icon-phone"></i>
-          紧急联系
-        </el-button>
-        <el-button type="success" @click="handleNurseCall">
-          <i class="el-icon-chat-dot-round"></i>
-          联系护士
-        </el-button>
-        <el-button type="info" @click="handleDoctorConsult">
-          <i class="el-icon-user"></i>
-          医生咨询
-        </el-button>
-        <el-button type="warning" @click="handleComplaint">
-          <i class="el-icon-edit-outline"></i>
-          意见反馈
-        </el-button>
-      </div>
-    </el-card>
-
-    <!-- 健康提醒弹窗 -->
-    <el-dialog
-      title="健康提醒详情"
-      v-model="warningDialogVisible"
-      width="600px"
-    >
-      <div v-if="selectedWarnings.length > 0">
-        <div 
-          v-for="warning in selectedWarnings" 
-          :key="warning.id"
-          class="warning-detail"
-        >
-          <div class="warning-header">
-            <el-tag :type="getWarningType(warning.level)">
-              {{ getWarningLevelText(warning.level) }}
-            </el-tag>
-            <span class="warning-time">{{ formatTime(warning.createTime) }}</span>
-          </div>
-          <div class="warning-content">{{ warning.message }}</div>
-          <div class="warning-suggestion" v-if="warning.suggestion">
-            <strong>建议：</strong>{{ warning.suggestion }}
-          </div>
-        </div>
-      </div>
-      <template #footer>
-        <el-button @click="warningDialogVisible = false">关闭</el-button>
-        <el-button type="primary" @click="handleMarkAsRead">标记为已读</el-button>
-      </template>
-    </el-dialog>
-
-    <!-- 联系医护弹窗 -->
-    <el-dialog
-      title="联系医护人员"
+    <!-- 联系医护对话框 -->
+    <el-dialog 
       v-model="contactDialogVisible"
+      title="联系医护人员"
       width="500px"
     >
       <el-form :model="contactForm" label-width="80px">
-        <el-form-item label="联系人">
-          <el-input v-model="contactForm.elderlyName" readonly />
+        <el-form-item label="长辈姓名">
+          <el-input v-model="contactForm.elderlyName" disabled />
         </el-form-item>
         <el-form-item label="紧急程度">
-          <el-radio-group v-model="contactForm.urgency">
-            <el-radio label="normal">一般咨询</el-radio>
-            <el-radio label="urgent">紧急情况</el-radio>
-            <el-radio label="emergency">危急情况</el-radio>
-          </el-radio-group>
+          <el-select v-model="contactForm.urgency" placeholder="请选择紧急程度">
+            <el-option label="非常紧急" value="urgent" />
+            <el-option label="比较紧急" value="high" />
+            <el-option label="一般紧急" value="normal" />
+            <el-option label="不紧急" value="low" />
+          </el-select>
         </el-form-item>
-        <el-form-item label="描述">
+        <el-form-item label="详细描述">
           <el-input 
-            type="textarea" 
-            v-model="contactForm.message" 
+            v-model="contactForm.message"
+            type="textarea"
             :rows="4"
-            placeholder="请描述具体情况..."
+            placeholder="请详细描述需要医护人员关注的情况..."
           />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="contactDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSendContact">发送</el-button>
+        <span class="dialog-footer">
+          <el-button @click="contactDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="submitContactRequest">发送请求</el-button>
+        </span>
       </template>
     </el-dialog>
   </div>
@@ -270,11 +236,11 @@ import {
   getElderlyByIds,
   getLatestVitals,
   getWarnings,
-  markWarningsAsRead,
   sendContactRequest
-} from '@/api/elderly'
+} from '@/api/family'
 import { useUserStore } from '@/store/user'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { Bell, Document, Message, View, Warning } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -284,9 +250,7 @@ const userStore = useUserStore()
 // 响应式数据
 const elderlyList = ref([])
 const loading = ref(false)
-const warningDialogVisible = ref(false)
 const contactDialogVisible = ref(false)
-const selectedWarnings = ref([])
 const contactForm = ref({
   elderlyName: '',
   urgency: 'normal',
@@ -319,18 +283,29 @@ const loadElderlyList = async () => {
     // 根据家属权限，只获取关联的老人信息
     const elderlyIds = userStore.userInfo.elderlyIds || []
     if (elderlyIds.length === 0) {
+      console.log('当前家属用户没有关联的老人')
       elderlyList.value = []
       return
     }
 
-    // 尝试调用真实API，如果失败则使用Mock数据
+    console.log('开始加载家属关联的老人信息，老人IDs:', elderlyIds)
+
+    // 调用家属专用API获取老人信息
     try {
       const response = await getElderlyByIds(elderlyIds)
-      elderlyList.value = response.data || []
+      console.log('API响应:', response)
       
-      // 获取每个老人的最新健康数据和预警信息
-      for (const elderly of elderlyList.value) {
-        await loadElderlyHealth(elderly)
+      if (response && response.code === 200) {
+        elderlyList.value = response.data || []
+        console.log('成功获取老人信息:', elderlyList.value.length, '条记录')
+        
+        // 获取每个老人的最新健康数据和预警信息
+        for (const elderly of elderlyList.value) {
+          await loadElderlyHealth(elderly)
+        }
+      } else {
+        console.error('API返回错误:', response)
+        throw new Error(response.message || 'API调用失败')
       }
     } catch (apiError) {
       console.warn('API调用失败，使用Mock数据:', apiError)
@@ -393,7 +368,7 @@ const getHealthStatusType = (status) => {
     'SICK': 'warning',
     'SERIOUS': 'danger',
     'DANGER': 'danger',
-    'WARNING': 'danger'
+    'WARNING': 'warning'
   }
   return typeMap[status] || 'info'
 }
@@ -402,148 +377,62 @@ const getHealthStatusText = (status) => {
   const textMap = {
     'HEALTHY': '健康',
     'SUBHEALTH': '亚健康',
-    'SICK': '疾病',
-    'SERIOUS': '重病',
+    'SICK': '患病',
+    'SERIOUS': '严重',
     'DANGER': '危险',
     'WARNING': '预警'
   }
   return textMap[status] || '未知'
 }
 
-const getWarningType = (level) => {
-  const typeMap = {
-    'INFO': 'info',
-    'WARNING': 'warning',
-    'DANGER': 'danger',
-    'EMERGENCY': 'danger'
+const getCareLevel = (level) => {
+  const levelMap = {
+    1: '一级护理',
+    2: '二级护理',
+    3: '三级护理',
+    4: '特级护理'
   }
-  return typeMap[level] || 'info'
+  return levelMap[level] || '未知'
 }
 
-const getWarningLevelText = (level) => {
-  const textMap = {
-    'INFO': '提醒',
-    'WARNING': '警告',
-    'DANGER': '危险',
-    'EMERGENCY': '紧急'
+const viewElderlyDetail = (elderly) => {
+  router.push({
+    path: '/elderly/detail',
+    query: { id: elderly.id }
+  })
+}
+
+const viewHealthRecord = (elderly) => {
+  router.push({
+    path: '/health/record',
+    query: { elderlyId: elderly.id }
+  })
+}
+
+const viewWarnings = (elderly) => {
+  router.push({
+    path: '/health/warning',
+    query: { elderlyId: elderly.id }
+  })
+}
+
+const contactMedical = (elderly) => {
+  contactForm.value = {
+    elderlyName: elderly.name,
+    urgency: 'normal',
+    message: ''
   }
-  return textMap[level] || '未知'
-}
-
-const formatTime = (time) => {
-  if (!time) return '未知'
-  const date = new Date(time)
-  const now = new Date()
-  const diff = now - date
-  
-  if (diff < 60000) return '刚刚'
-  if (diff < 3600000) return `${Math.floor(diff / 60000)}分钟前`
-  if (diff < 86400000) return `${Math.floor(diff / 3600000)}小时前`
-  if (diff < 604800000) return `${Math.floor(diff / 86400000)}天前`
-  
-  return date.toLocaleDateString()
-}
-
-// 事件处理
-const handleViewDetail = (elderly) => {
-  router.push(`/elderly/profile/${elderly.id}`)
-}
-
-const handleViewHealth = (elderly) => {
-  router.push(`/elderly/health-records/${elderly.id}`)
-}
-
-const handleContact = (elderly) => {
-  contactForm.value.elderlyName = elderly.name
   contactDialogVisible.value = true
 }
 
-const handleRequestAccess = () => {
-  ElMessageBox.confirm(
-    '您需要联系系统管理员来申请关联长辈账户。',
-    '申请关联',
-    {
-      confirmButtonText: '联系管理员',
-      cancelButtonText: '取消',
-      type: 'info'
-    }
-  ).then(() => {
-    // 跳转到联系页面或显示联系信息
-    ElMessage.info('请联系系统管理员：13800138000')
-  })
-}
-
-const handleEmergencyCall = () => {
-  ElMessageBox.confirm(
-    '确认要拨打紧急联系电话吗？',
-    '紧急联系',
-    {
-      confirmButtonText: '确认拨打',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }
-  ).then(() => {
-    window.open('tel:120')
-  })
-}
-
-const handleNurseCall = () => {
-  ElMessage.info('正在为您接通护士站...')
-  // 实际项目中可以集成在线客服系统
-}
-
-const handleDoctorConsult = () => {
-  ElMessage.info('医生咨询功能开发中...')
-  // 跳转到医生咨询页面
-}
-
-const handleComplaint = () => {
-  ElMessage.info('意见反馈功能开发中...')
-  // 跳转到意见反馈页面
-}
-
-const handleMarkAsRead = async () => {
-  try {
-    // 标记预警为已读
-    const warningIds = selectedWarnings.value.map(w => w.id)
-    
-    try {
-      await markWarningsAsRead(warningIds)
-    } catch (error) {
-      console.warn('API调用失败，模拟标记为已读:', error)
-      // 模拟标记为已读
-      elderlyList.value.forEach(elderly => {
-        if (elderly.warnings) {
-          elderly.warnings = elderly.warnings.filter(w => !warningIds.includes(w.id))
-        }
-      })
-    }
-    
-    ElMessage.success('已标记为已读')
-    warningDialogVisible.value = false
-    
-    // 重新加载数据
-    await loadElderlyList()
-  } catch (error) {
-    ElMessage.error('操作失败，请重试')
-  }
-}
-
-const handleSendContact = async () => {
+const submitContactRequest = async () => {
   try {
     if (!contactForm.value.message.trim()) {
-      ElMessage.warning('请填写联系内容')
+      ElMessage.warning('请填写详细描述')
       return
     }
     
-    // 发送联系请求
-    try {
-      await sendContactRequest(contactForm.value)
-    } catch (error) {
-      console.warn('API调用失败，模拟发送成功:', error)
-      // 模拟发送成功
-    }
-    
+    await sendContactRequest(contactForm.value)
     ElMessage.success('联系请求已发送，医护人员会尽快回复')
     contactDialogVisible.value = false
     
@@ -596,16 +485,16 @@ const getMockElderlyData = () => {
       relationship: '儿媳',
       avatar: '',
       latestVitals: {
-        bloodPressure: '140/95',
+        bloodPressure: '140/90',
         heartRate: 85,
-        temperature: 37.2
+        temperature: 36.8
       },
       warnings: [
         {
           id: 1,
           message: '血压偏高，建议注意休息',
           level: 'WARNING',
-          createTime: new Date().toISOString(),
+          createTime: new Date(),
           isRead: false
         }
       ],
@@ -613,30 +502,21 @@ const getMockElderlyData = () => {
     }
   ]
 }
-
-// 测试时使用Mock数据
-if (import.meta.env.MODE === 'development') {
-  elderlyList.value = getMockElderlyData()
-}
 </script>
 
 <style scoped>
 .family-elderly-view {
   padding: 20px;
-  background: #f5f7fa;
-  min-height: calc(100vh - 60px);
+  background-color: #f5f7fa;
+  min-height: 100vh;
 }
 
-/* 欢迎头部 */
+/* 欢迎头部样式 */
 .welcome-header {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
   border: none;
-}
-
-.welcome-header :deep(.el-card__body) {
-  padding: 24px;
+  color: white;
 }
 
 .header-content {
@@ -694,19 +574,23 @@ if (import.meta.env.MODE === 'development') {
   color: #e6a23c;
 }
 
-/* 长辈卡片区域 */
+/* 长辈卡片样式 */
 .elderly-cards {
-  margin-bottom: 20px;
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
 }
 
 .cards-header {
-  margin-bottom: 16px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #ebeef5;
+  padding-bottom: 16px;
 }
 
 .cards-header h3 {
-  margin: 0 0 4px 0;
-  color: #303133;
+  margin: 0 0 8px 0;
   font-size: 18px;
+  color: #303133;
 }
 
 .cards-header h3 i {
@@ -727,95 +611,88 @@ if (import.meta.env.MODE === 'development') {
 }
 
 .elderly-card {
-  cursor: pointer;
-  transition: all 0.3s ease;
   border: 1px solid #ebeef5;
+  transition: all 0.3s ease;
 }
 
 .elderly-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* 卡片头部 */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .elderly-info {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.elderly-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-}
-
-.avatar-section {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .elderly-avatar {
-  background: #f0f9ff;
-  color: #409eff;
+  border: 2px solid #f0f0f0;
 }
 
-.relationship-tag {
-  text-align: center;
-}
-
-.basic-info {
-  flex: 1;
-}
-
-.elderly-name {
-  margin: 0 0 8px 0;
-  font-size: 18px;
+.basic-info h4 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
   color: #303133;
-  font-weight: 500;
 }
 
-.elderly-details {
+.age-gender {
+  margin: 0;
+  font-size: 12px;
+  color: #909399;
+}
+
+.status-badges {
   display: flex;
-  gap: 12px;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-end;
+}
+
+/* 卡片内容 */
+.card-content {
+  padding: 16px 0;
+}
+
+.info-section {
+  margin-bottom: 16px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 8px;
 }
 
-.elderly-details span {
-  color: #606266;
-  font-size: 14px;
-}
-
-.contact-info {
+.info-item .label {
   color: #909399;
   font-size: 14px;
 }
 
-.contact-info i {
-  margin-right: 4px;
-}
-
-/* 健康状态 */
-.health-status {
-  background: #f8f9fa;
-  padding: 12px;
-  border-radius: 6px;
-}
-
-.status-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.status-label {
-  font-weight: 500;
+.info-item .value {
   color: #303133;
+  font-size: 14px;
+  font-weight: 500;
 }
 
-.vital-signs {
+/* 健康状况 */
+.health-section h5,
+.warning-section h5 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #303133;
+  border-left: 3px solid #409eff;
+  padding-left: 8px;
+}
+
+.vitals-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
@@ -824,7 +701,7 @@ if (import.meta.env.MODE === 'development') {
 .vital-item {
   text-align: center;
   padding: 8px;
-  background: white;
+  background: #f8f9fa;
   border-radius: 4px;
 }
 
@@ -836,32 +713,47 @@ if (import.meta.env.MODE === 'development') {
 }
 
 .vital-value {
+  display: block;
   font-size: 14px;
   font-weight: 500;
   color: #303133;
 }
 
-/* 预警信息 */
-.warnings {
-  background: #fef0e6;
-  padding: 12px;
-  border-radius: 6px;
-  border-left: 4px solid #e6a23c;
+/* 预警样式 */
+.warning-section {
+  margin-top: 16px;
 }
 
-.warnings-header {
+.warning-list {
+  max-height: 80px;
+  overflow-y: auto;
+}
+
+.warning-item {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
-  color: #e6a23c;
-  font-weight: 500;
+  padding: 6px;
+  background: #fef0f0;
+  border-radius: 4px;
 }
 
-.warning-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.warning-icon {
+  color: #f56c6c;
+}
+
+.warning-text {
+  font-size: 12px;
+  color: #303133;
+  flex: 1;
+}
+
+.more-warnings {
+  font-size: 12px;
+  color: #909399;
+  text-align: center;
+  padding: 4px;
 }
 
 /* 操作按钮 */
@@ -873,76 +765,12 @@ if (import.meta.env.MODE === 'development') {
 
 .card-actions .el-button {
   flex: 1;
+  min-width: 80px;
 }
 
-/* 更新时间 */
-.update-time {
-  color: #c0c4cc;
-  font-size: 12px;
-  text-align: center;
-  border-top: 1px solid #f0f0f0;
-  padding-top: 12px;
-}
-
-.update-time i {
-  margin-right: 4px;
-}
-
-/* 快速联系 */
-.quick-contact {
-  margin-bottom: 20px;
-}
-
-.contact-header h3 {
-  margin: 0 0 16px 0;
-  color: #303133;
-  font-size: 16px;
-}
-
-.contact-header h3 i {
-  margin-right: 8px;
-  color: #67c23a;
-}
-
-.contact-options {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.contact-options .el-button {
-  flex: 1;
-  min-width: 120px;
-}
-
-/* 弹窗样式 */
-.warning-detail {
-  margin-bottom: 16px;
-  padding: 16px;
-  background: #f8f9fa;
-  border-radius: 6px;
-}
-
-.warning-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.warning-time {
-  color: #909399;
-  font-size: 12px;
-}
-
-.warning-content {
-  margin-bottom: 8px;
-  color: #303133;
-}
-
-.warning-suggestion {
-  color: #606266;
-  font-size: 14px;
+/* 加载状态 */
+.loading-container {
+  padding: 40px;
 }
 
 /* 响应式设计 */
@@ -954,25 +782,28 @@ if (import.meta.env.MODE === 'development') {
   .header-content {
     flex-direction: column;
     gap: 16px;
-    text-align: center;
   }
   
   .elderly-grid {
     grid-template-columns: 1fr;
   }
   
-  .contact-options {
-    flex-direction: column;
+  .quick-stats {
+    gap: 12px;
   }
   
-  .contact-options .el-button {
-    width: 100%;
+  .stat-item {
+    padding: 12px;
+    min-width: 60px;
   }
-}
-
-/* 空状态 */
-.empty-state {
-  text-align: center;
-  padding: 40px;
+  
+  .card-actions {
+    gap: 4px;
+  }
+  
+  .card-actions .el-button {
+    min-width: 70px;
+    font-size: 12px;
+  }
 }
 </style>

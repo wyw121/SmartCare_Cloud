@@ -366,4 +366,119 @@ public class ElderlyController {
             return ResponseResult.error("评估失败");
         }
     }
+
+    // ========================================
+    // 家属专用API接口
+    // ========================================
+    /**
+     * 根据老人ID列表批量获取老人信息（家属专用）
+     */
+    @Operation(summary = "家属批量获取老人信息", description = "家属根据关联的老人ID列表批量获取老人信息")
+    @PostMapping("/family/batch")
+    public ResponseResult<List<Elderly>> getElderlyByIds(@RequestBody List<Long> elderlyIds) {
+        log.info("家属批量获取老人信息，老人IDs：{}", elderlyIds);
+        try {
+            // 这里可以添加权限验证，确保当前登录的家属用户只能查看自己关联的老人
+            return elderlyService.getElderlyByIds(elderlyIds);
+        } catch (Exception e) {
+            log.error("家属批量获取老人信息失败", e);
+            return ResponseResult.error("获取老人信息失败");
+        }
+    }
+
+    /**
+     * 获取老人最新体征数据（家属权限）
+     */
+    @Operation(summary = "获取老人最新体征数据", description = "家属查看关联老人的最新体征数据")
+    @GetMapping("/{elderlyId}/vitals/latest")
+    public ResponseResult<Object> getLatestVitals(
+            @Parameter(description = "老人ID") @PathVariable Long elderlyId) {
+        log.info("获取老人最新体征数据，老人ID：{}", elderlyId);
+        try {
+            // 这里可以调用健康服务获取最新体征数据
+            // 暂时返回模拟数据
+            java.util.Map<String, Object> vitals = new java.util.HashMap<>();
+            vitals.put("bloodPressure", "120/80");
+            vitals.put("heartRate", 72);
+            vitals.put("temperature", 36.5);
+            vitals.put("updateTime", new java.util.Date());
+
+            return ResponseResult.success(vitals);
+        } catch (Exception e) {
+            log.error("获取老人体征数据失败", e);
+            return ResponseResult.error("获取体征数据失败");
+        }
+    }
+
+    /**
+     * 获取老人预警信息（家属权限）
+     */
+    @Operation(summary = "获取老人预警信息", description = "家属查看关联老人的健康预警信息")
+    @GetMapping("/{elderlyId}/warnings")
+    public ResponseResult<List<Object>> getWarnings(
+            @Parameter(description = "老人ID") @PathVariable Long elderlyId) {
+        log.info("获取老人预警信息，老人ID：{}", elderlyId);
+        try {
+            // 这里可以调用预警服务获取预警信息
+            // 暂时返回模拟数据
+            List<Object> warnings = new java.util.ArrayList<>();
+
+            // 模拟一些预警数据
+            java.util.Map<String, Object> warning1 = new java.util.HashMap<>();
+            warning1.put("id", 1);
+            warning1.put("message", "血压偏高，建议注意休息");
+            warning1.put("level", "WARNING");
+            warning1.put("createTime", new java.util.Date());
+            warning1.put("isRead", false);
+            warning1.put("suggestion", "定期监测血压，适当运动，保持心情愉快");
+            warnings.add(warning1);
+
+            return ResponseResult.success(warnings);
+        } catch (Exception e) {
+            log.error("获取老人预警信息失败", e);
+            return ResponseResult.error("获取预警信息失败");
+        }
+    }
+
+    /**
+     * 标记预警为已读（家属权限）
+     */
+    @Operation(summary = "标记预警为已读", description = "家属标记预警信息为已读状态")
+    @PostMapping("/warnings/mark-read")
+    public ResponseResult<Void> markWarningsAsRead(@RequestBody List<Long> warningIds) {
+        log.info("标记预警为已读，预警IDs：{}", warningIds);
+        try {
+            // 这里可以调用预警服务标记为已读
+            // 暂时返回成功
+            return ResponseResult.success();
+        } catch (Exception e) {
+            log.error("标记预警为已读失败", e);
+            return ResponseResult.error("标记失败");
+        }
+    }
+
+    /**
+     * 发送联系医护请求（家属权限）
+     */
+    @Operation(summary = "发送联系医护请求", description = "家属发送联系医护人员的请求")
+    @PostMapping("/contact/send")
+    public ResponseResult<Void> sendContactRequest(@RequestBody java.util.Map<String, Object> contactData) {
+        log.info("发送联系医护请求，数据：{}", contactData);
+        try {
+            // 这里可以调用通知服务发送联系请求
+            // 可以发送短信、邮件或系统消息给医护人员
+
+            String elderlyName = (String) contactData.get("elderlyName");
+            String urgency = (String) contactData.get("urgency");
+            String message = (String) contactData.get("message");
+
+            log.info("联系请求详情 - 老人：{}，紧急程度：{}，消息：{}", elderlyName, urgency, message);
+
+            // 模拟发送成功
+            return ResponseResult.success();
+        } catch (Exception e) {
+            log.error("发送联系医护请求失败", e);
+            return ResponseResult.error("发送请求失败");
+        }
+    }
 }

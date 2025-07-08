@@ -206,4 +206,12 @@ public interface ElderlyService extends IService<Elderly> {
      * @return 健康风险评估数据
      */
     ResponseResult<HealthStatisticsVO.HealthRiskAssessment> getHealthRiskAssessment();
+
+    /**
+     * 根据老人ID列表批量获取老人信息（家属专用）
+     *
+     * @param elderlyIds 老人ID列表
+     * @return 老人信息列表
+     */
+    ResponseResult<List<Elderly>> getElderlyByIds(List<Long> elderlyIds);
 }

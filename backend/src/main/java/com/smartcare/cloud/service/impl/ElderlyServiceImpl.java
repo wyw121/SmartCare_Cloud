@@ -921,10 +921,10 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
         double highCareRatio = (semiCareCount + fullCareCount) * 100.0 / total;
 
         if (highCareRatio >= 60) {
-            return "高"; 
-        }else if (highCareRatio >= 30) {
-            return "中"; 
-        }else {
+            return "高";
+        } else if (highCareRatio >= 30) {
+            return "中";
+        } else {
             return "低";
         }
     }
@@ -934,10 +934,10 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
      */
     private String determineWorkloadLevel(int elderlyCount, int serviceCount) {
         if (elderlyCount >= 18 || serviceCount >= 150) {
-            return "高负荷"; 
-        }else if (elderlyCount >= 15 || serviceCount >= 120) {
-            return "中负荷"; 
-        }else {
+            return "高负荷";
+        } else if (elderlyCount >= 15 || serviceCount >= 120) {
+            return "中负荷";
+        } else {
             return "正常";
         }
     }
@@ -1147,5 +1147,32 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
         }
 
         return workloads;
+    }
+
+    /**
+     * 根据老人ID列表批量获取老人信息（家属专用）
+     */
+    @Override
+    public ResponseResult<List<Elderly>> getElderlyByIds(List<Long> elderlyIds) {
+        try {
+            if (elderlyIds == null || elderlyIds.isEmpty()) {
+                return ResponseResult.success(new ArrayList<>());
+            }
+
+            // 查询老人信息
+            QueryWrapper<Elderly> queryWrapper = new QueryWrapper<>();
+            queryWrapper.in("id", elderlyIds)
+                    .eq("is_deleted", 0)
+                    .eq("status", 1);
+
+            List<Elderly> elderlyList = this.list(queryWrapper);
+
+            log.info("批量查询老人信息成功，查询ID数量：{}，返回结果数量：{}", elderlyIds.size(), elderlyList.size());
+
+            return ResponseResult.success(elderlyList);
+        } catch (Exception e) {
+            log.error("批量查询老人信息失败，IDs：{}", elderlyIds, e);
+            return ResponseResult.error("批量查询老人信息失败：" + e.getMessage());
+        }
     }
 }
