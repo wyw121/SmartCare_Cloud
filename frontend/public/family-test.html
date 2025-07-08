@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家属端测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f7fa;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        .test-item {
+            margin: 15px 0;
+            padding: 15px;
+            border: 1px solid #e4e7ed;
+            border-radius: 4px;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.success { background: #f0f9ff; color: #67c23a; }
+        .status.error { background: #fef0f0; color: #f56c6c; }
+        .status.warning { background: #fdf6ec; color: #e6a23c; }
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 5px;
+            background: #409eff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover { background: #66b1ff; }
+        .btn.secondary { background: #909399; }
+        .btn.secondary:hover { background: #a6a9ad; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🏥 家属端功能测试</h1>
+        
+        <div class="test-item">
+            <h3>📋 测试清单</h3>
+            <ul>
+                <li><span class="status success">✓</span> API导入问题已修复</li>
+                <li><span class="status success">✓</span> 路由配置已更新</li>
+                <li><span class="status success">✓</span> Mock数据已添加</li>
+                <li><span class="status success">✓</span> 错误处理已完善</li>
+            </ul>
+        </div>
+
+        <div class="test-item">
+            <h3>🔗 测试链接</h3>
+            <p>请按以下步骤测试家属端功能：</p>
+            <ol>
+                <li>
+                    <a href="http://localhost:3001/user-switcher" class="btn" target="_blank">
+                        1. 切换到家属身份
+                    </a>
+                </li>
+                <li>
+                    <a href="http://localhost:3001/elderly/family-view" class="btn" target="_blank">
+                        2. 访问家属专用页面
+                    </a>
+                </li>
+                <li>
+                    <a href="http://localhost:3001/elderly/list" class="btn secondary" target="_blank">
+                        3. 尝试访问管理页面（应该重定向）
+                    </a>
+                </li>
+            </ol>
+        </div>
+
+        <div class="test-item">
+            <h3>🎯 期望效果</h3>
+            <ul>
+                <li><strong>用户切换：</strong>能够成功切换到家属身份</li>
+                <li><strong>页面显示：</strong>家属专用页面正常显示，包含Mock数据</li>
+                <li><strong>权限控制：</strong>访问管理页面时自动重定向到家属页面</li>
+                <li><strong>菜单显示：</strong>侧边栏显示家属专用菜单</li>
+                <li><strong>功能测试：</strong>各种按钮和交互正常工作</li>
+            </ul>
+        </div>
+
+        <div class="test-item">
+            <h3>🐛 问题排查</h3>
+            <p>如果遇到问题，请检查：</p>
+            <ul>
+                <li>浏览器控制台是否有错误信息</li>
+                <li>网络请求是否正常（F12 → Network）</li>
+                <li>用户身份是否正确切换（F12 → Application → localStorage）</li>
+                <li>路由跳转是否正确（地址栏URL变化）</li>
+            </ul>
+        </div>
+
+        <div class="test-item">
+            <h3>📱 移动端测试</h3>
+            <p>家属端支持移动设备访问，请使用浏览器开发者工具测试：</p>
+            <ol>
+                <li>F12 打开开发者工具</li>
+                <li>点击设备模拟器图标</li>
+                <li>选择手机或平板设备</li>
+                <li>测试页面响应式效果</li>
+            </ol>
+        </div>
+
+        <div class="test-item">
+            <h3>✨ 功能特色</h3>
+            <ul>
+                <li><strong>温馨化设计：</strong>使用关怀色彩和温馨用词</li>
+                <li><strong>卡片式布局：</strong>老人信息以卡片形式展示</li>
+                <li><strong>健康状态：</strong>突出显示健康状态和体征数据</li>
+                <li><strong>预警提醒：</strong>及时显示健康预警信息</li>
+                <li><strong>快速联系：</strong>提供紧急联系和医护沟通功能</li>
+                <li><strong>权限控制：</strong>严格控制访问权限，保护数据安全</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载完成后的检查
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🏥 家属端测试页面已加载');
+            console.log('✅ 所有修复已完成，可以开始测试');
+            
+            // 检查当前端口
+            if (window.location.port === '3001') {
+                console.log('✅ 端口正确：3001');
+            } else {
+                console.warn('⚠️ 注意：当前端口不是3001，请确认前端服务器端口');
+            }
+        });
+    </script>
+</body>
+</html>
