@@ -104,11 +104,14 @@ export function canAccessRoute(routeName, userRole) {
     return true
   }
   
-  // 家属权限页面（只能查看相关信息）
+  // 家属权限页面（严格限制，只能查看关联老人信息）
   const familyRoutes = [
-    'ElderlyList', 'ElderlyProfile', 'ElderlyDetail', 'ElderlyModular', // 只能查看关联老人
-    'HealthWarning', 'HealthWarningModular', 'HealthRecords', // 只能查看关联老人的健康预警
-    'ReportStatistics' // 基础报表查看
+    'Dashboard', 'DashboardModular', // 基础仪表板
+    'FamilyElderlyList', 'FamilyElderlyDetail', // 专用的家属查看页面
+    'FamilyHealthSummary', // 健康概要页面（脱敏）
+    'FamilyEmergencyContact', // 紧急联系页面
+    'FamilyVisitSchedule', // 探视预约页面
+    'Profile' // 个人资料
   ]
   
   if (userRole === 'family' && familyRoutes.includes(routeName)) {
@@ -230,24 +233,41 @@ export const ROLE_PERMISSIONS = {
   family: {
     name: '家属',
     permissions: [
-      'dashboard:view',
-      'elderly:view', // 只能查看关联的老人
-      'health:view', // 只能查看关联老人的健康信息
-      'health-warning:view', // 只能查看关联老人的预警
-      'report:view' // 只能查看基础报表
+      'dashboard:view-basic', // 基础仪表板，不含敏感统计
+      'elderly:view-related', // 只能查看关联老人的基本信息
+      'health:view-summary', // 只能查看关联老人的健康概要（脱敏）
+      'health-warning:view-related', // 只能查看关联老人的紧急预警
+      'contact:emergency', // 紧急联系功能
+      'visit:schedule', // 探视预约功能
+      'profile:view' // 个人资料查看
     ],
     routes: [
-      'Dashboard', 'DashboardModular',
-      'ElderlyList', 'ElderlyDetail', 'ElderlyModular', // 只能查看，不能编辑
-      'HealthWarning', 'HealthWarningModular', 'HealthRecords',
-      'ReportStatistics', // 基础报表
-      'Profile'
+      'Dashboard', 'DashboardModular', // 基础仪表板
+      'FamilyElderlyList', 'FamilyElderlyDetail', // 专用的家属查看页面
+      'FamilyHealthSummary', // 健康概要页面（脱敏）
+      'FamilyEmergencyContact', // 紧急联系页面
+      'FamilyVisitSchedule', // 探视预约页面
+      'Profile' // 个人资料
     ],
-    description: '家属角色，只能查看关联老人的信息和健康状况',
+    description: '家属角色，只能查看关联老人的基本信息和健康概要，具有紧急联系权限',
     features: {
-      elderly: ['view'], // 只能查看关联老人
-      health: ['view'], // 只能查看关联老人的健康信息
-      report: ['view'] // 只能查看基础报表
+      elderly: ['view-basic'], // 只能查看关联老人的基本信息（姓名、年龄等）
+      health: ['view-summary'], // 只能查看健康概要，不包含详细医疗记录
+      emergency: ['contact', 'alert'], // 紧急情况联系和接收预警
+      visit: ['schedule', 'view'], // 探视预约和查看
+      profile: ['view', 'edit-basic'] // 个人资料基本编辑
+    },
+    restrictions: {
+      // 数据访问限制
+      dataAccess: 'related-only', // 只能访问关联老人的数据
+      medicalRecords: 'summary-only', // 只能查看医疗记录概要
+      personalInfo: 'basic-only', // 只能查看基本个人信息
+      sensitiveData: 'masked', // 敏感数据脱敏显示
+      // 功能限制
+      editPermission: false, // 不能编辑任何信息
+      deletePermission: false, // 不能删除任何信息
+      exportPermission: false, // 不能导出数据
+      systemAccess: false // 不能访问系统管理功能
     }
   }
 }
@@ -298,6 +318,94 @@ export function isAdmin() {
 export function isDoctor() {
   const userStore = useUserStore()
   return userStore.userRole === 'doctor'
+}
+
+/**
+ * 检查家属是否可以查看指定老人信息
+ * @param {number} elderlyId 老人ID
+ * @param {number} familyId 家属ID
+ * @returns {boolean}
+ */
+export function canFamilyViewElderly(elderlyId, familyId) {
+  // 这里应该检查数据库中的关联关系
+  // 暂时返回true，实际项目中需要调用后端API验证
+  return true
+}
+
+/**
+ * 检查家属是否可以查看健康信息
+ * @param {number} elderlyId 老人ID
+ * @returns {boolean}
+ */
+export function canFamilyViewHealth(elderlyId) {
+  const userStore = useUserStore()
+  if (userStore.userRole !== 'family') {
+    return false
+  }
+  
+  // 检查是否有关联关系
+  return canFamilyViewElderly(elderlyId, userStore.userId)
+}
+
+/**
+ * 检查家属是否可以接收紧急联系
+ * @returns {boolean}
+ */
+export function canFamilyReceiveEmergency() {
+  const userStore = useUserStore()
+  return userStore.userRole === 'family' && hasPermission('contact:emergency')
+}
+
+/**
+ * 获取家属可查看的老人ID列表
+ * @param {number} familyId 家属ID
+ * @returns {Array} 老人ID列表
+ */
+export function getFamilyRelatedElderlyIds(familyId) {
+  // 这里应该从后端获取关联的老人ID列表
+  // 暂时返回空数组，实际项目中需要调用后端API
+  return []
+}
+
+/**
+ * 对敏感信息进行脱敏处理
+ * @param {Object} data 原始数据
+ * @param {string} type 数据类型
+ * @returns {Object} 脱敏后的数据
+ */
+export function maskSensitiveData(data, type) {
+  if (!data) return data
+  
+  const maskedData = { ...data }
+  
+  switch (type) {
+    case 'health':
+      // 健康信息脱敏：隐藏详细病历，只显示概要
+      if (maskedData.diagnosis) {
+        maskedData.diagnosis = maskedData.diagnosis.replace(/\d{4}-\d{2}-\d{2}/g, '****-**-**')
+      }
+      if (maskedData.medication) {
+        maskedData.medication = '用药信息已隐藏，如需详细信息请联系医生'
+      }
+      break
+    case 'personal':
+      // 个人信息脱敏：隐藏身份证号等敏感信息
+      if (maskedData.idCard) {
+        maskedData.idCard = maskedData.idCard.replace(/(\d{6})\d{8}(\d{4})/, '$1********$2')
+      }
+      if (maskedData.phone) {
+        maskedData.phone = maskedData.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
+      }
+      break
+    case 'medical':
+      // 医疗记录脱敏：只显示概要信息
+      if (maskedData.details) {
+        maskedData.details = '详细医疗记录已隐藏，如需查看请联系医生'
+      }
+      break
+  }
+  
+  return maskedData
 }
 
 /**
