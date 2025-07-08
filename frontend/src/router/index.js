@@ -99,7 +99,21 @@ const routes = [
         path: 'list',
         name: 'ElderlyList',
         component: () => import('@/views/elderly/list.vue'),
-        meta: { title: '老人档案列表', icon: 'list' }
+        meta: { 
+          title: '老人档案列表', 
+          icon: 'list',
+          roles: ['admin', 'doctor'] // 管理员和医生使用完整的管理页面
+        }
+      },
+      {
+        path: 'family-view',
+        name: 'ElderlyFamilyView',
+        component: () => import('@/views/elderly/family-view.vue'),
+        meta: { 
+          title: '我的关联长辈', 
+          icon: 'user',
+          roles: ['family'] // 家属使用专门的家属视图
+        }
       },
       {
         path: 'detail/:id(\\d+)',
@@ -305,6 +319,12 @@ const routes = [
     component: () => import('@/views/doctor-simple-test.vue'),
     meta: { title: '医生测试页面', hidden: true }
   },
+  {
+    path: '/user-switcher',
+    name: 'UserSwitcher',
+    component: () => import('@/views/user-switcher.vue'),
+    meta: { title: '用户切换（测试）', hidden: true }
+  },
   // 404页面必须放在最后
   {
     path: '/:pathMatch(.*)*',
@@ -347,11 +367,27 @@ router.beforeEach((to, from, next) => {
     return
   }
   
+  // 家属用户访问管理页面时重定向到专用页面
+  if (userRole === 'family') {
+    // 家属访问老人档案列表时，重定向到家属专用页面
+    if (to.path === '/elderly/list' || to.name === 'ElderlyList') {
+      next('/elderly/family-view')
+      return
+    }
+    
+    // 家属访问其他管理页面时，重定向到首页
+    const restrictedPaths = ['/doctor', '/system', '/equipment', '/reports']
+    if (restrictedPaths.some(path => to.path.startsWith(path))) {
+      next('/dashboard')
+      return
+    }
+  }
+  
   // 检查页面访问权限
   const routeName = to.name
   if (routeName && !canAccessRoute(routeName, userRole)) {
     // 如果没有权限，跳转到首页或显示403页面
-    next('/')
+    next('/dashboard')
     return
   }
   

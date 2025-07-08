@@ -107,10 +107,9 @@ export function canAccessRoute(routeName, userRole) {
   // 家属权限页面（严格限制，只能查看关联老人信息）
   const familyRoutes = [
     'Dashboard', 'DashboardModular', // 基础仪表板
-    'FamilyElderlyList', 'FamilyElderlyDetail', // 专用的家属查看页面
-    'FamilyHealthSummary', // 健康概要页面（脱敏）
-    'FamilyEmergencyContact', // 紧急联系页面
-    'FamilyVisitSchedule', // 探视预约页面
+    'ElderlyFamilyView', 'ElderlyProfile', 'ElderlyDetail', // 家属专用老人查看页面
+    'ElderlyHealthRecords', // 健康档案查看
+    'HealthWarning', 'HealthWarningPage', // 健康预警查看
     'Profile' // 个人资料
   ]
   

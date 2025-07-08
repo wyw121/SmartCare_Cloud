@@ -4,7 +4,9 @@
       <div class="logo-icon">
         <el-icon><Cpu /></el-icon>
       </div>
-      <h1 class="logo-text" v-if="!collapsed">智慧医养平台</h1>
+      <h1 class="logo-text" v-if="!collapsed">
+        {{ userRole === 'family' ? '关爱长辈' : '智慧医养平台' }}
+      </h1>
     </div>
     
     <el-menu
@@ -43,6 +45,7 @@ export default {
     const userStore = useUserStore()
 
     const collapsed = computed(() => !appStore.sidebar.opened)
+    const userRole = computed(() => userStore.userRole)
     
     const activeMenu = computed(() => {
       const { meta, path } = route
@@ -61,50 +64,83 @@ export default {
       console.log('🔍 侧边栏调试 - 用户信息:', userStore.userInfo)
       
       // 预定义的菜单结构 - 基于实际路由配置
-      const menuItems = [
-        {
-          path: '/dashboard',
-          name: 'dashboard',
-          meta: { title: '首页仪表板', icon: 'DataBoard' },
-          roles: ['admin', 'doctor', 'family']
-        },
-        {
-          path: '/elderly',
-          name: 'elderly',
-          meta: { title: '老人档案管理', icon: 'User' },
-          roles: ['admin', 'doctor', 'family']
-        },
-        {
-          path: '/doctor',
-          name: 'doctor',
-          meta: { title: '医生管理', icon: 'Avatar' },
-          roles: ['admin', 'doctor']
-        },
-        {
-          path: '/health-warning',
-          name: 'health-warning',
-          meta: { title: '健康预警', icon: 'Warning' },
-          roles: ['admin', 'doctor', 'family']
-        },
-        {
-          path: '/equipment',
-          name: 'equipment',
-          meta: { title: '设备管理', icon: 'Monitor' },
-          roles: ['admin', 'doctor', 'family']
-        },
-        {
-          path: '/reports',
-          name: 'reports',
-          meta: { title: '报表统计', icon: 'DataAnalysis' },
-          roles: ['admin', 'doctor', 'family']
-        },
-        {
-          path: '/system',
-          name: 'system',
-          meta: { title: '系统管理', icon: 'Setting' },
-          roles: ['admin'] // 仅系统管理员可见
-        }
-      ]
+      let menuItems = []
+      
+      if (userRole === 'family') {
+        // 家属专用菜单
+        menuItems = [
+          {
+            path: '/dashboard',
+            name: 'dashboard',
+            meta: { title: '关爱首页', icon: 'HomeFilled' },
+            roles: ['family']
+          },
+          {
+            path: '/elderly/family-view',
+            name: 'elderly',
+            meta: { title: '我的关联长辈', icon: 'User' },
+            roles: ['family']
+          },
+          {
+            path: '/health-warning',
+            name: 'health-warning',
+            meta: { title: '健康提醒', icon: 'Warning' },
+            roles: ['family']
+          },
+          {
+            path: '/profile',
+            name: 'profile',
+            meta: { title: '个人中心', icon: 'Avatar' },
+            roles: ['family']
+          }
+        ]
+      } else {
+        // 管理员和医生的完整菜单
+        menuItems = [
+          {
+            path: '/dashboard',
+            name: 'dashboard',
+            meta: { title: '首页仪表板', icon: 'DataBoard' },
+            roles: ['admin', 'doctor']
+          },
+          {
+            path: '/elderly',
+            name: 'elderly',
+            meta: { title: '老人档案管理', icon: 'User' },
+            roles: ['admin', 'doctor']
+          },
+          {
+            path: '/doctor',
+            name: 'doctor',
+            meta: { title: '医生管理', icon: 'Avatar' },
+            roles: ['admin', 'doctor']
+          },
+          {
+            path: '/health-warning',
+            name: 'health-warning',
+            meta: { title: '健康预警', icon: 'Warning' },
+            roles: ['admin', 'doctor']
+          },
+          {
+            path: '/equipment',
+            name: 'equipment',
+            meta: { title: '设备管理', icon: 'Monitor' },
+            roles: ['admin', 'doctor']
+          },
+          {
+            path: '/reports',
+            name: 'reports',
+            meta: { title: '报表统计', icon: 'DataAnalysis' },
+            roles: ['admin', 'doctor']
+          },
+          {
+            path: '/system',
+            name: 'system',
+            meta: { title: '系统管理', icon: 'Setting' },
+            roles: ['admin'] // 仅系统管理员可见
+          }
+        ]
+      }
       
       // 根据角色过滤菜单
       const filteredMenus = menuItems.filter(menu => {
@@ -118,7 +154,7 @@ export default {
       })
       
       console.log('🔍 侧边栏调试 - 过滤后的菜单:', filteredMenus)
-      console.log('🔍 侧边栏调试 - 设备管理菜单是否显示:', filteredMenus.some(m => m.name === 'equipment'))
+      console.log('🔍 侧边栏调试 - 用户角色:', userRole)
       
       return filteredMenus
     })
@@ -126,7 +162,8 @@ export default {
     return {
       collapsed,
       activeMenu,
-      routes
+      routes,
+      userRole
     }
   }
 }

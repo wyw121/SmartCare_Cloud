@@ -321,3 +321,61 @@ export function searchElderly(keyword, pageNum, pageSize) {
     }
   })
 }
+
+/**
+ * 根据老人ID列表批量获取老人信息（家属专用）
+ * @param {Array} elderlyIds 老人ID数组
+ */
+export function getElderlyByIds(elderlyIds) {
+  return request({
+    url: '/elderly/family/batch',
+    method: 'post',
+    data: { elderlyIds }
+  })
+}
+
+/**
+ * 获取老人最新体征数据（家属权限）
+ * @param {Number} elderlyId 老人ID
+ */
+export function getLatestVitals(elderlyId) {
+  return request({
+    url: `/elderly/${elderlyId}/vitals/latest`,
+    method: 'get'
+  })
+}
+
+/**
+ * 获取老人预警信息（家属权限）
+ * @param {Number} elderlyId 老人ID
+ */
+export function getWarnings(elderlyId) {
+  return request({
+    url: `/elderly/${elderlyId}/warnings`,
+    method: 'get'
+  })
+}
+
+/**
+ * 标记预警为已读（家属权限）
+ * @param {Array} warningIds 预警ID数组
+ */
+export function markWarningsAsRead(warningIds) {
+  return request({
+    url: '/elderly/warnings/mark-read',
+    method: 'post',
+    data: { warningIds }
+  })
+}
+
+/**
+ * 发送联系医护请求（家属权限）
+ * @param {Object} contactData 联系请求数据
+ */
+export function sendContactRequest(contactData) {
+  return request({
+    url: '/elderly/contact/send',
+    method: 'post',
+    data: contactData
+  })
+}
