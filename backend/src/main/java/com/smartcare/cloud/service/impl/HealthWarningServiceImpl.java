@@ -386,7 +386,7 @@ public class HealthWarningServiceImpl extends ServiceImpl<HealthWarningMapper, H
         log.info("根据老人ID列表获取健康预警统计，老人IDs：{}", elderlyIds);
 
         Map<String, Object> result = new HashMap<>();
-        
+
         if (elderlyIds == null || elderlyIds.isEmpty()) {
             // 如果没有关联老人，返回全零统计
             result.put("urgent", 0);
@@ -400,7 +400,7 @@ public class HealthWarningServiceImpl extends ServiceImpl<HealthWarningMapper, H
         // 按级别统计
         LambdaQueryWrapper<HealthWarning> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(HealthWarning::getElderlyId, elderlyIds);
-        
+
         // 统计各级别数量
         long urgent = this.count(queryWrapper.clone().eq(HealthWarning::getWarningLevel, 4));
         long high = this.count(queryWrapper.clone().eq(HealthWarning::getWarningLevel, 3));

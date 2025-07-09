@@ -344,22 +344,22 @@
 
 <script setup>
 import {
-  getFamilyWarningsPage,
-  getFamilyWarningStatistics,
-  markWarningsAsRead,
-  sendContactRequest
+    getFamilyWarningsPage,
+    getFamilyWarningStatistics,
+    markWarningsAsRead,
+    sendContactRequest
 } from '@/api/family'
-import {
-  CircleCheck,
-  InfoFilled,
-  Phone,
-  Refresh,
-  Search,
-  Warning
-} from '@element-plus/icons-vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { computed, onMounted, reactive, ref } from 'vue'
 import { useUserStore } from '@/store/user'
+import {
+    CircleCheck,
+    InfoFilled,
+    Phone,
+    Refresh,
+    Search,
+    Warning
+} from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
+import { onMounted, reactive, ref } from 'vue'
 
 // 用户Store
 const userStore = useUserStore()

@@ -115,11 +115,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { getFamilyWarningStatistics } from '@/api/family'
 import { useUserStore } from '@/store/user'
 import { ElMessage } from 'element-plus'
-import { getFamilyWarningStatistics } from '@/api/family'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const userStore = useUserStore()
