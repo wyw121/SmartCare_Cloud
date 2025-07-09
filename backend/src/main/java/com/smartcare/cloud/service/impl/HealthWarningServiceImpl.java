@@ -1,6 +1,7 @@
 package com.smartcare.cloud.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -269,5 +270,150 @@ public class HealthWarningServiceImpl extends ServiceImpl<HealthWarningMapper, H
         healthWarning.setTriggerTime(LocalDateTime.now());
 
         return this.save(healthWarning);
+    }
+
+    /**
+     * 根据老人ID列表分页查询健康预警列表（家属专用）
+     *
+     * @param dto 查询条件
+     * @param elderlyIds 允许查询的老人ID列表
+     * @return 分页结果
+     */
+    @Override
+    public PageInfo<HealthWarning> getPageListByElderlyIds(HealthWarningPageDTO dto, List<Long> elderlyIds) {
+        log.info("根据老人ID列表分页查询健康预警，参数：{}，老人IDs：{}", dto, elderlyIds);
+
+        // 设置分页参数
+        PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
+
+        // 构建查询条件
+        LambdaQueryWrapper<HealthWarning> queryWrapper = new LambdaQueryWrapper<>();
+
+        // 限制查询范围为指定的老人ID列表
+        if (elderlyIds != null && !elderlyIds.isEmpty()) {
+            queryWrapper.in(HealthWarning::getElderlyId, elderlyIds);
+        } else {
+            // 如果没有允许的老人ID，返回空结果
+            return new PageInfo<>(new ArrayList<>());
+        }
+
+        // 老人姓名模糊查询
+        if (StringUtils.hasText(dto.getElderlyName())) {
+            queryWrapper.like(HealthWarning::getElderlyName, dto.getElderlyName());
+        }
+
+        // 预警类型（支持多选）
+        if (StringUtils.hasText(dto.getWarningType())) {
+            String[] warningTypes = dto.getWarningType().split(",");
+            if (warningTypes.length == 1) {
+                queryWrapper.eq(HealthWarning::getWarningType, warningTypes[0].trim());
+            } else {
+                queryWrapper.in(HealthWarning::getWarningType, (Object[]) warningTypes);
+            }
+        }
+
+        // 预警级别（支持多选）
+        if (StringUtils.hasText(dto.getWarningLevel())) {
+            String[] warningLevels = dto.getWarningLevel().split(",");
+            if (warningLevels.length == 1) {
+                try {
+                    Integer level = Integer.parseInt(warningLevels[0].trim());
+                    queryWrapper.eq(HealthWarning::getWarningLevel, level);
+                } catch (NumberFormatException e) {
+                    log.warn("预警级别格式错误: {}", warningLevels[0]);
+                }
+            } else {
+                Integer[] levels = new Integer[warningLevels.length];
+                for (int i = 0; i < warningLevels.length; i++) {
+                    try {
+                        levels[i] = Integer.parseInt(warningLevels[i].trim());
+                    } catch (NumberFormatException e) {
+                        log.warn("预警级别格式错误: {}", warningLevels[i]);
+                    }
+                }
+                queryWrapper.in(HealthWarning::getWarningLevel, (Object[]) levels);
+            }
+        }
+
+        // 状态（支持多选）
+        if (StringUtils.hasText(dto.getStatus())) {
+            String[] statuses = dto.getStatus().split(",");
+            if (statuses.length == 1) {
+                try {
+                    Integer status = Integer.parseInt(statuses[0].trim());
+                    queryWrapper.eq(HealthWarning::getStatus, status);
+                } catch (NumberFormatException e) {
+                    log.warn("状态格式错误: {}", statuses[0]);
+                }
+            } else {
+                Integer[] statusArray = new Integer[statuses.length];
+                for (int i = 0; i < statuses.length; i++) {
+                    try {
+                        statusArray[i] = Integer.parseInt(statuses[i].trim());
+                    } catch (NumberFormatException e) {
+                        log.warn("状态格式错误: {}", statuses[i]);
+                    }
+                }
+                queryWrapper.in(HealthWarning::getStatus, statusArray);
+            }
+        }
+
+        // 时间范围查询
+        if (dto.getStartTime() != null) {
+            queryWrapper.ge(HealthWarning::getTriggerTime, dto.getStartTime());
+        }
+        if (dto.getEndTime() != null) {
+            queryWrapper.le(HealthWarning::getTriggerTime, dto.getEndTime());
+        }
+
+        // 按创建时间倒序
+        queryWrapper.orderByDesc(HealthWarning::getTriggerTime);
+
+        // 查询数据
+        List<HealthWarning> list = this.list(queryWrapper);
+
+        return new PageInfo<>(list);
+    }
+
+    /**
+     * 根据老人ID列表获取健康预警统计数据（家属专用）
+     *
+     * @param elderlyIds 老人ID列表
+     * @return 统计结果
+     */
+    @Override
+    public Map<String, Object> getWarningStatisticsByElderlyIds(List<Long> elderlyIds) {
+        log.info("根据老人ID列表获取健康预警统计，老人IDs：{}", elderlyIds);
+
+        Map<String, Object> result = new HashMap<>();
+        
+        if (elderlyIds == null || elderlyIds.isEmpty()) {
+            // 如果没有关联老人，返回全零统计
+            result.put("urgent", 0);
+            result.put("high", 0);
+            result.put("medium", 0);
+            result.put("low", 0);
+            result.put("total", 0);
+            return result;
+        }
+
+        // 按级别统计
+        LambdaQueryWrapper<HealthWarning> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(HealthWarning::getElderlyId, elderlyIds);
+        
+        // 统计各级别数量
+        long urgent = this.count(queryWrapper.clone().eq(HealthWarning::getWarningLevel, 4));
+        long high = this.count(queryWrapper.clone().eq(HealthWarning::getWarningLevel, 3));
+        long medium = this.count(queryWrapper.clone().eq(HealthWarning::getWarningLevel, 2));
+        long low = this.count(queryWrapper.clone().eq(HealthWarning::getWarningLevel, 1));
+        long total = urgent + high + medium + low;
+
+        result.put("urgent", urgent);
+        result.put("high", high);
+        result.put("medium", medium);
+        result.put("low", low);
+        result.put("total", total);
+
+        return result;
     }
 }

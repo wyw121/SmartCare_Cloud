@@ -35,4 +35,12 @@ public interface FamilyService {
      * @return 是否全部有权限
      */
     boolean hasPermissionToViewElderlyList(Long familyUserId, List<Long> elderlyIds);
+
+    /**
+     * 根据家属用户ID获取关联的老人ID列表（别名方法）
+     *
+     * @param familyUserId 家属用户ID
+     * @return 老人ID列表
+     */
+    List<Long> getRelatedElderlyIds(Long familyUserId);
 }

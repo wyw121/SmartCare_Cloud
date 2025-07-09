@@ -309,6 +309,35 @@ export const useUserStore = defineStore('user', {
       this.userInfo = { ...userInfo }
       this.permissions = userInfo.permissions || []
       this.roles = userInfo.role ? [userInfo.role] : []
+    },
+
+    // 开发环境快速切换用户
+    switchToDemoUser(userType = 'family') {
+      if (!import.meta.env.DEV) {
+        console.warn('用户切换功能仅在开发环境可用')
+        return
+      }
+      
+      const roleData = ROLE_DATA[userType]
+      if (!roleData) {
+        console.error('用户类型不存在:', userType)
+        return
+      }
+      
+      const token = `dev_switch_token_${userType}_${Date.now()}`
+      
+      this.token = token
+      this.userInfo = { ...roleData }
+      this.permissions = roleData.permissions || []
+      this.roles = [roleData.role]
+      
+      localStorage.setItem('token', token)
+      localStorage.setItem('userInfo', JSON.stringify(roleData))
+      
+      console.log(`🔄 已切换到${roleData.roleText}(${userType}):`, roleData.name)
+      
+      // 刷新页面以应用新的用户状态
+      window.location.reload()
     }
   }
 })

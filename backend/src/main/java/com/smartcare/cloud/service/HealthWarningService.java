@@ -6,6 +6,7 @@ import com.smartcare.cloud.dto.HealthWarningPageDTO;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 健康预警服务接口
@@ -120,4 +121,21 @@ public interface HealthWarningService extends IService<HealthWarning> {
     boolean createWarning(Long elderlyId, String elderlyName, String warningType,
             Integer warningLevel, String title, String content,
             String triggerData, String dataSource);
+
+    /**
+     * 根据老人ID列表分页查询健康预警列表（家属专用）
+     *
+     * @param dto 查询条件
+     * @param elderlyIds 允许查询的老人ID列表
+     * @return 分页结果
+     */
+    PageInfo<HealthWarning> getPageListByElderlyIds(HealthWarningPageDTO dto, List<Long> elderlyIds);
+
+    /**
+     * 根据老人ID列表获取健康预警统计数据（家属专用）
+     *
+     * @param elderlyIds 老人ID列表
+     * @return 统计结果
+     */
+    Map<String, Object> getWarningStatisticsByElderlyIds(List<Long> elderlyIds);
 }

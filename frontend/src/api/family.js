@@ -66,3 +66,25 @@ export function sendContactRequest(contactData) {
     data: contactData
   })
 }
+
+/**
+ * 家属专用 - 分页查询关联老人的健康预警
+ * @param {Object} params 查询参数
+ */
+export function getFamilyWarningsPage(params) {
+  return request({
+    url: '/family/warnings/page',
+    method: 'post',
+    data: params
+  })
+}
+
+/**
+ * 家属专用 - 获取关联老人健康预警统计
+ */
+export function getFamilyWarningStatistics() {
+  return request({
+    url: '/family/warnings/statistics',
+    method: 'get'
+  })
+}

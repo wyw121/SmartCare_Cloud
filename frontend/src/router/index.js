@@ -49,6 +49,12 @@ const routes = [
     meta: { title: '简单测试', hidden: true }
   },
   {
+    path: '/dev-tools',
+    name: 'DevTools',
+    component: () => import('@/views/dev-tools.vue'),
+    meta: { title: '开发工具', hidden: true }
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/login/index.vue'),
