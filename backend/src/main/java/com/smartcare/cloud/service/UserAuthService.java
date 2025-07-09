@@ -1,15 +1,15 @@
 package com.smartcare.cloud.service;
 
-import com.smartcare.cloud.entity.User;
-import com.smartcare.cloud.vo.LoginVO;
-import com.smartcare.cloud.vo.UserRegisterVO;
-import com.smartcare.cloud.vo.UserInfoVO;
+import java.util.List;
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.smartcare.cloud.dto.UserLoginDTO;
 import com.smartcare.cloud.dto.UserRegisterDTO;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-
-import java.util.List;
+import com.smartcare.cloud.entity.User;
+import com.smartcare.cloud.vo.LoginVO;
+import com.smartcare.cloud.vo.UserInfoVO;
+import com.smartcare.cloud.vo.UserRegisterVO;
 
 /**
  * 用户认证服务接口
@@ -190,5 +190,46 @@ public interface UserAuthService extends IService<User> {
      * @return 是否存在
      */
     boolean checkEmailExists(String email);
+
+    /**
+     * 更新用户基本信息
+     *
+     * @param updateDTO 更新信息
+     * @return 更新结果
+     */
+    boolean updateUserInfo(com.smartcare.cloud.dto.UserUpdateDTO updateDTO);
+
+    /**
+     * 修改用户密码
+     *
+     * @param passwordChangeDTO 密码修改信息
+     * @return 修改结果
+     */
+    boolean changePassword(com.smartcare.cloud.dto.PasswordChangeDTO passwordChangeDTO);
+
+    /**
+     * 上传用户头像
+     *
+     * @param userId 用户ID
+     * @param file 头像文件
+     * @return 头像URL
+     */
+    String uploadAvatar(Long userId, org.springframework.web.multipart.MultipartFile file);
+
+    /**
+     * 获取用户统计数据
+     *
+     * @param userId 用户ID
+     * @return 统计数据
+     */
+    java.util.Map<String, Object> getUserStatistics(Long userId);
+
+    /**
+     * 获取用户活动记录
+     *
+     * @param userId 用户ID
+     * @return 活动记录
+     */
+    java.util.List<java.util.Map<String, Object>> getUserActivities(Long userId);
 
 }

@@ -21,8 +21,18 @@ service.interceptors.request.use(
     const openApis = ['/doctor/', '/elderly/', '/health-warning/']
     const isOpenApi = openApis.some(api => config.url.includes(api))
     
+    // 只有在生产环境或者token是有效JWT格式时才添加Authorization头
     if (userStore.token && !isOpenApi) {
-      config.headers['Authorization'] = `Bearer ${userStore.token}`
+      // 检查token是否是有效的JWT格式（包含两个点）
+      if (userStore.token.includes('.') && userStore.token.split('.').length === 3) {
+        config.headers['Authorization'] = `Bearer ${userStore.token}`
+      } else if (import.meta.env.PROD) {
+        // 生产环境下token格式不正确，清除token
+        userStore.logout()
+        window.location.href = '/login.html'
+        return Promise.reject(new Error('Token格式不正确'))
+      }
+      // 开发环境下的mock token不添加Authorization头
     }
     
     // 添加请求时间戳，避免缓存

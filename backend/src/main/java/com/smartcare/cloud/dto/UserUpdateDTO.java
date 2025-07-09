@@ -15,6 +15,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "用户更新DTO")
 public class UserUpdateDTO {
 
+    @Schema(description = "用户ID")
+    private Long id;
+
     @Schema(description = "真实姓名")
     @NotBlank(message = "真实姓名不能为空")
     private String realName;
@@ -46,6 +49,14 @@ public class UserUpdateDTO {
     }
 
     // Getter和Setter方法
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getRealName() {
         return realName;
     }

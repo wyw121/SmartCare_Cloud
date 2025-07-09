@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧医养平台 - 登录</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .login-button:hover {
+            transform: translateY(-1px);
+        }
+
+        .login-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .demo-accounts {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .demo-accounts h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .demo-account {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .demo-account:hover {
+            background: #e9ecef;
+        }
+
+        .demo-account strong {
+            color: #667eea;
+        }
+
+        .demo-account span {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .result.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .result.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>🏥 智慧医养平台</h1>
+            <p>请登录您的账户</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">用户名</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button type="submit" class="login-button" id="loginButton">
+                登录
+            </button>
+        </form>
+
+        <div id="result" class="result" style="display: none;"></div>
+
+        <div class="demo-accounts">
+            <h3>演示账户</h3>
+            <div class="demo-account" onclick="fillAccount('admin', '123456')">
+                <strong>管理员</strong><br>
+                <span>用户名: admin / 密码: 123456</span>
+            </div>
+            <div class="demo-account" onclick="fillAccount('doctor', '123456')">
+                <strong>医生</strong><br>
+                <span>用户名: doctor / 密码: 123456</span>
+            </div>
+            <div class="demo-account" onclick="fillAccount('family', '123456')">
+                <strong>家属</strong><br>
+                <span>用户名: family / 密码: 123456</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080/api';
+        
+        // 填充账户信息
+        function fillAccount(username, password) {
+            document.getElementById('username').value = username;
+            document.getElementById('password').value = password;
+        }
+
+        // 显示结果
+        function showResult(message, isSuccess = true) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = `result ${isSuccess ? 'success' : 'error'}`;
+            resultDiv.textContent = message;
+        }
+
+        // 登录处理
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginButton = document.getElementById('loginButton');
+            
+            if (!username || !password) {
+                showResult('请填写用户名和密码', false);
+                return;
+            }
+
+            try {
+                loginButton.disabled = true;
+                loginButton.innerHTML = '<span class="loading"></span> 登录中...';
+                
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // 保存登录信息到localStorage
+                    localStorage.setItem('token', result.data.token);
+                    localStorage.setItem('userInfo', JSON.stringify(result.data.userInfo));
+                    
+                    showResult('登录成功！正在跳转...', true);
+                    
+                    // 延迟跳转
+                    setTimeout(() => {
+                        window.location.href = '/profile/index';
+                    }, 1500);
+                } else {
+                    showResult(result.message || '登录失败', false);
+                }
+            } catch (error) {
+                console.error('登录失败:', error);
+                showResult('登录失败，请检查网络连接或服务器状态', false);
+            } finally {
+                loginButton.disabled = false;
+                loginButton.innerHTML = '登录';
+            }
+        });
+
+        // 页面加载时检查是否已登录
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('token');
+            if (token && !token.startsWith('dev_auto_token_')) {
+                showResult('检测到已登录状态，正在跳转到个人中心...', true);
+                setTimeout(() => {
+                    window.location.href = '/profile/index';
+                }, 1500);
+            }
+        });
+    </script>
+</body>
+</html>

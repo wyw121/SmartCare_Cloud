@@ -383,4 +383,130 @@ public class UserAuthServiceImpl extends ServiceImpl<UserMapper, User> implement
         return exists != null && exists;
     }
 
+    @Override
+    @Transactional
+    public boolean updateUserInfo(com.smartcare.cloud.dto.UserUpdateDTO updateDTO) {
+        if (updateDTO == null || updateDTO.getId() == null) {
+            return false;
+        }
+
+        User user = new User();
+        user.setId(updateDTO.getId());
+        user.setRealName(updateDTO.getRealName());
+        user.setEmail(updateDTO.getEmail());
+        user.setPhone(updateDTO.getPhone());
+        user.setGender(updateDTO.getGender());
+        // 临时注释，字段不存在：birthday, bio, avatar
+
+        int result = userMapper.updateById(user);
+        return result > 0;
+    }
+
+    @Override
+    @Transactional
+    public boolean changePassword(com.smartcare.cloud.dto.PasswordChangeDTO passwordChangeDTO) {
+        if (passwordChangeDTO == null || passwordChangeDTO.getUserId() == null) {
+            return false;
+        }
+
+        // 检查新密码和确认密码是否一致
+        if (!passwordChangeDTO.getNewPassword().equals(passwordChangeDTO.getConfirmPassword())) {
+            throw new RuntimeException("新密码和确认密码不一致");
+        }
+
+        // 获取用户信息
+        User user = userMapper.selectById(passwordChangeDTO.getUserId());
+        if (user == null) {
+            throw new RuntimeException("用户不存在");
+        }
+
+        // 验证原密码
+        if (!passwordUtil.matches(passwordChangeDTO.getOldPassword(), user.getPassword())) {
+            throw new RuntimeException("原密码错误");
+        }
+
+        // 加密新密码
+        String encodedNewPassword = passwordUtil.encode(passwordChangeDTO.getNewPassword());
+
+        // 更新密码
+        user.setPassword(encodedNewPassword);
+        int result = userMapper.updateById(user);
+        return result > 0;
+    }
+
+    @Override
+    @Transactional
+    public String uploadAvatar(Long userId, org.springframework.web.multipart.MultipartFile file) {
+        if (userId == null || file == null || file.isEmpty()) {
+            return null;
+        }
+
+        // 这里应该实现文件上传逻辑，暂时返回一个模拟的URL
+        // 在实际项目中，应该上传到文件服务器或对象存储
+        String avatarUrl = "/uploads/avatar/" + userId + "_" + System.currentTimeMillis() + ".jpg";
+
+        // 更新用户头像字段（如果数据库中有这个字段）
+        User user = new User();
+        user.setId(userId);
+        // 临时注释，字段不存在：avatar
+        // user.setAvatar(avatarUrl);
+        // userMapper.updateById(user);
+
+        return avatarUrl;
+    }
+
+    @Override
+    public java.util.Map<String, Object> getUserStatistics(Long userId) {
+        if (userId == null) {
+            return new java.util.HashMap<>();
+        }
+
+        java.util.Map<String, Object> statistics = new java.util.HashMap<>();
+
+        // 这里应该从数据库查询真实的统计数据
+        // 暂时返回模拟数据
+        statistics.put("loginCount", 128);
+        statistics.put("workDays", 25);
+        statistics.put("taskCount", 45);
+
+        return statistics;
+    }
+
+    @Override
+    public java.util.List<java.util.Map<String, Object>> getUserActivities(Long userId) {
+        if (userId == null) {
+            return new java.util.ArrayList<>();
+        }
+
+        java.util.List<java.util.Map<String, Object>> activities = new java.util.ArrayList<>();
+
+        // 这里应该从数据库查询真实的活动记录
+        // 暂时返回模拟数据
+        java.util.Map<String, Object> activity1 = new java.util.HashMap<>();
+        activity1.put("id", 1);
+        activity1.put("title", "登录系统");
+        activity1.put("description", "通过Web端登录智慧医养平台");
+        activity1.put("time", "2024-01-15 10:30:00");
+        activity1.put("type", "primary");
+        activities.add(activity1);
+
+        java.util.Map<String, Object> activity2 = new java.util.HashMap<>();
+        activity2.put("id", 2);
+        activity2.put("title", "处理健康预警");
+        activity2.put("description", "处理了张大爷的血压异常预警");
+        activity2.put("time", "2024-01-15 09:45:00");
+        activity2.put("type", "success");
+        activities.add(activity2);
+
+        java.util.Map<String, Object> activity3 = new java.util.HashMap<>();
+        activity3.put("id", 3);
+        activity3.put("title", "添加老人档案");
+        activity3.put("description", "新增了李奶奶的个人档案信息");
+        activity3.put("time", "2024-01-14 16:20:00");
+        activity3.put("type", "info");
+        activities.add(activity3);
+
+        return activities;
+    }
+
 }

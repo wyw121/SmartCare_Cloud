@@ -112,14 +112,16 @@ export const useUserStore = defineStore('user', {
     let token = localStorage.getItem('token') || ''
     let userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
     
-    // 如果是开发环境且没有登录，自动登录为admin
-    if (import.meta.env.DEV && !token) {
+    // 如果是开发环境且没有有效的登录状态，自动登录为admin
+    if (import.meta.env.DEV && (!token || !userInfo.id)) {
       const adminData = ROLE_DATA.admin
       token = `dev_auto_token_${Date.now()}`
       userInfo = { ...adminData }
       
       localStorage.setItem('token', token)
       localStorage.setItem('userInfo', JSON.stringify(adminData))
+      
+      console.log('🚀 开发环境自动登录:', adminData.name)
     }
     
     return {

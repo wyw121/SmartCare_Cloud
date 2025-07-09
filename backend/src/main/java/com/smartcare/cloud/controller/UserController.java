@@ -1,21 +1,31 @@
 package com.smartcare.cloud.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.smartcare.cloud.dto.PasswordChangeDTO;
+import com.smartcare.cloud.dto.UserUpdateDTO;
 import com.smartcare.cloud.entity.User;
 import com.smartcare.cloud.service.PermissionService;
 import com.smartcare.cloud.service.RoleService;
 import com.smartcare.cloud.service.UserAuthService;
+import com.smartcare.cloud.util.JwtUtil;
 import com.smartcare.cloud.util.ResponseResult;
+import com.smartcare.cloud.vo.UserInfoVO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,6 +50,185 @@ public class UserController {
 
     @Autowired
     private PermissionService permissionService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    /**
+     * 获取当前用户信息
+     */
+    @Operation(summary = "获取当前用户信息", description = "获取当前登录用户的详细信息")
+    @GetMapping("/info")
+    public ResponseResult<UserInfoVO> getCurrentUserInfo(HttpServletRequest request) {
+        try {
+            // 从请求头中获取token
+            String token = request.getHeader("Authorization");
+            if (token != null && token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+
+            // 解析token获取用户ID
+            Long userId = jwtUtil.getUserIdFromToken(token);
+            if (userId == null) {
+                return ResponseResult.error("用户未登录或token无效");
+            }
+
+            UserInfoVO userInfo = userAuthService.getUserInfo(userId);
+            if (userInfo != null) {
+                return ResponseResult.success(userInfo);
+            } else {
+                return ResponseResult.error("用户不存在");
+            }
+        } catch (Exception e) {
+            return ResponseResult.error("获取用户信息失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 更新当前用户信息
+     */
+    @Operation(summary = "更新当前用户信息", description = "更新当前登录用户的基本信息")
+    @PutMapping("/info")
+    public ResponseResult<Void> updateCurrentUserInfo(@RequestBody UserUpdateDTO updateDTO, HttpServletRequest request) {
+        try {
+            // 从请求头中获取token
+            String token = request.getHeader("Authorization");
+            if (token != null && token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+
+            // 解析token获取用户ID
+            Long userId = jwtUtil.getUserIdFromToken(token);
+            if (userId == null) {
+                return ResponseResult.error("用户未登录或token无效");
+            }
+
+            updateDTO.setId(userId);
+            boolean success = userAuthService.updateUserInfo(updateDTO);
+            if (success) {
+                return ResponseResult.success("用户信息更新成功");
+            } else {
+                return ResponseResult.error("用户信息更新失败");
+            }
+        } catch (Exception e) {
+            return ResponseResult.error("更新用户信息失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 修改当前用户密码
+     */
+    @Operation(summary = "修改当前用户密码", description = "修改当前登录用户的密码")
+    @PutMapping("/password")
+    public ResponseResult<Void> changePassword(@RequestBody PasswordChangeDTO passwordChangeDTO, HttpServletRequest request) {
+        try {
+            // 从请求头中获取token
+            String token = request.getHeader("Authorization");
+            if (token != null && token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+
+            // 解析token获取用户ID
+            Long userId = jwtUtil.getUserIdFromToken(token);
+            if (userId == null) {
+                return ResponseResult.error("用户未登录或token无效");
+            }
+
+            passwordChangeDTO.setUserId(userId);
+            boolean success = userAuthService.changePassword(passwordChangeDTO);
+            if (success) {
+                return ResponseResult.success("密码修改成功");
+            } else {
+                return ResponseResult.error("密码修改失败，请检查原密码是否正确");
+            }
+        } catch (Exception e) {
+            return ResponseResult.error("修改密码失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 上传用户头像
+     */
+    @Operation(summary = "上传用户头像", description = "上传当前登录用户的头像")
+    @PutMapping("/avatar")
+    public ResponseResult<Map<String, String>> uploadAvatar(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+        try {
+            // 从请求头中获取token
+            String token = request.getHeader("Authorization");
+            if (token != null && token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+
+            // 解析token获取用户ID
+            Long userId = jwtUtil.getUserIdFromToken(token);
+            if (userId == null) {
+                return ResponseResult.error("用户未登录或token无效");
+            }
+
+            String avatarUrl = userAuthService.uploadAvatar(userId, file);
+            if (avatarUrl != null) {
+                Map<String, String> result = new HashMap<>();
+                result.put("avatarUrl", avatarUrl);
+                return ResponseResult.success(result);
+            } else {
+                return ResponseResult.error("头像上传失败");
+            }
+        } catch (Exception e) {
+            return ResponseResult.error("上传头像失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取用户统计数据
+     */
+    @Operation(summary = "获取用户统计数据", description = "获取当前登录用户的统计数据")
+    @GetMapping("/statistics")
+    public ResponseResult<Map<String, Object>> getUserStatistics(HttpServletRequest request) {
+        try {
+            // 从请求头中获取token
+            String token = request.getHeader("Authorization");
+            if (token != null && token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+
+            // 解析token获取用户ID
+            Long userId = jwtUtil.getUserIdFromToken(token);
+            if (userId == null) {
+                return ResponseResult.error("用户未登录或token无效");
+            }
+
+            Map<String, Object> statistics = userAuthService.getUserStatistics(userId);
+            return ResponseResult.success(statistics);
+        } catch (Exception e) {
+            return ResponseResult.error("获取用户统计失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取用户活动日志
+     */
+    @Operation(summary = "获取用户活动日志", description = "获取当前登录用户的最近活动记录")
+    @GetMapping("/activities")
+    public ResponseResult<List<Map<String, Object>>> getUserActivities(HttpServletRequest request) {
+        try {
+            // 从请求头中获取token
+            String token = request.getHeader("Authorization");
+            if (token != null && token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+
+            // 解析token获取用户ID
+            Long userId = jwtUtil.getUserIdFromToken(token);
+            if (userId == null) {
+                return ResponseResult.error("用户未登录或token无效");
+            }
+
+            List<Map<String, Object>> activities = userAuthService.getUserActivities(userId);
+            return ResponseResult.success(activities);
+        } catch (Exception e) {
+            return ResponseResult.error("获取用户活动失败：" + e.getMessage());
+        }
+    }
 
     @Operation(summary = "获取用户列表", description = "根据角色编码获取用户列表")
     @GetMapping("/list")
@@ -111,21 +300,6 @@ public class UserController {
             return ResponseResult.success(permissions);
         } catch (Exception e) {
             return ResponseResult.error("获取用户权限失败：" + e.getMessage());
-        }
-    }
-
-    @Operation(summary = "统计用户数量", description = "按角色统计用户数量")
-    @GetMapping("/statistics")
-    public ResponseResult<Object> getUserStatistics() {
-        try {
-            java.util.Map<String, Object> statistics = new java.util.HashMap<>();
-            statistics.put("adminCount", userAuthService.countUsersByRoleCode("admin"));
-            statistics.put("doctorCount", userAuthService.countUsersByRoleCode("doctor"));
-            statistics.put("familyCount", userAuthService.countUsersByRoleCode("family"));
-            statistics.put("totalCount", userAuthService.getTotalUserCount());
-            return ResponseResult.success(statistics);
-        } catch (Exception e) {
-            return ResponseResult.error("获取用户统计失败：" + e.getMessage());
         }
     }
 

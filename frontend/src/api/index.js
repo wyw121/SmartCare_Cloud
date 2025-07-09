@@ -114,11 +114,27 @@ export const user = {
   uploadAvatar(data) {
     return request({
       url: '/user/avatar',
-      method: 'post',
+      method: 'put',
       data,
       headers: {
         'Content-Type': 'multipart/form-data'
       }
+    })
+  },
+
+  // 获取用户统计数据
+  getStatistics() {
+    return request({
+      url: '/user/statistics',
+      method: 'get'
+    })
+  },
+
+  // 获取用户活动记录
+  getActivities() {
+    return request({
+      url: '/user/activities',
+      method: 'get'
     })
   }
 }

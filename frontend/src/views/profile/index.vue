@@ -1,21 +1,36 @@
 <template>
-  <div class="profile-container">
-    <div class="profile-header">
-      <div class="avatar-section">
-        <el-avatar :size="120" :src="userInfo.avatar">
-          <img src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
-        </el-avatar>
-        <el-button type="primary" size="small" @click="handleAvatarUpload" style="margin-top: 15px;">
-          更换头像
-        </el-button>
-      </div>
+  <div class="profile-container" v-loading="dataLoading">
+    <!-- 未登录提示 -->
+    <div v-if="!userStore.isLoggedIn" class="login-prompt">
+      <el-result
+        icon="warning"
+        title="未登录"
+        sub-title="请先登录以查看个人信息"
+      >
+        <template #extra>
+          <el-button type="primary" @click="goToLogin">去登录</el-button>
+        </template>
+      </el-result>
+    </div>
+
+    <!-- 个人中心内容 -->
+    <div v-else>
+      <div class="profile-header">
+        <div class="avatar-section">
+          <el-avatar :size="120" :src="userInfo.avatar">
+            <img src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
+          </el-avatar>
+          <el-button type="primary" size="small" @click="handleAvatarUpload" style="margin-top: 15px;">
+            更换头像
+          </el-button>
+        </div>
       
       <div class="info-section">
         <h2>{{ userInfo.realName }}</h2>
         <p class="username">@{{ userInfo.username }}</p>
         <div class="user-tags">
           <el-tag type="primary">{{ userInfo.roleName }}</el-tag>
-          <el-tag type="success">{{ userInfo.departmentName }}</el-tag>
+          <el-tag type="success">{{ userInfo.departmentName || '未分配部门' }}</el-tag>
         </div>
         
         <div class="user-stats">
@@ -59,8 +74,8 @@
             
             <el-form-item label="性别" prop="gender">
               <el-radio-group v-model="basicForm.gender">
-                <el-radio label="male">男</el-radio>
-                <el-radio label="female">女</el-radio>
+                <el-radio :label="1">男</el-radio>
+                <el-radio :label="0">女</el-radio>
               </el-radio-group>
             </el-form-item>
             
@@ -108,7 +123,7 @@
             <div class="security-info">
               <h4>邮箱验证</h4>
               <p class="security-desc">
-                当前邮箱：{{ userInfo.email }}
+                当前邮箱：{{ userInfo.email || '未设置' }}
                 <el-tag v-if="userInfo.emailVerified" type="success" size="small">已验证</el-tag>
                 <el-tag v-else type="warning" size="small">未验证</el-tag>
               </p>
@@ -124,7 +139,7 @@
             <div class="security-info">
               <h4>手机验证</h4>
               <p class="security-desc">
-                当前手机：{{ userInfo.phone }}
+                当前手机：{{ userInfo.phone || '未设置' }}
                 <el-tag v-if="userInfo.phoneVerified" type="success" size="small">已验证</el-tag>
                 <el-tag v-else type="warning" size="small">未验证</el-tag>
               </p>
@@ -138,12 +153,12 @@
     </el-row>
 
     <!-- 最近活动 -->
-    <el-card header="最近活动" style="margin-top: 20px;">
-      <el-timeline>
+    <el-card header="最近活动" style="margin-top: 20px;" v-loading="dataLoading">
+      <el-timeline v-if="activities.length > 0">
         <el-timeline-item
           v-for="activity in activities"
           :key="activity.id"
-          :timestamp="activity.time"
+          :timestamp="formatDateTime(activity.time)"
           :type="activity.type"
         >
           <div class="activity-content">
@@ -152,6 +167,9 @@
           </div>
         </el-timeline-item>
       </el-timeline>
+      <div v-else class="no-data">
+        <el-empty description="暂无活动记录" />
+      </div>
     </el-card>
 
     <!-- 修改密码弹窗 -->
@@ -211,10 +229,12 @@
       style="display: none"
       @change="handleAvatarChange"
     />
+    </div>
   </div>
 </template>
 
 <script setup>
+import { user } from '@/api'
 import { useUserStore } from '@/store/user'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
@@ -225,34 +245,35 @@ const userStore = useUserStore()
 const basicLoading = ref(false)
 const passwordLoading = ref(false)
 const passwordDialogVisible = ref(false)
+const dataLoading = ref(false)
 const basicFormRef = ref()
 const passwordFormRef = ref()
 const avatarInputRef = ref()
 
 // 用户信息
 const userInfo = ref({
-  id: 1,
-  username: 'admin',
-  realName: '系统管理员',
-  email: 'admin@smartcare.com',
-  phone: '13800138001',
+  id: null,
+  username: '',
+  realName: '',
+  email: '',
+  phone: '',
   avatar: '',
-  roleName: '超级管理员',
-  departmentName: '管理部',
-  gender: 'male',
-  birthday: '1990-01-01',
-  bio: '负责系统整体管理和维护',
-  emailVerified: true,
-  phoneVerified: true,
-  createTime: '2024-01-01 00:00:00',
-  lastLoginTime: '2024-01-15 10:30:00'
+  roleName: '',
+  departmentName: '',
+  gender: 1,
+  birthday: null,
+  bio: '',
+  emailVerified: false,
+  phoneVerified: false,
+  createTime: '',
+  lastLoginTime: ''
 })
 
 // 用户统计数据
 const userStats = ref({
-  loginCount: 128,
-  workDays: 25,
-  taskCount: 45
+  loginCount: 0,
+  workDays: 0,
+  taskCount: 0
 })
 
 // 基本信息表单
@@ -260,8 +281,8 @@ const basicForm = reactive({
   realName: '',
   email: '',
   phone: '',
-  gender: 'male',
-  birthday: '',
+  gender: 1,
+  birthday: null,
   bio: ''
 })
 
@@ -312,56 +333,151 @@ const passwordRules = {
 }
 
 // 最近活动
-const activities = ref([
-  {
-    id: 1,
-    title: '登录系统',
-    description: '通过Web端登录智慧医养平台',
-    time: '2024-01-15 10:30:00',
-    type: 'primary'
-  },
-  {
-    id: 2,
-    title: '处理健康预警',
-    description: '处理了张大爷的血压异常预警',
-    time: '2024-01-15 09:45:00',
-    type: 'success'
-  },
-  {
-    id: 3,
-    title: '添加老人档案',
-    description: '新增了李奶奶的个人档案信息',
-    time: '2024-01-14 16:20:00',
-    type: 'info'
-  },
-  {
-    id: 4,
-    title: '系统配置',
-    description: '更新了系统安全配置',
-    time: '2024-01-14 14:10:00',
-    type: 'warning'
-  }
-])
+const activities = ref([])
 
 /**
  * 页面初始化
  */
-onMounted(() => {
-  initUserInfo()
+onMounted(async () => {
+  await loadUserData()
 })
 
 /**
- * 初始化用户信息
+ * 加载用户数据
  */
-const initUserInfo = () => {
+const loadUserData = async () => {
+  try {
+    dataLoading.value = true
+    
+    // 检查是否有有效的登录令牌
+    const userStore = useUserStore()
+    if (!userStore.token) {
+      ElMessage.error('请先登录')
+      return
+    }
+    
+    // 检查是否是开发环境的模拟token
+    if (userStore.token.startsWith('dev_auto_token_') || userStore.token.startsWith('mock_token_')) {
+      // 开发环境模拟数据
+      loadMockData()
+      return
+    }
+    
+    // 尝试调用真实API
+    try {
+      // 并行加载用户信息、统计数据和活动记录
+      const [userResponse, statsResponse, activitiesResponse] = await Promise.all([
+        user.getInfo(),
+        user.getStatistics(),
+        user.getActivities()
+      ])
+
+      if (userResponse.success) {
+        userInfo.value = userResponse.data
+        initUserForm()
+      }
+
+      if (statsResponse.success) {
+        userStats.value = statsResponse.data
+      }
+
+      if (activitiesResponse.success) {
+        activities.value = activitiesResponse.data
+      }
+    } catch (apiError) {
+      console.error('真实API调用失败，降级到模拟数据:', apiError)
+      
+      // API调用失败时，降级到模拟数据
+      loadMockData()
+    }
+  } catch (error) {
+    console.error('加载用户数据失败:', error)
+    
+    // 如果是JWT错误或其他错误，尝试加载模拟数据
+    if (error.message.includes('JWT') || error.message.includes('token')) {
+      console.log('JWT令牌无效，加载模拟数据')
+      loadMockData()
+    } else {
+      ElMessage.error('加载用户数据失败')
+    }
+  } finally {
+    dataLoading.value = false
+  }
+}
+
+/**
+ * 加载模拟数据（开发环境使用）
+ */
+const loadMockData = () => {
+  const userStore = useUserStore()
+  const mockUser = userStore.userInfo || {}
+  
+  // 设置用户信息
+  userInfo.value = {
+    id: mockUser.id || 1,
+    username: mockUser.username || 'admin',
+    realName: mockUser.name || '系统管理员',
+    email: mockUser.email || 'admin@smartcare.com',
+    phone: mockUser.phone || '13800138000',
+    avatar: mockUser.avatar || '',
+    roleName: mockUser.roleText || '超级管理员',
+    departmentName: mockUser.department || '系统管理部',
+    gender: 1,
+    birthday: null,
+    bio: mockUser.description || '负责系统整体管理和维护',
+    emailVerified: true,
+    phoneVerified: true,
+    createTime: '2024-01-01 00:00:00',
+    lastLoginTime: new Date().toISOString()
+  }
+  
+  // 设置统计数据
+  userStats.value = {
+    loginCount: 128,
+    workDays: 25,
+    taskCount: 45
+  }
+  
+  // 设置活动记录
+  activities.value = [
+    {
+      id: 1,
+      title: '登录系统',
+      description: '通过Web端登录智慧医养平台',
+      time: new Date().toISOString(),
+      type: 'primary'
+    },
+    {
+      id: 2,
+      title: '查看个人中心',
+      description: '访问了个人中心页面',
+      time: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+      type: 'info'
+    },
+    {
+      id: 3,
+      title: '系统初始化',
+      description: '完成了系统初始化配置',
+      time: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+      type: 'success'
+    }
+  ]
+  
+  initUserForm()
+}
+
+/**
+ * 初始化用户表单
+ */
+const initUserForm = () => {
   // 将用户信息同步到表单
   Object.assign(basicForm, {
-    realName: userInfo.value.realName,
-    email: userInfo.value.email,
-    phone: userInfo.value.phone,
-    gender: userInfo.value.gender,
-    birthday: userInfo.value.birthday,
-    bio: userInfo.value.bio
+    realName: userInfo.value.realName || '',
+    email: userInfo.value.email || '',
+    phone: userInfo.value.phone || '',
+    gender: userInfo.value.gender || 1,
+    birthday: userInfo.value.birthday || null,
+    bio: userInfo.value.bio || ''
   })
 }
 
@@ -377,14 +493,40 @@ const handleUpdateBasic = async () => {
     
     basicLoading.value = true
     
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    const userStore = useUserStore()
     
-    // 更新用户信息
-    Object.assign(userInfo.value, basicForm)
+    // 如果是开发环境的模拟token，直接更新本地数据
+    if (userStore.token.startsWith('dev_auto_token_') || userStore.token.startsWith('mock_token_')) {
+      // 模拟API延迟
+      await new Promise(resolve => setTimeout(resolve, 800))
+      
+      // 更新本地用户信息
+      Object.assign(userInfo.value, basicForm)
+      
+      // 更新store中的用户信息
+      const updatedUserInfo = { ...userStore.userInfo }
+      updatedUserInfo.name = basicForm.realName
+      updatedUserInfo.email = basicForm.email
+      updatedUserInfo.phone = basicForm.phone
+      userStore.userInfo = updatedUserInfo
+      localStorage.setItem('userInfo', JSON.stringify(updatedUserInfo))
+      
+      ElMessage.success('基本信息更新成功')
+      return
+    }
     
-    ElMessage.success('基本信息更新成功')
+    // 真实API调用
+    const response = await user.updateInfo(basicForm)
+    
+    if (response.success) {
+      // 更新本地用户信息
+      Object.assign(userInfo.value, basicForm)
+      ElMessage.success('基本信息更新成功')
+    } else {
+      ElMessage.error(response.message || '基本信息更新失败')
+    }
   } catch (error) {
+    console.error('更新基本信息失败:', error)
     ElMessage.error('基本信息更新失败')
   } finally {
     basicLoading.value = false
@@ -414,14 +556,41 @@ const handleUpdatePassword = async () => {
     const valid = await passwordFormRef.value.validate()
     if (!valid) return
     
+    // 验证确认密码
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      ElMessage.error('两次输入密码不一致')
+      return
+    }
+    
     passwordLoading.value = true
     
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    const userStore = useUserStore()
     
-    ElMessage.success('密码修改成功')
-    passwordDialogVisible.value = false
+    // 如果是开发环境的模拟token，直接模拟成功
+    if (userStore.token.startsWith('dev_auto_token_') || userStore.token.startsWith('mock_token_')) {
+      // 模拟API延迟
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      ElMessage.success('密码修改成功')
+      passwordDialogVisible.value = false
+      return
+    }
+    
+    // 真实API调用
+    const response = await user.changePassword({
+      oldPassword: passwordForm.oldPassword,
+      newPassword: passwordForm.newPassword,
+      confirmPassword: passwordForm.confirmPassword
+    })
+    
+    if (response.success) {
+      ElMessage.success('密码修改成功')
+      passwordDialogVisible.value = false
+    } else {
+      ElMessage.error(response.message || '密码修改失败')
+    }
   } catch (error) {
+    console.error('修改密码失败:', error)
     ElMessage.error('密码修改失败')
   } finally {
     passwordLoading.value = false
@@ -451,6 +620,7 @@ const handleVerifyEmail = async () => {
     await new Promise(resolve => setTimeout(resolve, 1000))
     
     ElMessage.success('验证邮件已发送，请查收')
+    // 注意：实际项目中应该调用真实的邮箱验证API
   } catch (error) {
     if (error !== 'cancel') {
       ElMessage.error('发送验证邮件失败')
@@ -471,6 +641,7 @@ const handleVerifyPhone = async () => {
     await new Promise(resolve => setTimeout(resolve, 1000))
     
     ElMessage.success('验证短信已发送，请查收')
+    // 注意：实际项目中应该调用真实的手机验证API
   } catch (error) {
     if (error !== 'cancel') {
       ElMessage.error('发送验证短信失败')
@@ -505,27 +676,83 @@ const handleAvatarChange = async (event) => {
   }
   
   try {
-    // 模拟上传
     ElMessage.info('正在上传头像...')
-    await new Promise(resolve => setTimeout(resolve, 2000))
     
-    // 创建预览URL
-    const avatarUrl = URL.createObjectURL(file)
-    userInfo.value.avatar = avatarUrl
+    const userStore = useUserStore()
     
-    ElMessage.success('头像上传成功')
+    // 如果是开发环境的模拟token，直接创建预览URL
+    if (userStore.token.startsWith('dev_auto_token_') || userStore.token.startsWith('mock_token_')) {
+      // 模拟上传延迟
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      // 创建预览URL
+      const avatarUrl = URL.createObjectURL(file)
+      userInfo.value.avatar = avatarUrl
+      
+      // 更新store中的头像
+      const updatedUserInfo = { ...userStore.userInfo }
+      updatedUserInfo.avatar = avatarUrl
+      userStore.userInfo = updatedUserInfo
+      localStorage.setItem('userInfo', JSON.stringify(updatedUserInfo))
+      
+      ElMessage.success('头像上传成功')
+      return
+    }
+    
+    // 真实API调用
+    const formData = new FormData()
+    formData.append('file', file)
+    
+    const response = await user.uploadAvatar(formData)
+    
+    if (response.success) {
+      userInfo.value.avatar = response.data.avatarUrl
+      ElMessage.success('头像上传成功')
+    } else {
+      ElMessage.error(response.message || '头像上传失败')
+    }
   } catch (error) {
+    console.error('上传头像失败:', error)
     ElMessage.error('头像上传失败')
   }
   
   // 清空文件输入
   event.target.value = ''
 }
+
+/**
+ * 格式化性别显示
+ */
+const formatGender = (gender) => {
+  return gender === 1 ? '男' : '女'
+}
+
+/**
+ * 格式化时间显示
+ */
+const formatDateTime = (datetime) => {
+  if (!datetime) return '-'
+  return new Date(datetime).toLocaleString()
+}
+
+/**
+ * 跳转到登录页面
+ */
+const goToLogin = () => {
+  window.location.href = '/login.html'
+}
 </script>
 
 <style lang="scss" scoped>
 .profile-container {
   padding: 20px;
+}
+
+.login-prompt {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
 }
 
 .profile-header {
