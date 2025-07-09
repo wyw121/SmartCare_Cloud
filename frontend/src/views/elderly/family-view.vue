@@ -233,10 +233,10 @@
 
 <script setup>
 import {
-  getElderlyByIds,
-  getLatestVitals,
-  getWarnings,
-  sendContactRequest
+    getFamilyElderlyList,
+    getLatestVitals,
+    getWarnings,
+    sendContactRequest
 } from '@/api/family'
 import { useUserStore } from '@/store/user'
 import { Bell, Document, Message, View, Warning } from '@element-plus/icons-vue'
@@ -280,19 +280,11 @@ const loadElderlyList = async () => {
   try {
     loading.value = true
     
-    // 根据家属权限，只获取关联的老人信息
-    const elderlyIds = userStore.userInfo.elderlyIds || []
-    if (elderlyIds.length === 0) {
-      console.log('当前家属用户没有关联的老人')
-      elderlyList.value = []
-      return
-    }
+    console.log('开始加载家属关联的老人信息...')
 
-    console.log('开始加载家属关联的老人信息，老人IDs:', elderlyIds)
-
-    // 调用家属专用API获取老人信息
+    // 调用家属专用API获取关联老人列表
     try {
-      const response = await getElderlyByIds(elderlyIds)
+      const response = await getFamilyElderlyList()
       console.log('API响应:', response)
       
       if (response && response.code === 200) {
@@ -305,14 +297,13 @@ const loadElderlyList = async () => {
         }
       } else {
         console.error('API返回错误:', response)
-        throw new Error(response.message || 'API调用失败')
+        ElMessage.error('获取老人信息失败')
+        elderlyList.value = []
       }
     } catch (apiError) {
-      console.warn('API调用失败，使用Mock数据:', apiError)
-      // 使用Mock数据
-      elderlyList.value = getMockElderlyData().filter(elderly => 
-        elderlyIds.includes(elderly.id)
-      )
+      console.error('调用API失败:', apiError)
+      ElMessage.error('网络请求失败')
+      elderlyList.value = []
     }
     
   } catch (error) {

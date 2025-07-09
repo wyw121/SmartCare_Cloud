@@ -8,6 +8,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,6 +52,9 @@ public class FamilyController {
 
     @Autowired
     private HealthWarningService healthWarningService;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     /**
      * 根据老人ID列表批量获取老人信息（家属专用）
@@ -391,6 +395,143 @@ public class FamilyController {
         } catch (Exception e) {
             log.error("检查数据库数据失败", e);
             return ResponseResult.error("检查失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 家属专用 - 获取关联老人列表
+     */
+    @Operation(summary = "家属获取关联老人列表", description = "家属获取当前用户关联的所有老人信息")
+    @GetMapping("/elderly/list")
+    public ResponseResult<List<Elderly>> getFamilyElderlyList() {
+        log.info("家属获取关联老人列表");
+        try {
+            // 获取当前家属用户ID（实际应从JWT token获取）
+            Long currentFamilyUserId = 3L;
+
+            // 获取家属关联的老人ID列表
+            List<Long> elderlyIds = familyService.getRelatedElderlyIds(currentFamilyUserId);
+            if (elderlyIds == null || elderlyIds.isEmpty()) {
+                return ResponseResult.success(List.of()); // 返回空列表而不是错误
+            }
+
+            // 调用老人服务获取详细信息
+            ResponseResult<List<Elderly>> result = elderlyService.getElderlyByIds(elderlyIds);
+            return result;
+        } catch (Exception e) {
+            log.error("家属获取关联老人列表失败", e);
+            return ResponseResult.error("获取关联老人列表失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 临时API - 创建家属相关表和测试数据
+     */
+    @Operation(summary = "创建家属表", description = "开发环境专用，创建家属相关表和测试数据")
+    @PostMapping("/create-tables")
+    public ResponseResult<String> createFamilyTables() {
+        log.info("开始创建家属相关表和测试数据");
+        try {
+            // 创建family_user表
+            String createFamilyUserSql = "CREATE TABLE IF NOT EXISTS family_user ("
+                    + "id BIGINT PRIMARY KEY AUTO_INCREMENT,"
+                    + "sys_user_id BIGINT NOT NULL COMMENT '系统用户ID（关联sys_user表）',"
+                    + "real_name VARCHAR(50) NOT NULL COMMENT '真实姓名',"
+                    + "gender TINYINT(1) DEFAULT 1 COMMENT '性别：1-男，2-女',"
+                    + "phone VARCHAR(20) COMMENT '手机号码',"
+                    + "email VARCHAR(100) COMMENT '邮箱地址',"
+                    + "status TINYINT(1) DEFAULT 1 COMMENT '状态：1-正常，0-禁用',"
+                    + "is_deleted TINYINT(1) DEFAULT 0 COMMENT '是否删除：0-未删除，1-已删除',"
+                    + "create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',"
+                    + "update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',"
+                    + "create_by BIGINT COMMENT '创建人ID',"
+                    + "update_by BIGINT COMMENT '更新人ID',"
+                    + "UNIQUE KEY uk_sys_user_id (sys_user_id),"
+                    + "INDEX idx_status (status),"
+                    + "INDEX idx_phone (phone),"
+                    + "INDEX idx_create_time (create_time)"
+                    + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='家属用户表'";
+
+            jdbcTemplate.execute(createFamilyUserSql);
+            log.info("family_user表创建成功");
+
+            // 创建family_elderly_relation表
+            String createRelationSql = "CREATE TABLE IF NOT EXISTS family_elderly_relation ("
+                    + "id BIGINT PRIMARY KEY AUTO_INCREMENT,"
+                    + "family_user_id BIGINT NOT NULL COMMENT '家属用户ID',"
+                    + "elderly_id BIGINT NOT NULL COMMENT '老人ID',"
+                    + "relationship_type VARCHAR(20) NOT NULL COMMENT '关系类型',"
+                    + "relationship_name VARCHAR(20) NOT NULL COMMENT '关系名称',"
+                    + "is_primary TINYINT(1) DEFAULT 0 COMMENT '是否主要联系人：1-是，0-否',"
+                    + "is_emergency TINYINT(1) DEFAULT 0 COMMENT '是否紧急联系人：1-是，0-否',"
+                    + "contact_priority INT DEFAULT 5 COMMENT '联系优先级：1-最高，5-最低',"
+                    + "visit_frequency VARCHAR(20) COMMENT '探视频率',"
+                    + "authorized_operations JSON COMMENT '授权操作列表',"
+                    + "start_date DATE COMMENT '关系开始日期',"
+                    + "end_date DATE COMMENT '关系结束日期',"
+                    + "status TINYINT(1) DEFAULT 1 COMMENT '状态：1-有效，0-无效',"
+                    + "is_deleted TINYINT(1) DEFAULT 0 COMMENT '是否删除：0-未删除，1-已删除',"
+                    + "create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',"
+                    + "update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',"
+                    + "create_by BIGINT COMMENT '创建人ID',"
+                    + "update_by BIGINT COMMENT '更新人ID',"
+                    + "UNIQUE KEY uk_family_elderly (family_user_id, elderly_id),"
+                    + "INDEX idx_family_user (family_user_id),"
+                    + "INDEX idx_elderly (elderly_id),"
+                    + "INDEX idx_relationship (relationship_type),"
+                    + "INDEX idx_status (status),"
+                    + "INDEX idx_is_primary (is_primary),"
+                    + "INDEX idx_is_emergency (is_emergency),"
+                    + "INDEX idx_contact_priority (contact_priority)"
+                    + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='家属老人关系表'";
+
+            jdbcTemplate.execute(createRelationSql);
+            log.info("family_elderly_relation表创建成功");
+
+            // 插入测试家属用户数据
+            String insertFamilyUserSql = "INSERT IGNORE INTO family_user "
+                    + "(sys_user_id, real_name, gender, phone, email, status, create_by) "
+                    + "VALUES (3, '李家属', 1, '13800138002', 'family@smartcare.com', 1, 1)";
+
+            int familyUserRows = jdbcTemplate.update(insertFamilyUserSql);
+            log.info("插入家属用户数据: {} 行", familyUserRows);
+
+            // 获取家属用户ID
+            String getFamilyUserIdSql = "SELECT id FROM family_user WHERE sys_user_id = 3";
+            Long familyUserId = jdbcTemplate.queryForObject(getFamilyUserIdSql, Long.class);
+            log.info("家属用户ID: {}", familyUserId);
+
+            // 插入测试关联数据
+            String insertRelationSql = "INSERT IGNORE INTO family_elderly_relation "
+                    + "(family_user_id, elderly_id, relationship_type, relationship_name, "
+                    + "is_primary, is_emergency, contact_priority, start_date, status, create_by) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE(), 1, 1)";
+
+            // 插入5个关联关系
+            Object[][] relationData = {
+                {familyUserId, 1L, "child", "儿子", 1, 1, 1},
+                {familyUserId, 2L, "child", "女儿", 0, 1, 2},
+                {familyUserId, 3L, "child", "儿子", 0, 0, 3},
+                {familyUserId, 4L, "grandchild", "孙子", 0, 0, 4},
+                {familyUserId, 5L, "grandchild", "孙女", 0, 0, 5}
+            };
+
+            int totalRelations = 0;
+            for (Object[] data : relationData) {
+                int rows = jdbcTemplate.update(insertRelationSql, data);
+                totalRelations += rows;
+                log.info("插入关联关系: 家属{} -> 老人{}, 关系: {}", data[0], data[1], data[3]);
+            }
+
+            log.info("总共插入 {} 条关联关系", totalRelations);
+
+            return ResponseResult.success("家属表和测试数据创建成功！"
+                    + "家属用户: " + familyUserRows + " 条, "
+                    + "关联关系: " + totalRelations + " 条");
+
+        } catch (Exception e) {
+            log.error("创建家属表失败", e);
+            return ResponseResult.error("创建家属表失败：" + e.getMessage());
         }
     }
 

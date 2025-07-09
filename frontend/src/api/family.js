@@ -88,3 +88,13 @@ export function getFamilyWarningStatistics() {
     method: 'get'
   })
 }
+
+/**
+ * 家属专用 - 获取关联老人列表
+ */
+export function getFamilyElderlyList() {
+  return request({
+    url: '/family/elderly/list',
+    method: 'get'
+  })
+}
