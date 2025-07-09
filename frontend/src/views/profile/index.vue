@@ -38,13 +38,17 @@
             <div class="stat-value">{{ userStats.loginCount }}</div>
             <div class="stat-label">登录次数</div>
           </div>
-          <div class="stat-item">
+          <div class="stat-item" v-if="userStore.userRole !== 'family'">
             <div class="stat-value">{{ userStats.workDays }}</div>
             <div class="stat-label">工作天数</div>
           </div>
           <div class="stat-item">
             <div class="stat-value">{{ userStats.taskCount }}</div>
-            <div class="stat-label">处理任务</div>
+            <div class="stat-label">{{ userStore.userRole === 'family' ? '查看预警' : '处理任务' }}</div>
+          </div>
+          <div class="stat-item" v-if="userStore.userRole === 'family'">
+            <div class="stat-value">{{ userInfo.elderlyIds?.length || 2 }}</div>
+            <div class="stat-label">关联长辈</div>
           </div>
         </div>
       </div>
@@ -357,7 +361,10 @@ const loadUserData = async () => {
     }
     
     // 检查是否是开发环境的模拟token
-    if (userStore.token.startsWith('dev_auto_token_') || userStore.token.startsWith('mock_token_')) {
+    if (userStore.token.startsWith('dev_auto_token_') || 
+        userStore.token.startsWith('mock_token_') || 
+        userStore.token.startsWith('dev_switch_token_')) {
+      console.log('检测到开发环境token，加载模拟数据')
       // 开发环境模拟数据
       loadMockData()
       return
@@ -409,59 +416,184 @@ const loadUserData = async () => {
  * 加载模拟数据（开发环境使用）
  */
 const loadMockData = () => {
+  console.log('开始加载模拟数据')
   const userStore = useUserStore()
   const mockUser = userStore.userInfo || {}
   
-  // 设置用户信息
-  userInfo.value = {
-    id: mockUser.id || 1,
-    username: mockUser.username || 'admin',
-    realName: mockUser.name || '系统管理员',
-    email: mockUser.email || 'admin@smartcare.com',
-    phone: mockUser.phone || '13800138000',
-    avatar: mockUser.avatar || '',
-    roleName: mockUser.roleText || '超级管理员',
-    departmentName: mockUser.department || '系统管理部',
-    gender: 1,
-    birthday: null,
-    bio: mockUser.description || '负责系统整体管理和维护',
-    emailVerified: true,
-    phoneVerified: true,
-    createTime: '2024-01-01 00:00:00',
-    lastLoginTime: new Date().toISOString()
-  }
+  console.log('从store获取的用户信息:', mockUser)
   
-  // 设置统计数据
-  userStats.value = {
-    loginCount: 128,
-    workDays: 25,
-    taskCount: 45
-  }
+  // 根据用户角色设置不同的模拟数据
+  let mockData = {}
   
-  // 设置活动记录
-  activities.value = [
-    {
-      id: 1,
-      title: '登录系统',
-      description: '通过Web端登录智慧医养平台',
-      time: new Date().toISOString(),
-      type: 'primary'
-    },
-    {
-      id: 2,
-      title: '查看个人中心',
-      description: '访问了个人中心页面',
-      time: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-      type: 'info'
-    },
-    {
-      id: 3,
-      title: '系统初始化',
-      description: '完成了系统初始化配置',
-      time: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-      type: 'success'
+  if (mockUser.role === 'family') {
+    // 家属用户的模拟数据
+    mockData = {
+      id: mockUser.id || 3,
+      username: mockUser.username || 'family',
+      realName: mockUser.name || '李家属',
+      email: mockUser.email || 'family@smartcare.com',
+      phone: mockUser.phone || '13800138002',
+      avatar: mockUser.avatar || '',
+      roleName: mockUser.roleText || '家属',
+      departmentName: '',
+      gender: 1,
+      birthday: null,
+      bio: mockUser.description || '家属用户，负责关心长辈健康',
+      emailVerified: true,
+      phoneVerified: true,
+      createTime: '2024-01-01 00:00:00',
+      lastLoginTime: new Date().toISOString(),
+      relationship: mockUser.relationship || '儿子', // 家属关系
+      elderlyIds: mockUser.elderlyIds || [1, 2] // 关联的长辈ID
     }
-  ]
+    
+    // 家属的统计数据
+    userStats.value = {
+      loginCount: 45,
+      workDays: 0, // 家属没有工作天数概念
+      taskCount: 8 // 查看预警次数
+    }
+    
+    // 家属的活动记录
+    activities.value = [
+      {
+        id: 1,
+        title: '查看健康预警',
+        description: '查看了关联长辈的健康预警信息',
+        time: new Date().toISOString(),
+        type: 'warning'
+      },
+      {
+        id: 2,
+        title: '登录系统',
+        description: '通过Web端登录智慧医养平台',
+        time: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+        type: 'primary'
+      },
+      {
+        id: 3,
+        title: '查看长辈档案',
+        description: '查看了关联长辈的详细档案信息',
+        time: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        type: 'info'
+      },
+      {
+        id: 4,
+        title: '关联长辈',
+        description: '成功关联了长辈账户',
+        time: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+        type: 'success'
+      }
+    ]
+  } else if (mockUser.role === 'doctor') {
+    // 医生用户的模拟数据
+    mockData = {
+      id: mockUser.id || 2,
+      username: mockUser.username || 'doctor',
+      realName: mockUser.name || '张医生',
+      email: mockUser.email || 'doctor@smartcare.com',
+      phone: mockUser.phone || '13800138001',
+      avatar: mockUser.avatar || '',
+      roleName: mockUser.roleText || '医生',
+      departmentName: mockUser.department || '内科',
+      gender: 1,
+      birthday: null,
+      bio: mockUser.description || '负责老人医疗健康管理，处理健康预警和评估',
+      emailVerified: true,
+      phoneVerified: true,
+      createTime: '2024-01-01 00:00:00',
+      lastLoginTime: new Date().toISOString()
+    }
+    
+    // 医生的统计数据
+    userStats.value = {
+      loginCount: 89,
+      workDays: 22,
+      taskCount: 156
+    }
+    
+    // 医生的活动记录
+    activities.value = [
+      {
+        id: 1,
+        title: '处理健康预警',
+        description: '处理了多个老人的健康预警信息',
+        time: new Date().toISOString(),
+        type: 'warning'
+      },
+      {
+        id: 2,
+        title: '登录系统',
+        description: '通过Web端登录智慧医养平台',
+        time: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
+        type: 'primary'
+      },
+      {
+        id: 3,
+        title: '编写评估报告',
+        description: '为老人编写了健康评估报告',
+        time: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+        type: 'success'
+      }
+    ]
+  } else {
+    // 管理员或其他用户的模拟数据
+    mockData = {
+      id: mockUser.id || 1,
+      username: mockUser.username || 'admin',
+      realName: mockUser.name || '系统管理员',
+      email: mockUser.email || 'admin@smartcare.com',
+      phone: mockUser.phone || '13800138000',
+      avatar: mockUser.avatar || '',
+      roleName: mockUser.roleText || '超级管理员',
+      departmentName: mockUser.department || '系统管理部',
+      gender: 1,
+      birthday: null,
+      bio: mockUser.description || '负责系统整体管理和维护',
+      emailVerified: true,
+      phoneVerified: true,
+      createTime: '2024-01-01 00:00:00',
+      lastLoginTime: new Date().toISOString()
+    }
+    
+    // 管理员的统计数据
+    userStats.value = {
+      loginCount: 128,
+      workDays: 25,
+      taskCount: 45
+    }
+    
+    // 管理员的活动记录
+    activities.value = [
+      {
+        id: 1,
+        title: '登录系统',
+        description: '通过Web端登录智慧医养平台',
+        time: new Date().toISOString(),
+        type: 'primary'
+      },
+      {
+        id: 2,
+        title: '查看个人中心',
+        description: '访问了个人中心页面',
+        time: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+        type: 'info'
+      },
+      {
+        id: 3,
+        title: '系统初始化',
+        description: '完成了系统初始化配置',
+        time: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+        type: 'success'
+      }
+    ]
+  }
+  
+  // 设置用户信息
+  userInfo.value = mockData
+  console.log('设置的用户信息:', userInfo.value)
+  console.log('设置的统计数据:', userStats.value)
+  console.log('设置的活动记录:', activities.value)
   
   initUserForm()
 }

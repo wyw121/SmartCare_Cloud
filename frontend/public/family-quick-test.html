@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家属个人中心快速测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background: #409EFF;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background: #337ecc;
+        }
+        .btn.success {
+            background: #67C23A;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .status.success {
+            background: #f0f9ff;
+            border: 1px solid #b3d8ff;
+            color: #0369a1;
+        }
+        .status.warning {
+            background: #fffbeb;
+            border: 1px solid #fed7aa;
+            color: #ea580c;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🏥 家属个人中心快速测试</h1>
+        <p>这个页面可以快速设置家属身份并测试个人中心功能</p>
+    </div>
+
+    <div class="card">
+        <h2>🚀 一键测试</h2>
+        <p>点击下面的按钮自动设置家属身份并打开个人中心：</p>
+        <button class="btn success" onclick="quickTest()">设置家属身份 & 打开个人中心</button>
+        
+        <div id="status" style="display: none;"></div>
+    </div>
+
+    <div class="card">
+        <h2>📋 测试步骤说明</h2>
+        <ol>
+            <li>点击上面的按钮设置家属身份</li>
+            <li>系统会自动打开个人中心页面</li>
+            <li>检查页面是否正常显示家属信息</li>
+            <li>检查是否显示了家属特有的字段（如"与长辈关系"）</li>
+            <li>检查统计数据是否适合家属角色</li>
+        </ol>
+    </div>
+
+    <div class="card">
+        <h2>🔧 手动调试</h2>
+        <p>如果页面有问题，可以：</p>
+        <ol>
+            <li>打开浏览器控制台（F12）</li>
+            <li>运行 <code>switchToFamily()</code> 命令</li>
+            <li>检查控制台输出的调试信息</li>
+            <li>运行 <code>checkUserState()</code> 查看当前状态</li>
+        </ol>
+        
+        <button class="btn" onclick="openConsole()">查看控制台调试命令</button>
+    </div>
+
+    <script>
+        function quickTest() {
+            console.log('🏥 开始家属个人中心测试...')
+            
+            // 设置家属用户数据
+            const familyData = {
+                id: 3,
+                username: 'family',
+                password: '123456',
+                name: '李家属',
+                role: 'family',
+                roleText: '家属',
+                permissions: [
+                    'dashboard:view',
+                    'elderly:view',
+                    'health:view',
+                    'health-warning:view',
+                    'report:view'
+                ],
+                avatar: '',
+                relationship: '儿子',
+                elderlyIds: [1, 2],
+                phone: '13800138002',
+                email: 'family@smartcare.com',
+                description: '家属用户，可查看关联老人的健康信息和预警',
+                features: {
+                    elderly: ['view'],
+                    health: ['view'],
+                    report: ['view']
+                }
+            }
+            
+            const token = `dev_switch_token_family_${Date.now()}`
+            
+            try {
+                // 设置用户数据
+                localStorage.setItem('token', token)
+                localStorage.setItem('userInfo', JSON.stringify(familyData))
+                
+                console.log('✅ 家属数据设置成功:', familyData)
+                
+                showStatus('已设置家属身份，正在打开个人中心...', 'success')
+                
+                // 延迟打开页面，确保数据已保存
+                setTimeout(() => {
+                    window.open('/profile/index', '_blank')
+                }, 500)
+                
+            } catch (error) {
+                console.error('❌ 设置失败:', error)
+                showStatus('设置失败: ' + error.message, 'warning')
+            }
+        }
+        
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('status')
+            statusEl.textContent = message
+            statusEl.className = `status ${type}`
+            statusEl.style.display = 'block'
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusEl.style.display = 'none'
+                }, 3000)
+            }
+        }
+        
+        function openConsole() {
+            console.log('=== 家属个人中心调试命令 ===')
+            console.log('1. switchToFamily() - 切换到家属角色')
+            console.log('2. checkUserState() - 检查当前用户状态')
+            console.log('3. clearUserState() - 清除用户状态')
+            console.log('===============================')
+            
+            showStatus('调试命令已输出到控制台，请按F12查看', 'success')
+        }
+        
+        // 定义全局调试函数
+        window.switchToFamily = function() {
+            quickTest()
+        }
+        
+        window.checkUserState = function() {
+            console.log('=== 当前用户状态 ===')
+            console.log('Token:', localStorage.getItem('token'))
+            const userInfo = localStorage.getItem('userInfo')
+            if (userInfo) {
+                console.log('UserInfo:', JSON.parse(userInfo))
+            } else {
+                console.log('UserInfo: 无')
+            }
+            console.log('==================')
+        }
+        
+        window.clearUserState = function() {
+            localStorage.removeItem('token')
+            localStorage.removeItem('userInfo')
+            console.log('✅ 用户状态已清除')
+            location.reload()
+        }
+    </script>
+</body>
+</html>
