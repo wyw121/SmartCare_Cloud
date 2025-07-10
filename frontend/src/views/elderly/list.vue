@@ -69,10 +69,6 @@
           <i class="el-icon-download"></i>
           导出数据
         </el-button>
-        <el-button type="warning" @click="handleImport">
-          <i class="el-icon-upload"></i>
-          导入数据
-        </el-button>
         <el-button type="info" @click="handleHealthStatistics">
           <i class="el-icon-data-analysis"></i>
           健康统计
@@ -797,11 +793,6 @@ export default {
       return csvRows.join('\n')
     }
 
-    // 导入
-    const handleImport = () => {
-      ElMessage.info('导入功能开发中...')
-    }
-
     // 健康统计
     const handleHealthStatistics = () => {
       healthStatisticsDialogVisible.value = true
@@ -936,7 +927,6 @@ export default {
       handleDelete,
       handleBatchDelete,
       handleExport,
-      handleImport,
       handleHealthStatistics,
       handleCareLevelStats,
       handleHealthRecords,

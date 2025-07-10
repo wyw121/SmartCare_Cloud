@@ -1,9 +1,10 @@
 <template>
   <el-dialog
-    v-model="visible"
+    :model-value="visible"
     :title="isEdit ? '编辑医生' : '新增医生'"
     width="700px"
     @close="handleClose"
+    @update:model-value="$emit('update:visible', $event)"
   >
     <el-form
       ref="formRef"

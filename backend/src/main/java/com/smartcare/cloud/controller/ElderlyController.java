@@ -22,10 +22,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.smartcare.cloud.dto.ElderlyPageDTO;
 import com.smartcare.cloud.entity.Elderly;
 import com.smartcare.cloud.service.ElderlyService;
-import com.smartcare.cloud.vo.HealthStatisticsVO;
-import com.smartcare.cloud.vo.HealthStatisticsVO.AgeHealthDistribution;
-import com.smartcare.cloud.vo.HealthStatisticsVO.HealthRiskAssessment;
-import com.smartcare.cloud.vo.HealthStatisticsVO.HealthStatusDistribution;
 import com.smartcare.cloud.vo.ResponseResult;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -326,9 +322,10 @@ public class ElderlyController {
      */
     @Operation(summary = "获取健康统计数据", description = "获取老人健康状态的完整统计信息")
     @GetMapping("/health-statistics")
-    public ResponseResult<HealthStatisticsVO> getHealthStatistics() {
+    public ResponseResult<Object> getHealthStatistics() {
         try {
-            return elderlyService.getHealthStatistics();
+            Object result = elderlyService.getHealthStatistics();
+            return ResponseResult.success(result);
         } catch (Exception e) {
             log.error("获取健康统计数据失败", e);
             return ResponseResult.error("统计失败");
@@ -340,9 +337,10 @@ public class ElderlyController {
      */
     @Operation(summary = "获取健康状态分布", description = "获取老人健康状态的分布统计")
     @GetMapping("/health-status-distribution")
-    public ResponseResult<List<HealthStatusDistribution>> getHealthStatusDistribution() {
+    public ResponseResult<Object> getHealthStatusDistribution() {
         try {
-            return elderlyService.getHealthStatusDistribution();
+            Object result = elderlyService.getHealthStatusDistribution();
+            return ResponseResult.success(result);
         } catch (Exception e) {
             log.error("获取健康状态分布失败", e);
             return ResponseResult.error("统计失败");
@@ -354,9 +352,10 @@ public class ElderlyController {
      */
     @Operation(summary = "获取年龄段健康分布", description = "获取不同年龄段老人的健康状态分布")
     @GetMapping("/age-health-distribution")
-    public ResponseResult<List<AgeHealthDistribution>> getAgeHealthDistribution() {
+    public ResponseResult<Object> getAgeHealthDistribution() {
         try {
-            return elderlyService.getAgeHealthDistribution();
+            Object result = elderlyService.getAgeHealthDistribution();
+            return ResponseResult.success(result);
         } catch (Exception e) {
             log.error("获取年龄段健康分布失败", e);
             return ResponseResult.error("统计失败");
@@ -368,9 +367,10 @@ public class ElderlyController {
      */
     @Operation(summary = "获取健康风险评估", description = "获取老人健康风险评估数据")
     @GetMapping("/health-risk-assessment")
-    public ResponseResult<HealthRiskAssessment> getHealthRiskAssessment() {
+    public ResponseResult<Object> getHealthRiskAssessment() {
         try {
-            return elderlyService.getHealthRiskAssessment();
+            Object result = elderlyService.getHealthRiskAssessment();
+            return ResponseResult.success(result);
         } catch (Exception e) {
             log.error("获取健康风险评估失败", e);
             return ResponseResult.error("评估失败");
@@ -385,11 +385,12 @@ public class ElderlyController {
      */
     @Operation(summary = "家属批量获取老人信息", description = "家属根据关联的老人ID列表批量获取老人信息")
     @PostMapping("/family/batch")
-    public ResponseResult<List<Elderly>> getElderlyByIds(@RequestBody List<Long> elderlyIds) {
+    public ResponseResult<Object> getElderlyByIds(@RequestBody List<Long> elderlyIds) {
         log.info("家属批量获取老人信息，老人IDs：{}", elderlyIds);
         try {
             // 这里可以添加权限验证，确保当前登录的家属用户只能查看自己关联的老人
-            return elderlyService.getElderlyByIds(elderlyIds);
+            Object result = elderlyService.getElderlyByIds(elderlyIds);
+            return ResponseResult.success(result);
         } catch (Exception e) {
             log.error("家属批量获取老人信息失败", e);
             return ResponseResult.error("获取老人信息失败");

@@ -1,9 +1,10 @@
 <template>
   <el-dialog
-    v-model="visible"
+    :model-value="visible"
     title="医生详情"
     width="600px"
     @close="handleClose"
+    @update:model-value="$emit('update:visible', $event)"
   >
     <div class="doctor-detail" v-if="doctorData">
       <!-- 基本信息 -->
