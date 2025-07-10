@@ -334,26 +334,26 @@
 
 <script setup>
 import {
-  deleteHealthWarning,
-  deleteHealthWarningBatch,
-  getHealthWarningPageList,
-  getWarningLevelStatistics,
-  handleHealthWarning,
-  updateHealthWarningStatus
+    deleteHealthWarning,
+    deleteHealthWarningBatch,
+    getHealthWarningPageList,
+    getWarningLevelStatistics,
+    handleHealthWarning,
+    updateHealthWarningStatus
 } from '@/api/healthWarning'
 import {
-  CircleCheck,
-  Delete,
-  Download,
-  Hide,
-  InfoFilled,
-  Refresh,
-  Search,
-  Select,
-  Warning
+    CircleCheck,
+    Delete,
+    Download,
+    Hide,
+    InfoFilled,
+    Refresh,
+    Search,
+    Select,
+    Warning
 } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, onUnmounted, reactive, ref } from 'vue'
 
 // 响应式数据
 const tableLoading = ref(false)
@@ -720,8 +720,13 @@ const handleCurrentChange = (page) => {
 
 // 初始化
 onMounted(() => {
+  console.log('🚀 [HealthWarning] 管理员健康预警页面挂载完成')
   getList()
   getStatistics()
+})
+
+onUnmounted(() => {
+  console.log('💀 [HealthWarning] 管理员健康预警页面卸载')
 })
 </script>
 

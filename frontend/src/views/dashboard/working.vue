@@ -247,8 +247,19 @@ import {
     User, Warning
 } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import { reactive, ref } from 'vue'
+import { onMounted, onUnmounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+
+// 组件生命周期调试
+console.log('🏠 [Dashboard] 组件脚本开始执行')
+
+onMounted(() => {
+  console.log('🚀 [Dashboard] 组件挂载完成')
+})
+
+onUnmounted(() => {
+  console.log('💀 [Dashboard] 组件卸载')
+})
 
 const router = useRouter()
 const timeRange = ref('7d')

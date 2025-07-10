@@ -355,6 +355,13 @@ const router = createRouter({
 
 // 路由守卫
 router.beforeEach((to, from, next) => {
+  console.log('🚀 [路由守卫] beforeEach 开始', {
+    from: from.path,
+    to: to.path,
+    toName: to.name,
+    toMeta: to.meta
+  })
+  
   // 设置页面标题
   document.title = to.meta.title ? `${to.meta.title} - 智慧医养大数据平台` : '智慧医养大数据平台'
   
@@ -362,22 +369,33 @@ router.beforeEach((to, from, next) => {
   const isLoggedIn = userStore.isLoggedIn
   const userRole = userStore.userRole
   
+  console.log('🔐 [路由守卫] 用户状态', {
+    isLoggedIn,
+    userRole,
+    userInfo: userStore.userInfo
+  })
+  
   // 如果是登录页面或注册页面，直接通过
   if (to.path === '/login' || to.path === '/register') {
+    console.log('✅ [路由守卫] 登录/注册页面，直接通过')
     next()
     return
   }
   
   // 如果未登录，跳转到登录页
   if (!isLoggedIn) {
+    console.log('❌ [路由守卫] 未登录，跳转到登录页')
     next('/login')
     return
   }
   
   // 家属用户访问管理页面时重定向到专用页面
   if (userRole === 'family') {
+    console.log('👨‍👩‍👧‍👦 [路由守卫] 家属用户权限检查', { toPath: to.path })
+    
     // 家属访问老人档案列表时，重定向到家属专用页面
     if (to.path === '/elderly/list' || to.name === 'ElderlyList') {
+      console.log('🔄 [路由守卫] 家属重定向到专用页面')
       next('/elderly/family-view')
       return
     }
@@ -385,6 +403,7 @@ router.beforeEach((to, from, next) => {
     // 家属访问其他管理页面时，重定向到首页
     const restrictedPaths = ['/doctor', '/system', '/equipment', '/reports']
     if (restrictedPaths.some(path => to.path.startsWith(path))) {
+      console.log('🚫 [路由守卫] 家属访问受限页面，重定向到首页')
       next('/dashboard')
       return
     }
@@ -393,21 +412,44 @@ router.beforeEach((to, from, next) => {
   // 检查页面访问权限
   const routeName = to.name
   if (routeName && !canAccessRoute(routeName, userRole)) {
-    // 如果没有权限，跳转到首页或显示403页面
+    console.log('🚫 [路由守卫] 权限检查失败，跳转到首页', { routeName, userRole })
     next('/dashboard')
     return
   }
   
+  console.log('✅ [路由守卫] 权限检查通过，继续导航')
   next()
 })
 
 // 路由后置守卫 - 管理页面缓存
 router.afterEach((to, from) => {
+  console.log('🎯 [路由守卫] afterEach 开始', {
+    from: from.path,
+    to: to.path,
+    toName: to.name,
+    toMeta: to.meta
+  })
+  
   const tagsViewStore = useTagsViewStore()
   
-  // 添加访问的页面到标签页
+  console.log('📋 [标签页] 当前标签状态', {
+    visitedViewsCount: tagsViewStore.visitedViews.length,
+    cachedViewsCount: tagsViewStore.cachedViews.length,
+    visitedViews: tagsViewStore.visitedViews.map(v => ({ path: v.path, name: v.name, title: v.title })),
+    cachedViews: tagsViewStore.cachedViews
+  })
+  
+  // 添加访问的页面到标签页（避免重复添加）
   if (to.name && !to.meta?.hidden) {
+    console.log('➕ [标签页] 添加新标签', { name: to.name, path: to.path, title: to.meta?.title })
     tagsViewStore.addView(to)
+    
+    console.log('📋 [标签页] 添加后状态', {
+      visitedViewsCount: tagsViewStore.visitedViews.length,
+      cachedViewsCount: tagsViewStore.cachedViews.length
+    })
+  } else {
+    console.log('⏭️ [标签页] 跳过添加（隐藏页面或无名称）', { name: to.name, hidden: to.meta?.hidden })
   }
 })
 

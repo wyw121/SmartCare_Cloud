@@ -97,6 +97,14 @@ const filterAffixTags = (routes, basePath = '/') => {
  */
 const initTags = () => {
   const affixTagsList = affixTags.value = filterAffixTags(router.options.routes)
+  
+  // 按优先级排序固定标签，确保首页仪表板在最前面
+  affixTagsList.sort((a, b) => {
+    if (a.name === 'Dashboard') return -1
+    if (b.name === 'Dashboard') return 1
+    return 0
+  })
+  
   for (const tag of affixTagsList) {
     if (tag.name) {
       tagsViewStore.addVisitedView(tag)
@@ -108,9 +116,21 @@ const initTags = () => {
  * 添加标签
  */
 const addTags = () => {
+  console.log('➕ [TagsView] addTags 调用', {
+    routeName: route.name,
+    routePath: route.path,
+    routeTitle: route.meta?.title
+  })
+  
   const { name } = route
-  if (name && route.meta.title) {
+  if (name && route.meta?.title) {
+    console.log('✅ [TagsView] 满足添加条件，调用 tagsViewStore.addView')
     tagsViewStore.addView(route)
+  } else {
+    console.log('❌ [TagsView] 不满足添加条件', { 
+      hasName: !!name, 
+      hasTitle: !!route.meta?.title 
+    })
   }
   return false
 }
@@ -232,10 +252,25 @@ const handleScroll = () => {
 }
 
 // 监听路由变化
-watch(route, () => {
+watch(route, (newRoute, oldRoute) => {
+  console.log('🏷️ [TagsView] 路由变化监听', {
+    from: oldRoute?.path,
+    to: newRoute.path,
+    fromName: oldRoute?.name,
+    toName: newRoute.name
+  })
   addTags()
   moveToCurrentTag()
 })
+
+// 监听访问的视图变化
+watch(visitedViews, (newViews, oldViews) => {
+  console.log('🏷️ [TagsView] 访问视图列表变化', {
+    oldCount: oldViews?.length || 0,
+    newCount: newViews.length,
+    newViews: newViews.map(v => ({ path: v.path, name: v.name, title: v.title }))
+  })
+}, { immediate: true, deep: true })
 
 // 监听可见性变化
 watch(visible, (value) => {
@@ -248,8 +283,10 @@ watch(visible, (value) => {
 
 // 组件挂载时初始化
 onMounted(() => {
+  console.log('🚀 [TagsView] 组件挂载，开始初始化')
   initTags()
   addTags()
+  console.log('✅ [TagsView] 初始化完成')
 })
 </script>
 
