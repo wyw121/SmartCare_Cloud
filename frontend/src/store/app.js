@@ -32,10 +32,7 @@ export const useAppStore = defineStore('app', {
       showFooter: false
     },
     // 页面加载状态
-    pageLoading: false,
-    // 标签页列表
-    visitedViews: [],
-    cachedViews: []
+    pageLoading: false
   }),
 
   getters: {
@@ -96,53 +93,6 @@ export const useAppStore = defineStore('app', {
     // 设置页面加载状态
     setPageLoading(loading) {
       this.pageLoading = loading
-    },
-
-    // 添加访问过的页面
-    addVisitedView(view) {
-      if (this.visitedViews.some(v => v.path === view.path)) return
-      this.visitedViews.push({
-        name: view.name,
-        path: view.path,
-        title: view.meta?.title || 'no-name',
-        affix: view.meta?.affix || false
-      })
-    },
-
-    // 添加缓存页面
-    addCachedView(view) {
-      if (this.cachedViews.includes(view.name)) return
-      if (!view.meta?.noCache) {
-        this.cachedViews.push(view.name)
-      }
-    },
-
-    // 删除访问过的页面
-    delVisitedView(view) {
-      const index = this.visitedViews.findIndex(v => v.path === view.path)
-      if (index > -1) {
-        this.visitedViews.splice(index, 1)
-      }
-    },
-
-    // 删除缓存页面
-    delCachedView(view) {
-      const index = this.cachedViews.indexOf(view.name)
-      if (index > -1) {
-        this.cachedViews.splice(index, 1)
-      }
-    },
-
-    // 删除其他页面
-    delOthersViews(view) {
-      this.visitedViews = this.visitedViews.filter(v => v.affix || v.path === view.path)
-      this.cachedViews = this.cachedViews.filter(name => name === view.name)
-    },
-
-    // 删除所有页面
-    delAllViews() {
-      this.visitedViews = this.visitedViews.filter(v => v.affix)
-      this.cachedViews = []
     }
   }
 })

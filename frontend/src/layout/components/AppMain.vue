@@ -9,15 +9,15 @@
 </template>
 
 <script setup>
-import { useAppStore } from '@/store/app'
+import { useTagsViewStore } from '@/store/tagsView'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const appStore = useAppStore()
+const tagsViewStore = useTagsViewStore()
 
 // 计算属性
-const cachedViews = computed(() => appStore.cachedViews)
+const cachedViews = computed(() => tagsViewStore.cachedViews)
 const key = computed(() => route.path)
 </script>
 

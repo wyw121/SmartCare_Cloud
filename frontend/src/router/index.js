@@ -1,4 +1,5 @@
 import Layout from '@/layout/index.vue'
+import { useTagsViewStore } from '@/store/tagsView'
 import { useUserStore } from '@/store/user'
 import { canAccessRoute } from '@/utils/permission'
 import { createRouter, createWebHistory } from 'vue-router'
@@ -398,6 +399,16 @@ router.beforeEach((to, from, next) => {
   }
   
   next()
+})
+
+// 路由后置守卫 - 管理页面缓存
+router.afterEach((to, from) => {
+  const tagsViewStore = useTagsViewStore()
+  
+  // 添加访问的页面到标签页
+  if (to.name && !to.meta?.hidden) {
+    tagsViewStore.addView(to)
+  }
 })
 
 export default router
