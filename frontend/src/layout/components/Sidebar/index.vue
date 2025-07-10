@@ -82,7 +82,7 @@ export default {
             roles: ['family']
           },
           {
-            path: '/health-warning',
+            path: '/health/warning',
             name: 'health-warning',
             meta: { title: '健康提醒', icon: 'Warning' },
             roles: ['family']
@@ -116,7 +116,7 @@ export default {
             roles: ['admin', 'doctor']
           },
           {
-            path: '/health-warning',
+            path: '/health/warning',
             name: 'health-warning',
             meta: { title: '健康预警', icon: 'Warning' },
             roles: ['admin', 'doctor']

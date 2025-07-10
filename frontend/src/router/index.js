@@ -290,23 +290,7 @@ const routes = [
       }
     ]
   },
-  {
-    path: '/health-warning',
-    component: Layout,
-    redirect: '/health-warning/index',
-    children: [
-      {
-        path: 'index',
-        name: 'HealthWarningPage',
-        component: () => import('@/views/health-warning/index.vue'),
-        meta: { 
-          title: '健康预警', 
-          icon: 'warning',
-          permissions: ['warning:view']
-        }
-      }
-    ]
-  },
+
   {
     path: '/profile',
     component: Layout,

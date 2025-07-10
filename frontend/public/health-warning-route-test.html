@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康预警路由测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .test-link {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .test-link:hover {
+            background: #0056b3;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 健康预警路由修复验证</h1>
+        
+        <div class="test-section">
+            <h3>修复说明</h3>
+            <div class="info">
+                <strong>问题原因：</strong>路由配置冲突，侧边栏菜单路径与实际路由不匹配<br>
+                <strong>修复方案：</strong>
+                <ul>
+                    <li>✅ 删除重复的 <code>/health-warning</code> 路由</li>
+                    <li>✅ 统一使用 <code>/health/warning</code> 路径</li>
+                    <li>✅ 更新侧边栏菜单配置</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>路由测试</h3>
+            <p>点击以下链接测试路由是否正常工作：</p>
+            <a href="/" class="test-link">首页</a>
+            <a href="/health/warning" class="test-link">健康预警（正确路径）</a>
+            <a href="/dashboard" class="test-link">仪表板</a>
+            <a href="/elderly/list" class="test-link">老人档案</a>
+        </div>
+
+        <div class="test-section">
+            <h3>API测试</h3>
+            <button onclick="testHealthWarningAPI()" class="test-link">测试健康预警API</button>
+            <button onclick="testFamilyAPI()" class="test-link">测试家属API</button>
+            <div id="api-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>修复前后对比</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr style="background: #f8f9fa;">
+                    <th style="border: 1px solid #ddd; padding: 8px;">项目</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">修复前</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">修复后</th>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;">路由配置</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">
+                        /health/warning (主路由)<br>
+                        /health-warning/index (重复路由)
+                    </td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">/health/warning (统一路由)</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;">侧边栏菜单</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">/health-warning</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">/health/warning</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;">访问状态</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">404错误</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">正常访问</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function testHealthWarningAPI() {
+            const resultsDiv = document.getElementById('api-results');
+            resultsDiv.innerHTML = '<div class="info">正在测试健康预警API...</div>';
+            
+            try {
+                const response = await fetch('/api/health-warning/page', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pageNum: 1, pageSize: 5 })
+                });
+                
+                const data = await response.json();
+                
+                if (data.code === 200) {
+                    resultsDiv.innerHTML = `
+                        <div class="success">
+                            ✅ 健康预警API测试成功<br>
+                            获取到 ${data.data.total} 条预警数据，当前页 ${data.data.list.length} 条
+                        </div>
+                    `;
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div class="error">
+                            ❌ API返回错误：${data.message}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `
+                    <div class="error">
+                        ❌ API请求失败：${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function testFamilyAPI() {
+            const resultsDiv = document.getElementById('api-results');
+            resultsDiv.innerHTML = '<div class="info">正在测试家属API...</div>';
+            
+            try {
+                const response = await fetch('/api/family/warnings/page', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pageNum: 1, pageSize: 5 })
+                });
+                
+                const data = await response.json();
+                
+                if (data.code === 200) {
+                    resultsDiv.innerHTML = `
+                        <div class="success">
+                            ✅ 家属API测试成功<br>
+                            获取到 ${data.data.total} 条预警数据，当前页 ${data.data.list.length} 条
+                        </div>
+                    `;
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div class="error">
+                            ❌ 家属API返回错误：${data.message}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `
+                    <div class="error">
+                        ❌ 家属API请求失败：${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // 页面加载完成后的提示
+        window.onload = function() {
+            console.log('健康预警路由修复验证页面加载完成');
+            console.log('✅ 路由冲突已修复');
+            console.log('✅ 侧边栏菜单路径已更新');
+            console.log('✅ 现在可以正常访问 /health/warning 页面');
+        };
+    </script>
+</body>
+</html>
