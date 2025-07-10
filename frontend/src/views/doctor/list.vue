@@ -108,10 +108,6 @@
           <el-icon><Download /></el-icon>
           导出数据
         </el-button>
-        <el-button type="warning" @click="handleImport" v-permission="'doctor:import'">
-          <el-icon><Upload /></el-icon>
-          导入数据
-        </el-button>
         <el-button type="info" @click="handleStatistics" v-permission="'doctor:statistics'">
           <el-icon><DataAnalysis /></el-icon>
           统计分析
@@ -682,21 +678,21 @@
 
 <script setup>
 import {
-  addDoctor,
-  deleteDoctor,
-  deleteDoctorBatch,
-  getDoctorPageList,
-  getDoctorStatistics,
-  updateDoctor
+    addDoctor,
+    deleteDoctor,
+    deleteDoctorBatch,
+    getDoctorPageList,
+    getDoctorStatistics,
+    updateDoctor
 } from '@/api/doctor'
 import {
-  addDoctorSchedule,
-  copyDoctorSchedule,
-  getDoctorScheduleByDate,
-  updateDoctorSchedule
+    addDoctorSchedule,
+    copyDoctorSchedule,
+    getDoctorScheduleByDate,
+    updateDoctorSchedule
 } from '@/api/schedule'
 import { useUserStore } from '@/store/user'
-import { Briefcase, Calendar, Check, CopyDocument, DataAnalysis, Delete, Document, Download, Edit, Plus, QuestionFilled, Refresh, Search, Upload, User, View } from '@element-plus/icons-vue'
+import { Briefcase, Calendar, Check, CopyDocument, DataAnalysis, Delete, Document, Download, Edit, Plus, QuestionFilled, Refresh, Search, User, View } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from 'vue'
 
@@ -1093,13 +1089,6 @@ const formatDataForExport = (data) => {
   })
   
   return '\uFEFF' + csvRows.join('\n') // 添加BOM以支持中文
-}
-
-// 导入数据
-const handleImport = () => {
-  ElMessage.info('导入数据功能待实现')
-  // 将来可以实现：
-  // 打开文件选择对话框，处理批量导入
 }
 
 // 医生统计
