@@ -366,12 +366,12 @@
 
 <script>
 import {
-    batchDeleteElderly,
-    createElderly,
-    deleteElderly,
-    exportElderlyData,
-    getElderlyPage,
-    updateElderly
+  batchDeleteElderly,
+  createElderly,
+  deleteElderly,
+  exportElderlyData,
+  getElderlyPage,
+  updateElderly
 } from '@/api/elderly'
 import CareStatisticsDialog from '@/components/CareStatisticsDialog.vue'
 import AssessmentReportDialog from '@/components/elderly/AssessmentReportDialog.vue'
@@ -690,16 +690,111 @@ export default {
     const handleExport = async () => {
       try {
         const ids = selectedRows.value.map(row => row.id)
-        const response = await exportElderlyData(ids.length > 0 ? ids : null)
+        
+        // 如果没有选择任何行，导出全部数据
+        if (ids.length === 0) {
+          try {
+            await ElMessageBox.confirm(
+              '您没有选择任何数据，是否要导出全部老人档案数据？',
+              '确认导出',
+              {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+              }
+            )
+          } catch {
+            ElMessage.info('已取消导出')
+            return
+          }
+        }
+        
+        ElMessage.info('正在导出数据...')
+        // 确保发送的是数组格式，空数组表示导出全部
+        const exportIds = ids.length > 0 ? ids : []
+        console.log('发送导出请求，IDs:', exportIds)
+        
+        const response = await exportElderlyData(exportIds)
+        
         if (response.code === 200) {
-          ElMessage.success('导出成功')
-          // 这里可以添加文件下载逻辑
+          // 将数据转换为CSV格式
+          const csvData = convertToCSV(response.data.data)
+          
+          // 构造文件名
+          const timestamp = new Date().toISOString().slice(0, 19).replace(/[T:]/g, '-')
+          const filename = `elderly_data_${timestamp}.csv`
+          
+          // 创建下载链接
+          const blob = new Blob(['\uFEFF' + csvData], {
+            type: 'text/csv;charset=utf-8'
+          })
+          const url = window.URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.href = url
+          link.download = filename
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          window.URL.revokeObjectURL(url)
+          
+          ElMessage.success(`数据已导出到文件: ${filename}`)
         } else {
           ElMessage.error('导出失败：' + response.message)
         }
       } catch (error) {
-        ElMessage.error('导出失败：' + error.message)
+        console.error('导出失败:', error)
+        ElMessage.error('导出失败：' + (error.message || '服务器内部错误'))
       }
+    }
+
+    // 将数据转换为CSV格式
+    const convertToCSV = (data) => {
+      if (!data || data.length === 0) {
+        return ''
+      }
+
+      // CSV表头
+      const headers = [
+        '姓名',
+        '性别',
+        '年龄',
+        '身份证号',
+        '联系电话',
+        '紧急联系人',
+        '紧急联系电话',
+        '健康状态',
+        '照护等级',
+        '居住地址',
+        '创建时间',
+        '更新时间'
+      ]
+
+      // 构建CSV内容
+      const csvRows = []
+      
+      // 添加表头
+      csvRows.push(headers.join(','))
+      
+      // 添加数据行
+      data.forEach(item => {
+        const row = [
+          `"${item.name || ''}"`,
+          `"${item.gender === 1 ? '男' : item.gender === 0 ? '女' : ''}"`,
+          `"${item.age || ''}"`,
+          `"${item.idCard || ''}"`,
+          `"${item.phone || ''}"`,
+          `"${item.emergencyContact || ''}"`,
+          `"${item.emergencyPhone || ''}"`,
+          `"${getHealthStatusText(item.healthStatus)}"`,
+          `"${getCareLevelText(item.careLevel)}"`,
+          `"${item.address || ''}"`,
+          `"${item.createTime || ''}"`,
+          `"${item.updateTime || ''}"`
+        ]
+        csvRows.push(row.join(','))
+      })
+      
+      return csvRows.join('\n')
     }
 
     // 导入
@@ -831,6 +926,7 @@ export default {
       getHealthStatusType,
       getCareLevelText,
       calculateAge,
+      convertToCSV,
       fetchData,
       handleSearch,
       handleReset,

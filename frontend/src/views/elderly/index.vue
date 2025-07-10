@@ -215,7 +215,7 @@
 </template>
 
 <script>
-import { batchDeleteElderly, createElderly, deleteElderly, getElderlyPage, updateElderly } from '@/api/elderly'
+import { batchDeleteElderly, createElderly, deleteElderly, exportElderlyData, getElderlyPage, updateElderly } from '@/api/elderly'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
 
@@ -420,8 +420,68 @@ export default {
     }
 
     // 导出
-    const handleExport = () => {
-      ElMessage.info('导出功能开发中...')
+    const handleExport = async () => {
+      try {
+        const ids = selectedRows.value.map(row => row.id)
+        
+        // 如果没有选择任何行，导出全部数据
+        if (ids.length === 0) {
+          ElMessageBox.confirm(
+            '您没有选择任何数据，是否要导出全部老人档案数据？',
+            '确认导出',
+            {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+            }
+          ).then(async () => {
+            await doExport(null)
+          }).catch(() => {
+            ElMessage.info('已取消导出')
+          })
+        } else {
+          await doExport(ids)
+        }
+      } catch (error) {
+        console.error('导出失败:', error)
+        ElMessage.error('导出失败：' + (error.message || '系统错误'))
+      }
+    }
+
+    // 执行导出
+    const doExport = async (ids) => {
+      try {
+        ElMessage.info('正在导出数据...')
+        const response = await exportElderlyData(ids)
+        
+        if (response.code === 200) {
+          ElMessage.success('导出成功')
+          
+          // 构造文件名
+          const timestamp = new Date().toISOString().slice(0, 19).replace(/[T:]/g, '-')
+          const filename = `elderly_data_${timestamp}.json`
+          
+          // 创建下载链接
+          const blob = new Blob([JSON.stringify(response.data, null, 2)], {
+            type: 'application/json;charset=utf-8'
+          })
+          const url = window.URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.href = url
+          link.download = filename
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          window.URL.revokeObjectURL(url)
+          
+          ElMessage.success(`数据已导出到文件: ${filename}`)
+        } else {
+          ElMessage.error('导出失败：' + response.message)
+        }
+      } catch (error) {
+        console.error('导出失败:', error)
+        ElMessage.error('导出失败：' + (error.message || '服务器内部错误'))
+      }
     }
 
     // 表格选择变化

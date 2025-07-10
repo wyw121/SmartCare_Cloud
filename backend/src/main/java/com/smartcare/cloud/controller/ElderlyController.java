@@ -225,8 +225,18 @@ public class ElderlyController {
     @Operation(summary = "批量导出老人档案")
     @PostMapping("/export")
     public ResponseResult<Object> exportElderlyData(@RequestBody List<Long> ids) {
-        log.info("批量导出老人档案，IDs：{}", ids);
-        return elderlyService.exportElderlyData(ids);
+        try {
+            log.info("批量导出老人档案，IDs：{}", ids);
+            if (ids == null) {
+                log.info("导出全部老人档案数据");
+            } else {
+                log.info("导出指定老人档案数据，共 {} 条", ids.size());
+            }
+            return elderlyService.exportElderlyData(ids);
+        } catch (Exception e) {
+            log.error("导出老人档案失败", e);
+            return ResponseResult.error("导出失败：" + e.getMessage());
+        }
     }
 
     /**
