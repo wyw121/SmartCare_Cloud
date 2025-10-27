@@ -35,19 +35,19 @@ spring:
       filters: stat,wall,slf4j
       connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
 
-  # Redis配置
-  redis:
-    host: localhost
-    port: 6379
-    password:
-    database: 0
-    timeout: 10000ms
-    jedis:
-      pool:
-        max-active: 8
-        max-wait: -1ms
-        max-idle: 8
-        min-idle: 0
+  # Redis配置（暂未启用，待后续性能优化时开启缓存功能）
+  # redis:
+  #   host: localhost
+  #   port: 6379
+  #   password:
+  #   database: 0
+  #   timeout: 10000ms
+  #   jedis:
+  #     pool:
+  #       max-active: 8
+  #       max-wait: -1ms
+  #       max-idle: 8
+  #       min-idle: 0
 
   # Jackson配置
   jackson:

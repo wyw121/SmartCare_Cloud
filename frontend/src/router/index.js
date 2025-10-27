@@ -19,42 +19,9 @@ import { createRouter, createWebHistory } from 'vue-router'
  */
 
 const routes = [
-  {
-    path: '/test',
-    name: 'Test',
-    component: () => import('@/views/__tests__/test.vue'),
-    meta: { title: '测试页面', hidden: true }
-  },
-  {
-    path: '/debug',
-    name: 'Debug',
-    component: () => import('@/views/__tests__/debug.vue'),
-    meta: { title: '调试页面', hidden: true }
-  },
-  {
-    path: '/chart-test',
-    name: 'ChartTest',
-    component: () => import('@/views/__tests__/chart-test.vue'),
-    meta: { title: '图表测试', hidden: true }
-  },
-  {
-    path: '/permission-demo',
-    name: 'PermissionDemo',
-    component: () => import('@/views/__tests__/permission-demo.vue'),
-    meta: { title: '权限演示', hidden: true }
-  },
-  {
-    path: '/simple',
-    name: 'SimpleTest',
-    component: () => import('@/views/__tests__/simple-test.vue'),
-    meta: { title: '简单测试', hidden: true }
-  },
-  {
-    path: '/dev-tools',
-    name: 'DevTools',
-    component: () => import('@/views/__tests__/dev-tools.vue'),
-    meta: { title: '开发工具', hidden: true }
-  },
+  // 测试路由已移至 __tests__ 目录，仅在开发环境使用
+  // 如需使用测试页面，请从 frontend/__tests__/views/ 目录访问
+  
   {
     path: '/login',
     name: 'Login',
@@ -87,13 +54,8 @@ const routes = [
         name: 'Dashboard',
         component: () => import('@/views/dashboard/working.vue'),
         meta: { title: '首页仪表板', icon: 'Platform', affix: true }
-      },
-      {
-        path: 'modular',
-        name: 'DashboardModular',
-        component: () => import('@/views/dashboard/modular.vue'),
-        meta: { title: '模块化仪表板', hidden: true }
       }
+      // 模块化仪表板已归档至 __archive__/modular-pages/
     ]
   },
   {
@@ -151,13 +113,8 @@ const routes = [
         name: 'ElderlyHealthRecords',
         component: () => import('@/views/elderly/health-records.vue'),
         meta: { title: '健康档案', activeMenu: '/elderly/list', hidden: true }
-      },
-      {
-        path: 'modular',
-        name: 'ElderlyModular',
-        component: () => import('@/views/elderly/modular.vue'),
-        meta: { title: '模块化老人管理', hidden: true }
       }
+      // 模块化老人管理已归档至 __archive__/modular-pages/
     ]
   },
   {
@@ -171,13 +128,8 @@ const routes = [
         name: 'DoctorList',
         component: () => import('@/views/doctor/list.vue'),
         meta: { title: '医生列表', icon: 'list' }
-      },
-      {
-        path: 'modular',
-        name: 'DoctorModular',
-        component: () => import('@/views/doctor/modular.vue'),
-        meta: { title: '模块化医生管理', hidden: true }
       }
+      // 模块化医生管理已归档至 __archive__/modular-pages/
     ]
   },
   {
@@ -192,12 +144,7 @@ const routes = [
         component: () => import('@/views/health-warning/index.vue'),
         meta: { title: '健康预警', icon: 'warning' }
       },
-      {
-        path: 'warning-modular',
-        name: 'HealthWarningModular',
-        component: () => import('@/views/health-warning/modular.vue'),
-        meta: { title: '模块化健康预警', hidden: true }
-      },
+      // 模块化健康预警已归档至 __archive__/modular-pages/
       {
         path: 'records',
         name: 'HealthRecords',
@@ -249,13 +196,8 @@ const routes = [
         name: 'DataAnalysis',
         component: () => import('@/views/reports/analysis.vue'),
         meta: { title: '大数据分析', icon: 'data-analysis' }
-      },
-      {
-        path: 'modular-analysis',
-        name: 'ModularDataAnalysis',
-        component: () => import('@/views/reports/modular-analysis.vue'),
-        meta: { title: '模块化数据分析', hidden: true }
       }
+      // 模块化数据分析已归档至 __archive__/modular-pages/
     ]
   },
   {
@@ -270,12 +212,7 @@ const routes = [
         component: () => import('@/views/system/users.vue'),
         meta: { title: '用户管理', icon: 'user' }
       },
-      {
-        path: 'modular-users',
-        name: 'SystemModularUsers',
-        component: () => import('@/views/system/modular-users.vue'),
-        meta: { title: '模块化用户管理', hidden: true }
-      },
+      // 模块化用户管理已归档至 __archive__/modular-pages/
       {
         path: 'roles',
         name: 'SystemRoles',
