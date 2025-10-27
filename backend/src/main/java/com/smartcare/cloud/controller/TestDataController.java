@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +19,9 @@ import com.smartcare.cloud.vo.ResponseResult;
 
 /**
  * 测试数据控制器
+ * 仅在开发环境启用
  */
+@Profile("dev")
 @RestController
 @RequestMapping("/test")
 public class TestDataController {

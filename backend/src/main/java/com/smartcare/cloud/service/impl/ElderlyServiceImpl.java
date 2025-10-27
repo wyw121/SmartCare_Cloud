@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,10 +24,10 @@ import com.smartcare.cloud.dto.AssessmentReportDTO;
 import com.smartcare.cloud.dto.ElderlyPageDTO;
 import com.smartcare.cloud.entity.Elderly;
 import com.smartcare.cloud.entity.HealthRecord;
+import com.smartcare.cloud.event.ElderlyUpdatedEvent;
 import com.smartcare.cloud.mapper.ElderlyMapper;
 import com.smartcare.cloud.service.ElderlyService;
-import com.smartcare.cloud.service.HealthAssessmentService;
-import com.smartcare.cloud.service.HealthRecordService;
+import com.smartcare.cloud.service.facade.ElderlyFacadeService;
 import com.smartcare.cloud.vo.HealthStatisticsVO;
 import com.smartcare.cloud.vo.HealthStatisticsVO.AgeHealthDistribution;
 import com.smartcare.cloud.vo.HealthStatisticsVO.HealthRiskAssessment;
@@ -36,6 +37,11 @@ import com.smartcare.cloud.vo.ResponseResult;
 
 /**
  * 老人信息服务实现类
+ * 
+ * 重构说明：
+ * 1. 使用Facade模式封装跨模块调用，降低耦合
+ * 2. 使用事件驱动模式实现异步解耦
+ * 3. 专注于老人信息的核心业务逻辑
  *
  * @author SmartCare Team
  * @date 2024-01-01
@@ -47,10 +53,10 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
     private static final Logger log = LoggerFactory.getLogger(ElderlyServiceImpl.class);
 
     @Autowired
-    private HealthRecordService healthRecordService;
+    private ElderlyFacadeService elderlyFacadeService;
 
     @Autowired
-    private HealthAssessmentService healthAssessmentService;
+    private ApplicationEventPublisher eventPublisher;
 
     /**
      * 计算年龄
@@ -175,6 +181,9 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
             boolean success = this.save(elderly);
 
             if (success) {
+                // 发布老人创建事件
+                eventPublisher.publishEvent(new ElderlyUpdatedEvent(this, elderly, "CREATE"));
+                log.info("已发布老人创建事件，ID：{}", elderly.getId());
                 return ResponseResult.success();
             } else {
                 return ResponseResult.error("添加失败");
@@ -206,6 +215,9 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
             boolean success = this.updateById(elderly);
 
             if (success) {
+                // 发布老人更新事件
+                eventPublisher.publishEvent(new ElderlyUpdatedEvent(this, elderly, "UPDATE"));
+                log.info("已发布老人更新事件，ID：{}", elderly.getId());
                 return ResponseResult.success();
             } else {
                 return ResponseResult.error("更新失败");
@@ -226,6 +238,9 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
 
             boolean success = this.removeById(id);
             if (success) {
+                // 发布老人删除事件
+                eventPublisher.publishEvent(new ElderlyUpdatedEvent(this, elderly, "DELETE"));
+                log.info("已发布老人删除事件，ID：{}", id);
                 return ResponseResult.success();
             } else {
                 return ResponseResult.error("删除失败");
@@ -270,50 +285,19 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
 
     @Override
     public ResponseResult<Object> getElderlyHealthRecords(Long id) {
-        try {
-            // 首先验证老人是否存在
-            if (this.getById(id) == null) {
-                return ResponseResult.error("老人信息不存在");
-            }
-
-            // 调用健康记录服务获取分页数据
-            ResponseResult<IPage<HealthRecord>> result = healthRecordService.getHealthRecordsByElderlyId(id, 1L, 10L, null);
-
-            if (result.isSuccess()) {
-                IPage<HealthRecord> page = result.getData();
-                // 转换为前端需要的格式
-                Map<String, Object> data = new HashMap<>();
-                data.put("records", page.getRecords());
-                data.put("total", page.getTotal());
-                data.put("current", page.getCurrent());
-                data.put("size", page.getSize());
-
-                return ResponseResult.success(data);
-            } else {
-                return ResponseResult.error("获取健康档案失败");
-            }
-
-        } catch (Exception e) {
-            log.error("获取老人健康档案失败，ID：{}", id, e);
-            return ResponseResult.error("获取健康档案失败");
-        }
+        // 使用Facade封装跨模块调用
+        return elderlyFacadeService.getElderlyHealthRecords(id);
     }
 
     @Override
     public ResponseResult<Void> addHealthRecord(Long id, Object healthRecord) {
         try {
-            // 首先验证老人是否存在
-            if (this.getById(id) == null) {
-                return ResponseResult.error("老人信息不存在");
-            }
-
             // 将Object转换为HealthRecord
             ObjectMapper objectMapper = new ObjectMapper();
             HealthRecord record = objectMapper.convertValue(healthRecord, HealthRecord.class);
-            record.setElderlyId(id);
 
-            // 调用健康记录服务保存
-            return healthRecordService.addHealthRecord(record);
+            // 使用Facade封装跨模块调用
+            return elderlyFacadeService.addHealthRecord(id, record);
 
         } catch (Exception e) {
             log.error("添加健康记录失败，ID：{}", id, e);
@@ -416,23 +400,8 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
 
     @Override
     public ResponseResult<Object> generateAssessmentReport(Long id) {
-        try {
-            log.info("生成健康评估报告，老人ID：{}", id);
-
-            // 获取老人信息
-            Elderly elderly = this.getById(id);
-            if (elderly == null) {
-                return ResponseResult.error("老人信息不存在");
-            }
-
-            // 使用健康评估服务生成报告
-            AssessmentReportDTO report = healthAssessmentService.generateAssessmentReport(elderly);
-
-            return ResponseResult.success(report);
-        } catch (Exception e) {
-            log.error("生成健康评估报告失败，ID：{}", id, e);
-            return ResponseResult.error("生成评估报告失败：" + e.getMessage());
-        }
+        // 使用Facade封装跨模块调用
+        return elderlyFacadeService.generateAssessmentReport(id);
     }
 
     @Override

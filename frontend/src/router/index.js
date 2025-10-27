@@ -22,37 +22,37 @@ const routes = [
   {
     path: '/test',
     name: 'Test',
-    component: () => import('@/views/test.vue'),
+    component: () => import('@/views/__tests__/test.vue'),
     meta: { title: '测试页面', hidden: true }
   },
   {
     path: '/debug',
     name: 'Debug',
-    component: () => import('@/views/debug.vue'),
+    component: () => import('@/views/__tests__/debug.vue'),
     meta: { title: '调试页面', hidden: true }
   },
   {
     path: '/chart-test',
     name: 'ChartTest',
-    component: () => import('@/views/chart-test.vue'),
+    component: () => import('@/views/__tests__/chart-test.vue'),
     meta: { title: '图表测试', hidden: true }
   },
   {
     path: '/permission-demo',
     name: 'PermissionDemo',
-    component: () => import('@/views/permission-demo.vue'),
+    component: () => import('@/views/__tests__/permission-demo.vue'),
     meta: { title: '权限演示', hidden: true }
   },
   {
     path: '/simple',
     name: 'SimpleTest',
-    component: () => import('@/views/simple-test.vue'),
+    component: () => import('@/views/__tests__/simple-test.vue'),
     meta: { title: '简单测试', hidden: true }
   },
   {
     path: '/dev-tools',
     name: 'DevTools',
-    component: () => import('@/views/dev-tools.vue'),
+    component: () => import('@/views/__tests__/dev-tools.vue'),
     meta: { title: '开发工具', hidden: true }
   },
   {
@@ -307,13 +307,13 @@ const routes = [
   {
     path: '/doctor-test',
     name: 'DoctorTest',
-    component: () => import('@/views/doctor-simple-test.vue'),
+    component: () => import('@/views/__tests__/doctor-simple-test.vue'),
     meta: { title: '医生测试页面', hidden: true }
   },
   {
     path: '/user-switcher',
     name: 'UserSwitcher',
-    component: () => import('@/views/user-switcher.vue'),
+    component: () => import('@/views/__tests__/user-switcher.vue'),
     meta: { title: '用户切换（测试）', hidden: true }
   },
   // 404页面必须放在最后

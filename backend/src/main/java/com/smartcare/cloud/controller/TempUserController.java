@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import com.smartcare.cloud.util.PasswordUtil;
 /**
  * 临时用户添加控制器 - 仅用于开发环境
  */
+@Profile("dev")
 @RestController
 @RequestMapping("/api/temp")
 public class TempUserController {

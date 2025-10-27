@@ -3,6 +3,7 @@ package com.smartcare.cloud.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,7 +14,9 @@ import com.smartcare.cloud.vo.ResponseResult;
 
 /**
  * 测试控制器 用于验证系统功能
+ * 仅在开发环境启用
  */
+@Profile("dev")
 @RestController
 @RequestMapping("/api/test")
 public class TestController {
