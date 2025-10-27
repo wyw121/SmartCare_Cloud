@@ -46,6 +46,7 @@ import UserSearchSection from '@/components/system/UserSearchSection.vue'
 import UserTableSection from '@/components/system/UserTableSection.vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
+import { getUserList as fetchUsers, createUser, updateUser, deleteUser, batchDeleteUsers, toggleUserStatus, getRoles, getDepartments } from '@/api/system'
 
 // 响应式数据
 const loading = ref(false)
@@ -84,9 +85,39 @@ const departments = ref([
   { id: 4, name: '技术部' }
 ])
 
-onMounted(() => {
-  getUserList()
+onMounted(async () => {
+  await loadRoles()
+  await loadDepartments()
+  await getUserList()
 })
+
+/**
+ * 加载角色列表
+ */
+const loadRoles = async () => {
+  try {
+    const response = await getRoles()
+    if (response && response.data) {
+      roles.value = response.data
+    }
+  } catch (error) {
+    console.error('获取角色列表失败:', error)
+  }
+}
+
+/**
+ * 加载部门列表
+ */
+const loadDepartments = async () => {
+  try {
+    const response = await getDepartments()
+    if (response && response.data) {
+      departments.value = response.data
+    }
+  } catch (error) {
+    console.error('获取部门列表失败:', error)
+  }
+}
 
 /**
  * 获取用户列表
@@ -94,48 +125,22 @@ onMounted(() => {
 const getUserList = async () => {
   loading.value = true
   try {
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 500))
+    const response = await fetchUsers({
+      ...searchParams,
+      current: pageParams.current,
+      size: pageParams.size
+    })
     
-    const mockData = {
-      records: [
-        {
-          id: 1,
-          username: 'admin',
-          realName: '系统管理员',
-          email: 'admin@smartcare.com',
-          phone: '13800138000',
-          roleId: 1,
-          roleName: '超级管理员',
-          departmentId: 1,
-          departmentName: '管理部',
-          status: 1,
-          createTime: '2024-01-01 09:00:00',
-          remark: '系统默认管理员'
-        },
-        {
-          id: 2,
-          username: 'zhangsan',
-          realName: '张三',
-          email: 'zhang@smartcare.com',
-          phone: '13800138001',
-          roleId: 3,
-          roleName: '医生',
-          departmentId: 2,
-          departmentName: '医疗部',
-          status: 1,
-          createTime: '2024-01-02 10:00:00',
-          remark: '主治医师'
-        }
-      ],
-      total: 2
+    if (response && response.data) {
+      userList.value = response.data.records || response.data
+      pageParams.total = response.data.total || response.data.length
     }
-    
-    userList.value = mockData.records
-    pageParams.total = mockData.total
   } catch (error) {
     ElMessage.error('获取用户列表失败')
     console.error(error)
+    // 失败时使用空数据
+    userList.value = []
+    pageParams.total = 0
   } finally {
     loading.value = false
   }

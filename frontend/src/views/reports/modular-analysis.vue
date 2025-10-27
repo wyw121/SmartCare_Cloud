@@ -45,6 +45,7 @@ import DataTableSection from '@/components/reports/DataTableSection.vue'
 import OverviewSection from '@/components/reports/OverviewSection.vue'
 import { ElMessage } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
+import { getOverviewStatistics, getAIInsights, getStatisticsData } from '@/api/reports'
 
 // 响应式数据
 const tableLoading = ref(false)
@@ -98,7 +99,39 @@ const aiInsights = ref([
  */
 onMounted(() => {
   initAnalysisData()
+  loadOverviewData()
+  loadAIInsights()
 })
+
+/**
+ * 加载概览数据
+ */
+const loadOverviewData = async () => {
+  try {
+    const response = await getOverviewStatistics()
+    if (response && response.data) {
+      overviewData.value = response.data
+    }
+  } catch (error) {
+    console.error('获取概览数据失败:', error)
+    // 保留默认模拟数据作为后备
+  }
+}
+
+/**
+ * 加载AI洞察
+ */
+const loadAIInsights = async () => {
+  try {
+    const response = await getAIInsights()
+    if (response && response.data) {
+      aiInsights.value = response.data
+    }
+  } catch (error) {
+    console.error('获取AI洞察失败:', error)
+    // 保留默认模拟数据作为后备
+  }
+}
 
 /**
  * 初始化分析数据
@@ -106,10 +139,22 @@ onMounted(() => {
 const initAnalysisData = async () => {
   tableLoading.value = true
   try {
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    const response = await getStatisticsData({
+      analysisType: analysisType.value,
+      dateRange: dateRange.value,
+      page: pageParams.current,
+      size: pageParams.size
+    })
     
-    // 模拟数据
+    if (response && response.data) {
+      analysisData.value = response.data.records || response.data
+      pageParams.total = response.data.total || response.data.length
+    }
+  } catch (error) {
+    console.error('获取分析数据失败:', error)
+    ElMessage.error('获取分析数据失败,使用模拟数据')
+    
+    // 失败时使用模拟数据
     const mockData = [
       {
         indicator: '平均血压',
@@ -151,8 +196,6 @@ const initAnalysisData = async () => {
     
     analysisData.value = mockData
     pageParams.total = mockData.length
-  } catch (error) {
-    ElMessage.error('获取分析数据失败')
   } finally {
     tableLoading.value = false
   }

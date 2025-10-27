@@ -1,23 +1,8 @@
 import request from '@/utils/request';
-import {
-  batchDeleteMockUsers,
-  checkMockEmail,
-  checkMockUsername,
-  createMockUser,
-  deleteMockUser,
-  getMockUserPage,
-  mockDepartments,
-  mockRoles,
-  toggleMockUserStatus,
-  updateMockUser
-} from './mockSystem';
 
 /**
  * 系统管理相关API
  */
-
-// 开发模式控制
-const isDev = false; // 是否使用Mock数据，生产环境设为false
 
 /**
  * 获取用户列表（新版本，直接从数据库获取）
@@ -41,9 +26,6 @@ export function fetchUserList(params) {
  * @param {number} params.size - 页面大小
  */
 export function getUserList(params) {
-  if (isDev) {
-    return Promise.resolve(getMockUserPage(params))
-  }
   return request({
     url: '/system/users',
     method: 'get',
@@ -56,9 +38,6 @@ export function getUserList(params) {
  * @param {Object} data - 用户数据
  */
 export function createUser(data) {
-  if (isDev) {
-    return Promise.resolve(createMockUser(data))
-  }
   return request({
     url: '/system/users',
     method: 'post',
@@ -72,9 +51,6 @@ export function createUser(data) {
  * @param {Object} data - 用户数据
  */
 export function updateUser(id, data) {
-  if (isDev) {
-    return Promise.resolve(updateMockUser(id, data))
-  }
   return request({
     url: `/system/users/${id}`,
     method: 'put',
@@ -87,9 +63,6 @@ export function updateUser(id, data) {
  * @param {number} id - 用户ID
  */
 export function deleteUser(id) {
-  if (isDev) {
-    return Promise.resolve(deleteMockUser(id))
-  }
   return request({
     url: `/system/users/${id}`,
     method: 'delete'
@@ -101,9 +74,6 @@ export function deleteUser(id) {
  * @param {Array} ids - 用户ID数组
  */
 export function batchDeleteUsers(ids) {
-  if (isDev) {
-    return Promise.resolve(batchDeleteMockUsers(ids))
-  }
   return request({
     url: '/system/users/batch',
     method: 'delete',
@@ -117,9 +87,6 @@ export function batchDeleteUsers(ids) {
  * @param {number} status - 状态 (0:禁用, 1:启用)
  */
 export function toggleUserStatus(id, status) {
-  if (isDev) {
-    return Promise.resolve(toggleMockUserStatus(id, status))
-  }
   return request({
     url: `/system/users/${id}/status`,
     method: 'put',
@@ -132,8 +99,7 @@ export function toggleUserStatus(id, status) {
  * @param {number} id - 用户ID
  */
 export function resetUserPassword(id) {
-  if (isDev) {
-    return Promise.resolve({ code: 200, message: '密码重置成功' })
+  )
   }
   return request({
     url: `/system/users/${id}/password/reset`,
@@ -145,12 +111,7 @@ export function resetUserPassword(id) {
  * 获取角色列表
  */
 export function getRoleList() {
-  if (isDev) {
-    return Promise.resolve({
-      code: 200,
-      message: '查询成功',
-      data: mockRoles
-    })
+  )
   }
   return request({
     url: '/system/roles',
@@ -162,12 +123,7 @@ export function getRoleList() {
  * 获取部门列表
  */
 export function getDepartmentList() {
-  if (isDev) {
-    return Promise.resolve({
-      code: 200,
-      message: '查询成功',
-      data: mockDepartments
-    })
+  )
   }
   return request({
     url: '/system/departments',
@@ -205,9 +161,6 @@ export function getUserDetail(id) {
  * @param {number} excludeId - 排除的用户ID（编辑时使用）
  */
 export function checkUsername(username, excludeId = null) {
-  if (isDev) {
-    return Promise.resolve(checkMockUsername(username, excludeId))
-  }
   return request({
     url: '/system/users/check-username',
     method: 'get',
@@ -221,9 +174,6 @@ export function checkUsername(username, excludeId = null) {
  * @param {number} excludeId - 排除的用户ID（编辑时使用）
  */
 export function checkEmail(email, excludeId = null) {
-  if (isDev) {
-    return Promise.resolve(checkMockEmail(email, excludeId))
-  }
   return request({
     url: '/system/users/check-email',
     method: 'get',
