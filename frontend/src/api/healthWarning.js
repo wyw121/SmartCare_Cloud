@@ -1,12 +1,12 @@
 import request from '@/utils/request';
-import { getMockLevelStatistics, getMockWarningPage } from './mockHealthWarning';
+// import { getMockLevelStatistics, getMockWarningPage } from './mockHealthWarning';
 
 /**
  * 健康预警API
  */
 
 // 开发模式
-const isDev = false; // 是否使用Mock数据，生产环境设为false
+const isDev = false; // 是否使用Mock数据,生产环境设为false
 
 /**
  * 获取预警统计

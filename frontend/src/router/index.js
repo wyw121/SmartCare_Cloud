@@ -138,13 +138,13 @@ const routes = [
     redirect: '/health/warning',
     meta: { title: '健康管理', icon: 'monitor' },
     children: [
-      {
-        path: 'warning',
-        name: 'HealthWarning',
-        component: () => import('@/views/health-warning/index.vue'),
-        meta: { title: '健康预警', icon: 'warning' }
-      },
-      // 模块化健康预警已归档至 __archive__/modular-pages/
+      // 健康预警功能待实现
+      // {
+      //   path: 'warning',
+      //   name: 'HealthWarning',
+      //   component: () => import('@/views/health-warning/index.vue'),
+      //   meta: { title: '健康预警', icon: 'warning' }
+      // },
       {
         path: 'records',
         name: 'HealthRecords',
@@ -241,18 +241,19 @@ const routes = [
       }
     ]
   },
-  {
-    path: '/doctor-test',
-    name: 'DoctorTest',
-    component: () => import('@/views/__tests__/doctor-simple-test.vue'),
-    meta: { title: '医生测试页面', hidden: true }
-  },
-  {
-    path: '/user-switcher',
-    name: 'UserSwitcher',
-    component: () => import('@/views/__tests__/user-switcher.vue'),
-    meta: { title: '用户切换（测试）', hidden: true }
-  },
+  // 测试页面已归档
+  // {
+  //   path: '/doctor-test',
+  //   name: 'DoctorTest',
+  //   component: () => import('@/views/__tests__/doctor-simple-test.vue'),
+  //   meta: { title: '医生测试页面', hidden: true }
+  // },
+  // {
+  //   path: '/user-switcher',
+  //   name: 'UserSwitcher',
+  //   component: () => import('@/views/__tests__/user-switcher.vue'),
+  //   meta: { title: '用户切换（测试）', hidden: true }
+  // },
   // 404页面必须放在最后
   {
     path: '/:pathMatch(.*)*',

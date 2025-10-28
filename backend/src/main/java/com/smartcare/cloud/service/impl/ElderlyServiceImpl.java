@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +53,7 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
 
     private static final Logger log = LoggerFactory.getLogger(ElderlyServiceImpl.class);
 
+    @Lazy
     @Autowired
     private ElderlyFacadeService elderlyFacadeService;
 
