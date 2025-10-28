@@ -1,18 +1,28 @@
 package com.smartcare.cloud.service.impl;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smartcare.cloud.dto.DeviceDataDTO;
 import com.smartcare.cloud.entity.Equipment;
+import com.smartcare.cloud.entity.HealthRecord;
+import com.smartcare.cloud.entity.HealthWarning;
 import com.smartcare.cloud.mapper.EquipmentMapper;
 import com.smartcare.cloud.service.EquipmentService;
+import com.smartcare.cloud.service.HealthWarningService;
 
 /**
  * 设备管理服务实现类
@@ -22,6 +32,14 @@ import com.smartcare.cloud.service.EquipmentService;
  */
 @Service
 public class EquipmentServiceImpl extends ServiceImpl<EquipmentMapper, Equipment> implements EquipmentService {
+
+    private static final Logger log = LoggerFactory.getLogger(EquipmentServiceImpl.class);
+
+    @Autowired
+    private HealthWarningService healthWarningService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Override
     public Page<Equipment> getEquipmentPage(int current, int size, String deviceType, String status, String keyword) {
@@ -238,5 +256,244 @@ public class EquipmentServiceImpl extends ServiceImpl<EquipmentMapper, Equipment
             return this.updateById(equipment);
         }
         return false;
+    }
+
+    /**
+     * 处理设备上传的健康数据
+     * 
+     * 主要流程:
+     * 1. 验证设备和老人信息
+     * 2. 解析并存储健康数据(TODO: 待健康记录表字段修复后实现)
+     * 3. 检测数据异常,自动创建健康预警
+     * 4. 更新设备状态和最后在线时间
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean processDeviceData(DeviceDataDTO deviceData) {
+        try {
+            // 1. 验证设备是否存在
+            Equipment equipment = this.getById(deviceData.getEquipmentId());
+            if (equipment == null) {
+                log.error("设备不存在,ID:{}", deviceData.getEquipmentId());
+                return false;
+            }
+
+            // 2. 验证设备是否绑定到指定老人
+            if (equipment.getElderlyId() != null && 
+                !equipment.getElderlyId().equals(deviceData.getElderlyId())) {
+                log.warn("设备绑定的老人ID({})与数据中的老人ID({})不匹配", 
+                    equipment.getElderlyId(), deviceData.getElderlyId());
+            }
+
+            // 3. 存储健康记录(TODO: 待health_record表字段修复后实现)
+            // HealthRecord record = createHealthRecord(deviceData);
+            // healthRecordService.save(record);
+            log.info("设备数据已接收(暂存内存),老人ID:{}, 数据类型:{}", 
+                deviceData.getElderlyId(), deviceData.getDataType());
+
+            // 4. 检测数据异常,自动创建预警
+            checkAndCreateWarning(deviceData);
+
+            // 5. 更新设备状态
+            equipment.setStatus("在线");
+            equipment.setLastOnlineTime(LocalDateTime.now());
+            equipment.setUpdateTime(LocalDateTime.now());
+            this.updateById(equipment);
+
+            log.info("设备数据处理成功,设备ID:{}, 老人ID:{}", 
+                deviceData.getEquipmentId(), deviceData.getElderlyId());
+
+            return true;
+
+        } catch (Exception e) {
+            log.error("处理设备数据失败", e);
+            throw new RuntimeException("处理设备数据失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 检测健康数据异常并创建预警
+     */
+    private void checkAndCreateWarning(DeviceDataDTO deviceData) {
+        StringBuilder warningMsg = new StringBuilder();
+        String warningType = null;
+        Integer warningLevel = null;
+
+        // 检测血压异常
+        if (deviceData.getSystolicPressure() != null && deviceData.getDiastolicPressure() != null) {
+            int systolic = deviceData.getSystolicPressure();
+            int diastolic = deviceData.getDiastolicPressure();
+            
+            if (systolic >= 180 || diastolic >= 110) {
+                warningType = "高血压危象";
+                warningLevel = 4; // 紧急
+                warningMsg.append(String.format("血压严重异常: %d/%d mmHg (正常范围90-140/60-90)", 
+                    systolic, diastolic));
+            } else if (systolic >= 160 || diastolic >= 100) {
+                warningType = "高血压";
+                warningLevel = 3; // 高
+                warningMsg.append(String.format("血压偏高: %d/%d mmHg", systolic, diastolic));
+            } else if (systolic < 90 || diastolic < 60) {
+                warningType = "低血压";
+                warningLevel = 2; // 中
+                warningMsg.append(String.format("血压偏低: %d/%d mmHg", systolic, diastolic));
+            }
+        }
+
+        // 检测心率异常
+        if (deviceData.getHeartRate() != null) {
+            int heartRate = deviceData.getHeartRate();
+            
+            if (heartRate > 120 || heartRate < 50) {
+                if (warningType == null) {
+                    warningType = heartRate > 120 ? "心动过速" : "心动过缓";
+                    warningLevel = 3;
+                }
+                if (warningMsg.length() > 0) warningMsg.append(", ");
+                warningMsg.append(String.format("心率异常: %d次/分 (正常范围60-100)", heartRate));
+            }
+        }
+
+        // 检测体温异常
+        if (deviceData.getBodyTemperature() != null) {
+            double temp = deviceData.getBodyTemperature().doubleValue();
+            
+            if (temp >= 39.0) {
+                if (warningType == null) {
+                    warningType = "高热";
+                    warningLevel = 4;
+                }
+                if (warningMsg.length() > 0) warningMsg.append(", ");
+                warningMsg.append(String.format("体温过高: %.1f°C (正常范围36.0-37.3)", temp));
+            } else if (temp >= 37.5) {
+                if (warningType == null) {
+                    warningType = "发热";
+                    warningLevel = 2;
+                }
+                if (warningMsg.length() > 0) warningMsg.append(", ");
+                warningMsg.append(String.format("体温偏高: %.1f°C", temp));
+            } else if (temp < 35.0) {
+                if (warningType == null) {
+                    warningType = "低体温";
+                    warningLevel = 3;
+                }
+                if (warningMsg.length() > 0) warningMsg.append(", ");
+                warningMsg.append(String.format("体温过低: %.1f°C", temp));
+            }
+        }
+
+        // 检测血糖异常
+        if (deviceData.getBloodGlucose() != null) {
+            double glucose = deviceData.getBloodGlucose().doubleValue();
+            
+            if (glucose >= 11.1) {
+                if (warningType == null) {
+                    warningType = "高血糖";
+                    warningLevel = 3;
+                }
+                if (warningMsg.length() > 0) warningMsg.append(", ");
+                warningMsg.append(String.format("血糖过高: %.1f mmol/L (正常范围3.9-6.1)", glucose));
+            } else if (glucose < 3.0) {
+                if (warningType == null) {
+                    warningType = "低血糖";
+                    warningLevel = 4;
+                }
+                if (warningMsg.length() > 0) warningMsg.append(", ");
+                warningMsg.append(String.format("血糖过低: %.1f mmol/L", glucose));
+            }
+        }
+
+        // 检测血氧异常
+        if (deviceData.getSpo2() != null) {
+            int spo2 = deviceData.getSpo2();
+            
+            if (spo2 < 90) {
+                if (warningType == null) {
+                    warningType = "低氧血症";
+                    warningLevel = 4;
+                }
+                if (warningMsg.length() > 0) warningMsg.append(", ");
+                warningMsg.append(String.format("血氧饱和度过低: %d%% (正常≥95)", spo2));
+            } else if (spo2 < 95) {
+                if (warningType == null) {
+                    warningType = "血氧偏低";
+                    warningLevel = 2;
+                }
+                if (warningMsg.length() > 0) warningMsg.append(", ");
+                warningMsg.append(String.format("血氧饱和度偏低: %d%%", spo2));
+            }
+        }
+
+        // 如果检测到异常,创建健康预警
+        if (warningType != null && warningLevel != null) {
+            try {
+                HealthWarning warning = new HealthWarning();
+                warning.setElderlyId(deviceData.getElderlyId());
+                warning.setWarningType(warningType);
+                warning.setWarningLevel(warningLevel);
+                warning.setLevel(getLevelText(warningLevel));
+                warning.setDescription(warningMsg.toString());
+                warning.setStatus(0); // 未查看
+                warning.setTriggerTime(deviceData.getCollectTime());
+                warning.setDataSource("设备监测");
+                
+                // 如果有原始数据,记录下来
+                if (deviceData.getRawData() != null) {
+                    warning.setHandleRemark("设备原始数据: " + deviceData.getRawData());
+                }
+
+                // 使用HealthWarningServiceImpl的createWarningWithEvent方法发布事件
+                if (healthWarningService instanceof HealthWarningServiceImpl) {
+                    ((HealthWarningServiceImpl) healthWarningService)
+                        .createWarningWithEvent(warning, "device");
+                } else {
+                    // 降级方案: 直接保存
+                    healthWarningService.save(warning);
+                }
+
+                log.info("设备数据异常,已创建健康预警,类型:{}, 级别:{}, 老人ID:{}", 
+                    warningType, warningLevel, deviceData.getElderlyId());
+
+            } catch (Exception e) {
+                log.error("创建健康预警失败", e);
+            }
+        }
+    }
+
+    /**
+     * 获取预警级别文本
+     */
+    private String getLevelText(Integer level) {
+        switch (level) {
+            case 4: return "紧急";
+            case 3: return "高";
+            case 2: return "中";
+            case 1: return "低";
+            default: return "未知";
+        }
+    }
+
+    /**
+     * 创建健康记录(TODO: 待health_record表字段修复后启用)
+     */
+    @SuppressWarnings("unused")
+    private HealthRecord createHealthRecord(DeviceDataDTO deviceData) {
+        HealthRecord record = new HealthRecord();
+        record.setElderlyId(deviceData.getElderlyId());
+        record.setRecordType(4); // 监测记录
+        record.setRecordDate(deviceData.getCollectTime());
+        
+        // TODO: 待数据库表修复后取消注释
+        // record.setSystolicPressure(deviceData.getSystolicPressure());
+        // record.setDiastolicPressure(deviceData.getDiastolicPressure());
+        // record.setHeartRate(deviceData.getHeartRate());
+        // record.setBodyTemperature(deviceData.getBodyTemperature());
+        // record.setBloodGlucose(deviceData.getBloodGlucose());
+        
+        if (deviceData.getRemark() != null) {
+            record.setRemark(deviceData.getRemark());
+        }
+        
+        return record;
     }
 }

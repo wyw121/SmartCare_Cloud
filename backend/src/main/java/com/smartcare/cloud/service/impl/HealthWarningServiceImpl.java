@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -18,6 +20,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.smartcare.cloud.dto.HealthWarningPageDTO;
 import com.smartcare.cloud.entity.HealthWarning;
+import com.smartcare.cloud.event.HealthWarningCreatedEvent;
 import com.smartcare.cloud.mapper.HealthWarningMapper;
 import com.smartcare.cloud.service.HealthWarningService;
 
@@ -31,6 +34,9 @@ import com.smartcare.cloud.service.HealthWarningService;
 public class HealthWarningServiceImpl extends ServiceImpl<HealthWarningMapper, HealthWarning> implements HealthWarningService {
 
     private static final Logger log = LoggerFactory.getLogger(HealthWarningServiceImpl.class);
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     @Override
     public PageInfo<HealthWarning> getPageList(HealthWarningPageDTO dto) {
@@ -415,5 +421,50 @@ public class HealthWarningServiceImpl extends ServiceImpl<HealthWarningMapper, H
         result.put("total", total);
 
         return result;
+    }
+
+    /**
+     * 创建健康预警并发布事件
+     * 
+     * 此方法包装了MyBatis-Plus的save()方法,
+     * 在保存成功后自动发布HealthWarningCreatedEvent事件,
+     * 触发后续的通知、日志、统计等异步处理
+     * 
+     * @param healthWarning 健康预警对象
+     * @param source 预警来源(system/device/manual)
+     * @return 保存结果
+     */
+    public boolean createWarningWithEvent(HealthWarning healthWarning, String source) {
+        try {
+            // 保存预警记录
+            boolean success = this.save(healthWarning);
+            
+            if (success) {
+                // 判断是否紧急(级别>=3为高/紧急)
+                boolean urgent = healthWarning.getWarningLevel() != null 
+                    && healthWarning.getWarningLevel() >= 3;
+                
+                // 发布健康预警创建事件
+                HealthWarningCreatedEvent event = new HealthWarningCreatedEvent(
+                    this, 
+                    healthWarning, 
+                    source, 
+                    urgent
+                );
+                eventPublisher.publishEvent(event);
+                
+                log.info("健康预警创建成功并发布事件,ID:{},老人ID:{},级别:{},来源:{}", 
+                    healthWarning.getId(),
+                    healthWarning.getElderlyId(),
+                    healthWarning.getWarningLevel(),
+                    source);
+            }
+            
+            return success;
+            
+        } catch (Exception e) {
+            log.error("创建健康预警失败", e);
+            return false;
+        }
     }
 }

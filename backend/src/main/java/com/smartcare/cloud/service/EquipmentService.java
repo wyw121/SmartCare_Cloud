@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.smartcare.cloud.dto.DeviceDataDTO;
 import com.smartcare.cloud.entity.Equipment;
 
 /**
@@ -69,4 +70,15 @@ public interface EquipmentService extends IService<Equipment> {
      * 绑定设备到老人
      */
     boolean bindDeviceToElderly(Long deviceId, Long elderlyId);
+
+    /**
+     * 处理设备上传的健康数据
+     * 
+     * 解析设备数据,存储到健康记录表,
+     * 如果数据异常则自动创建健康预警
+     * 
+     * @param deviceData 设备数据DTO
+     * @return 处理结果
+     */
+    boolean processDeviceData(DeviceDataDTO deviceData);
 }

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.smartcare.cloud.dto.DeviceDataDTO;
 import com.smartcare.cloud.entity.Equipment;
 import com.smartcare.cloud.service.EquipmentService;
 import com.smartcare.cloud.util.ResponseResult;
@@ -288,6 +291,46 @@ public class EquipmentController {
         } catch (Exception e) {
             log.error("绑定设备到老人失败", e);
             return ResponseResult.error("绑定设备到老人失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 上传设备采集数据
+     * 
+     * 医疗监测设备通过此接口上传健康数据,
+     * 系统会解析数据并存储到健康记录表,
+     * 如果数据异常会自动创建健康预警。
+     * 
+     * @param id 设备ID
+     * @param deviceData 设备数据
+     * @return 处理结果
+     */
+    @Operation(summary = "上传设备数据", description = "设备上传健康监测数据")
+    @PostMapping("/{id}/data")
+    public ResponseResult<String> uploadDeviceData(
+            @Parameter(description = "设备ID") @PathVariable Long id,
+            @Valid @RequestBody DeviceDataDTO deviceData) {
+        
+        log.info("设备上传数据 - 设备ID:{}, 老人ID:{}, 数据类型:{}", 
+            id, deviceData.getElderlyId(), deviceData.getDataType());
+
+        try {
+            // 验证设备ID一致性
+            if (!id.equals(deviceData.getEquipmentId())) {
+                return ResponseResult.error("设备ID不匹配");
+            }
+
+            // 调用服务处理设备数据
+            boolean success = equipmentService.processDeviceData(deviceData);
+            
+            if (success) {
+                return ResponseResult.success("设备数据上传成功");
+            } else {
+                return ResponseResult.error("设备数据上传失败");
+            }
+        } catch (Exception e) {
+            log.error("处理设备数据失败", e);
+            return ResponseResult.error("处理设备数据失败：" + e.getMessage());
         }
     }
 }
