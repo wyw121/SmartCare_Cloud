@@ -3,7 +3,7 @@ package com.smartcare.cloud.aspect;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smartcare.cloud.annotation.AuditLog;
 import com.smartcare.cloud.service.AuditLogService;
-import com.smartcare.cloud.utils.JwtUtils;
+import com.smartcare.cloud.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -75,7 +75,7 @@ public class AuditLogAspect {
             if (token != null && token.startsWith("Bearer ")) {
                 token = token.substring(7);
                 try {
-                    String username = JwtUtils.getUsernameFromToken(token);
+                    String username = JwtUtil.getUsernameFromToken(token);
                     auditLog.setUsername(username);
                     // TODO: 从token中获取userId
                 } catch (Exception e) {
