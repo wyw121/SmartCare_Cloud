@@ -11,6 +11,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -142,6 +144,7 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
     }
 
     @Override
+    @Cacheable(value = "elderly", key = "#id", unless = "#result == null || #result.code != 200")
     public ResponseResult<Elderly> getElderlyById(Long id) {
         try {
             // 使用QueryWrapper查询，确保字段映射正确
@@ -197,6 +200,7 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
     }
 
     @Override
+    @CacheEvict(value = "elderly", key = "#elderly.id")
     public ResponseResult<Void> updateElderly(Elderly elderly) {
         try {
             Elderly existingElderly = this.getById(elderly.getId());
@@ -231,6 +235,7 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
     }
 
     @Override
+    @CacheEvict(value = "elderly", key = "#id")
     public ResponseResult<Void> deleteElderly(Long id) {
         try {
             Elderly elderly = this.getById(id);
@@ -254,6 +259,7 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
     }
 
     @Override
+    @CacheEvict(value = "elderly", allEntries = true)
     public ResponseResult<Void> batchDeleteElderly(List<Long> ids) {
         try {
             boolean success = this.removeByIds(ids);
