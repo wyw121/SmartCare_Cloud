@@ -15,8 +15,8 @@
       <!-- 顶部导航栏 -->
       <navbar />
       
-      <!-- 标签页导航 -->
-      <tags-view v-if="showTabs" />
+      <!-- 标签页导航 - 已隐藏 -->
+      <!-- <tags-view v-if="showTabs" /> -->
       
       <!-- 页面内容 -->
       <app-main />
@@ -38,7 +38,7 @@ import AppMain from './components/AppMain.vue'
 import Navbar from './components/Navbar.vue'
 import Settings from './components/Settings/index.vue'
 import Sidebar from './components/Sidebar/index.vue'
-import TagsView from './components/TagsView/index.vue'
+// import TagsView from './components/TagsView/index.vue' // 已移除标签页功能
 
 const appStore = useAppStore()
 
