@@ -99,69 +99,141 @@ public class ReportStatisticsServiceImpl implements ReportStatisticsService {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            // 获取健康状况分布
+            // 获取老人总数
+            long totalElderly = elderlyService.count();
+            
+            // 获取健康状况分布 - 使用真实SQL查询
             List<Map<String, Object>> healthStatusList = new ArrayList<>();
 
-            // 模拟健康状况统计数据（实际项目中应从数据库查询）
-            Map<String, Object> excellent = new HashMap<>();
-            excellent.put("status", "优良");
-            excellent.put("count", 45);
-            excellent.put("percentage", 45.0);
-            healthStatusList.add(excellent);
+            // 查询各健康状态的老人数量
+            QueryWrapper<Elderly> healthyQuery = new QueryWrapper<>();
+            healthyQuery.eq("health_status", "健康");
+            long healthyCount = elderlyService.count(healthyQuery);
+            
+            QueryWrapper<Elderly> subHealthQuery = new QueryWrapper<>();
+            subHealthQuery.eq("health_status", "亚健康");
+            long subHealthCount = elderlyService.count(subHealthQuery);
+            
+            QueryWrapper<Elderly> chronicQuery = new QueryWrapper<>();
+            chronicQuery.eq("health_status", "慢性病");
+            long chronicCount = elderlyService.count(chronicQuery);
+            
+            QueryWrapper<Elderly> illQuery = new QueryWrapper<>();
+            illQuery.eq("health_status", "疾病");
+            long illCount = elderlyService.count(illQuery);
 
-            Map<String, Object> good = new HashMap<>();
-            good.put("status", "良好");
-            good.put("count", 30);
-            good.put("percentage", 30.0);
-            healthStatusList.add(good);
+            // 计算百分比
+            if (totalElderly > 0) {
+                Map<String, Object> healthy = new HashMap<>();
+                healthy.put("status", "健康");
+                healthy.put("count", healthyCount);
+                healthy.put("percentage", Math.round((double) healthyCount / totalElderly * 10000.0) / 100.0);
+                healthStatusList.add(healthy);
 
-            Map<String, Object> fair = new HashMap<>();
-            fair.put("status", "一般");
-            fair.put("count", 20);
-            fair.put("percentage", 20.0);
-            healthStatusList.add(fair);
+                Map<String, Object> subHealth = new HashMap<>();
+                subHealth.put("status", "亚健康");
+                subHealth.put("count", subHealthCount);
+                subHealth.put("percentage", Math.round((double) subHealthCount / totalElderly * 10000.0) / 100.0);
+                healthStatusList.add(subHealth);
 
-            Map<String, Object> poor = new HashMap<>();
-            poor.put("status", "较差");
-            poor.put("count", 5);
-            poor.put("percentage", 5.0);
-            healthStatusList.add(poor);
+                Map<String, Object> chronic = new HashMap<>();
+                chronic.put("status", "慢性病");
+                chronic.put("count", chronicCount);
+                chronic.put("percentage", Math.round((double) chronicCount / totalElderly * 10000.0) / 100.0);
+                healthStatusList.add(chronic);
+
+                Map<String, Object> ill = new HashMap<>();
+                ill.put("status", "疾病");
+                ill.put("count", illCount);
+                ill.put("percentage", Math.round((double) illCount / totalElderly * 10000.0) / 100.0);
+                healthStatusList.add(ill);
+            }
 
             result.put("healthStatusDistribution", healthStatusList);
 
-            // 获取常见疾病统计
-            List<Map<String, Object>> diseaseList = new ArrayList<>();
-
-            String[] diseases = {"高血压", "糖尿病", "心脏病", "关节炎", "认知障碍"};
-            int[] diseaseCounts = {35, 28, 15, 12, 8};
-
-            for (int i = 0; i < diseases.length; i++) {
-                Map<String, Object> disease = new HashMap<>();
-                disease.put("name", diseases[i]);
-                disease.put("count", diseaseCounts[i]);
-                disease.put("percentage", Math.round((double) diseaseCounts[i] / 100 * 100 * 100.0) / 100.0);
-                diseaseList.add(disease);
-            }
-
-            result.put("commonDiseases", diseaseList);
-
-            // 获取年龄段分布
+            // 获取年龄段分布 - 使用真实SQL查询
             List<Map<String, Object>> ageDistribution = new ArrayList<>();
-
+            
+            // 按年龄段统计
             String[] ageGroups = {"60-65岁", "66-70岁", "71-75岁", "76-80岁", "80岁以上"};
-            int[] ageCounts = {20, 25, 22, 18, 15};
-
+            int[][] ageRanges = {{60, 65}, {66, 70}, {71, 75}, {76, 80}, {81, 150}};
+            
             for (int i = 0; i < ageGroups.length; i++) {
+                QueryWrapper<Elderly> ageQuery = new QueryWrapper<>();
+                ageQuery.ge("age", ageRanges[i][0]);
+                ageQuery.le("age", ageRanges[i][1]);
+                long count = elderlyService.count(ageQuery);
+                
                 Map<String, Object> ageGroup = new HashMap<>();
                 ageGroup.put("ageGroup", ageGroups[i]);
-                ageGroup.put("count", ageCounts[i]);
-                ageGroup.put("percentage", Math.round((double) ageCounts[i] / 100 * 100 * 100.0) / 100.0);
+                ageGroup.put("count", count);
+                if (totalElderly > 0) {
+                    ageGroup.put("percentage", Math.round((double) count / totalElderly * 10000.0) / 100.0);
+                } else {
+                    ageGroup.put("percentage", 0.0);
+                }
                 ageDistribution.add(ageGroup);
             }
 
             result.put("ageDistribution", ageDistribution);
 
-            log.info("健康状况统计获取成功");
+            // 获取性别分布 - 使用真实SQL查询
+            QueryWrapper<Elderly> maleQuery = new QueryWrapper<>();
+            maleQuery.eq("gender", 1);
+            long maleCount = elderlyService.count(maleQuery);
+            
+            QueryWrapper<Elderly> femaleQuery = new QueryWrapper<>();
+            femaleQuery.eq("gender", 0);
+            long femaleCount = elderlyService.count(femaleQuery);
+            
+            List<Map<String, Object>> genderDistribution = new ArrayList<>();
+            Map<String, Object> male = new HashMap<>();
+            male.put("gender", "男");
+            male.put("count", maleCount);
+            if (totalElderly > 0) {
+                male.put("percentage", Math.round((double) maleCount / totalElderly * 10000.0) / 100.0);
+            } else {
+                male.put("percentage", 0.0);
+            }
+            genderDistribution.add(male);
+            
+            Map<String, Object> female = new HashMap<>();
+            female.put("gender", "女");
+            female.put("count", femaleCount);
+            if (totalElderly > 0) {
+                female.put("percentage", Math.round((double) femaleCount / totalElderly * 10000.0) / 100.0);
+            } else {
+                female.put("percentage", 0.0);
+            }
+            genderDistribution.add(female);
+            
+            result.put("genderDistribution", genderDistribution);
+
+            // 获取护理等级分布 - 使用真实SQL查询
+            List<Map<String, Object>> careLevelDistribution = new ArrayList<>();
+            String[] careLevels = {"自理", "半自理", "不能自理", "特级护理"};
+            
+            for (int level = 1; level <= 4; level++) {
+                QueryWrapper<Elderly> careLevelQuery = new QueryWrapper<>();
+                careLevelQuery.eq("care_level", level);
+                long count = elderlyService.count(careLevelQuery);
+                
+                Map<String, Object> careLevel = new HashMap<>();
+                careLevel.put("level", careLevels[level - 1]);
+                careLevel.put("count", count);
+                if (totalElderly > 0) {
+                    careLevel.put("percentage", Math.round((double) count / totalElderly * 10000.0) / 100.0);
+                } else {
+                    careLevel.put("percentage", 0.0);
+                }
+                careLevelDistribution.add(careLevel);
+            }
+            
+            result.put("careLevelDistribution", careLevelDistribution);
+            
+            result.put("totalElderly", totalElderly);
+
+            log.info("健康状况统计获取成功,老人总数:{}", totalElderly);
 
         } catch (Exception e) {
             log.error("获取健康状况统计失败", e);
@@ -237,54 +309,39 @@ public class ReportStatisticsServiceImpl implements ReportStatisticsService {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            // 获取科室统计
+            // 获取科室统计 - 已使用真实查询
             List<Object> departmentStats = doctorService.getDepartmentStatistics();
             result.put("departmentStatistics", departmentStats);
 
-            // 获取医生工作量排行
-            List<Map<String, Object>> doctorWorkload = new ArrayList<>();
-
-            // 模拟医生工作量数据
-            String[] doctorNames = {"张医生", "李医生", "王医生", "陈医生", "刘医生"};
-            int[] consultations = {45, 38, 32, 28, 25};
-            int[] elderlyCount = {20, 18, 15, 12, 10};
-
-            for (int i = 0; i < doctorNames.length; i++) {
-                Map<String, Object> doctor = new HashMap<>();
-                doctor.put("doctorName", doctorNames[i]);
-                doctor.put("consultations", consultations[i]);
-                doctor.put("elderlyCount", elderlyCount[i]);
-                doctor.put("efficiency", Math.round((double) consultations[i] / elderlyCount[i] * 100.0) / 100.0);
-                doctorWorkload.add(doctor);
+            // 获取医生总数
+            long totalDoctors = doctorService.count();
+            result.put("totalDoctors", totalDoctors);
+            
+            // 获取老人总数
+            long totalElderly = elderlyService.count();
+            result.put("totalElderly", totalElderly);
+            
+            // 计算人均医生数
+            if (totalElderly > 0) {
+                result.put("doctorPerElderly", Math.round((double) totalDoctors / totalElderly * 1000.0) / 1000.0);
+            } else {
+                result.put("doctorPerElderly", 0.0);
             }
 
-            result.put("doctorWorkload", doctorWorkload);
-
-            // 获取服务类型统计
-            List<Map<String, Object>> serviceTypes = new ArrayList<>();
-
-            String[] services = {"健康咨询", "药物指导", "康复训练", "营养指导", "心理疏导"};
-            int[] serviceCounts = {120, 85, 65, 45, 30};
-
-            for (int i = 0; i < services.length; i++) {
-                Map<String, Object> service = new HashMap<>();
-                service.put("serviceName", services[i]);
-                service.put("count", serviceCounts[i]);
-                service.put("percentage", Math.round((double) serviceCounts[i] / 345 * 100 * 100.0) / 100.0);
-                serviceTypes.add(service);
-            }
-
-            result.put("serviceTypes", serviceTypes);
-
-            // 获取服务满意度
+            // 注意: 医生工作量、服务类型、满意度统计需要额外的表(如consultation, service_record)
+            // 暂时保留基础统计,后续可扩展
+            result.put("doctorWorkload", new ArrayList<>());
+            result.put("serviceTypes", new ArrayList<>());
+            
             Map<String, Object> satisfaction = new HashMap<>();
-            satisfaction.put("averageScore", 4.6);
-            satisfaction.put("excellentRate", 78.5);
-            satisfaction.put("goodRate", 18.2);
-            satisfaction.put("fairRate", 3.3);
+            satisfaction.put("averageScore", 0.0);
+            satisfaction.put("excellentRate", 0.0);
+            satisfaction.put("goodRate", 0.0);
+            satisfaction.put("fairRate", 0.0);
+            satisfaction.put("note", "需要服务记录表支持");
             result.put("serviceSatisfaction", satisfaction);
 
-            log.info("医疗服务统计获取成功");
+            log.info("医疗服务统计获取成功,医生总数:{},老人总数:{}", totalDoctors, totalElderly);
 
         } catch (Exception e) {
             log.error("获取医疗服务统计失败", e);
@@ -304,23 +361,19 @@ public class ReportStatisticsServiceImpl implements ReportStatisticsService {
             // 生成时间序列数据
             List<String> dates = generateDateSeries(days);
 
-            // 生成健康预警趋势数据
-            List<Map<String, Object>> warningTrend = generateTrendData(dates, 0, 15);
+            // 获取健康预警趋势数据 - 基于真实数据
+            List<Map<String, Object>> warningTrend = getWarningTrendData(days);
             result.put("warningTrend", warningTrend);
 
-            // 生成新增老人趋势数据
-            List<Map<String, Object>> elderlyTrend = generateTrendData(dates, 0, 5);
+            // 获取新增老人趋势数据 - 基于真实数据
+            List<Map<String, Object>> elderlyTrend = getElderlyTrendData(days);
             result.put("elderlyTrend", elderlyTrend);
 
-            // 生成健康评分趋势数据
-            List<Map<String, Object>> healthScoreTrend = generateTrendData(dates, 75, 95);
-            result.put("healthScoreTrend", healthScoreTrend);
+            // 健康评分趋势和服务质量趋势需要额外的数据表支持,暂时返回空
+            result.put("healthScoreTrend", new ArrayList<>());
+            result.put("serviceQualityTrend", new ArrayList<>());
 
-            // 生成服务质量趋势数据
-            List<Map<String, Object>> serviceQualityTrend = generateTrendData(dates, 80, 100);
-            result.put("serviceQualityTrend", serviceQualityTrend);
-
-            log.info("趋势分析数据获取成功，时间范围：{}天", days);
+            log.info("趋势分析数据获取成功,时间范围:{}天", days);
 
         } catch (Exception e) {
             log.error("获取趋势分析数据失败", e);
@@ -328,6 +381,58 @@ public class ReportStatisticsServiceImpl implements ReportStatisticsService {
         }
 
         return result;
+    }
+    
+    /**
+     * 获取预警趋势数据
+     */
+    private List<Map<String, Object>> getWarningTrendData(int days) {
+        List<Map<String, Object>> trendData = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
+        
+        for (int i = days - 1; i >= 0; i--) {
+            LocalDateTime date = now.minusDays(i);
+            LocalDateTime dayStart = date.withHour(0).withMinute(0).withSecond(0);
+            LocalDateTime dayEnd = date.withHour(23).withMinute(59).withSecond(59);
+            
+            QueryWrapper<HealthWarning> query = new QueryWrapper<>();
+            query.between("created_time", dayStart, dayEnd);
+            long count = healthWarningService.count(query);
+            
+            Map<String, Object> data = new HashMap<>();
+            data.put("date", date.format(formatter));
+            data.put("value", count);
+            trendData.add(data);
+        }
+        
+        return trendData;
+    }
+    
+    /**
+     * 获取新增老人趋势数据
+     */
+    private List<Map<String, Object>> getElderlyTrendData(int days) {
+        List<Map<String, Object>> trendData = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
+        
+        for (int i = days - 1; i >= 0; i--) {
+            LocalDateTime date = now.minusDays(i);
+            LocalDateTime dayStart = date.withHour(0).withMinute(0).withSecond(0);
+            LocalDateTime dayEnd = date.withHour(23).withMinute(59).withSecond(59);
+            
+            QueryWrapper<Elderly> query = new QueryWrapper<>();
+            query.between("created_time", dayStart, dayEnd);
+            long count = elderlyService.count(query);
+            
+            Map<String, Object> data = new HashMap<>();
+            data.put("date", date.format(formatter));
+            data.put("value", count);
+            trendData.add(data);
+        }
+        
+        return trendData;
     }
 
     @Override
@@ -447,22 +552,5 @@ public class ReportStatisticsServiceImpl implements ReportStatisticsService {
         }
 
         return dates;
-    }
-
-    /**
-     * 生成趋势数据
-     */
-    private List<Map<String, Object>> generateTrendData(List<String> dates, int min, int max) {
-        List<Map<String, Object>> trendData = new ArrayList<>();
-        Random random = new Random();
-
-        for (String date : dates) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("date", date);
-            data.put("value", min + random.nextInt(max - min + 1));
-            trendData.add(data);
-        }
-
-        return trendData;
     }
 }
