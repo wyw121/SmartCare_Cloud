@@ -209,14 +209,14 @@ backend/create_family_permission_tables.sql
 - **老人**: 个人信息查看权限
 - **家属**: 关联长辈信息查看权限
 
-详见: [RBAC权限系统说明.md](./RBAC权限系统说明.md)
+详见: [docs/RBAC权限系统说明.md](./docs/RBAC权限系统说明.md)
 
 ## 📚 开发文档
 
-- [项目概览](./PROJECT_OVERVIEW.md) - 项目整体介绍
-- [数据库设置](./DATABASE_SETUP.md) - 数据库配置指南
-- [工作区设置](./WORKSPACE_SETUP.md) - 开发环境配置
-- [Git提交规范](./GIT_COMMIT_GUIDE.md) - 代码提交规范
+- [项目概览](./docs/PROJECT_OVERVIEW.md) - 项目整体介绍
+- [数据库设置](./docs/DATABASE_SETUP.md) - 数据库配置指南
+- [工作区设置](./docs/WORKSPACE_SETUP.md) - 开发环境配置
+- [Git提交规范](./docs/GIT_COMMIT_GUIDE.md) - 代码提交规范
 - [前端开发指南](./docs/development/前端开发指南.md) - 前端开发规范
 - [设备管理接入指南](./docs/development/设备管理接入指南.md) - 设备接入文档
 
@@ -278,7 +278,7 @@ npm run test
 4. 推送到分支 (`git push origin feature/AmazingFeature`)
 5. 开启Pull Request
 
-详见: [Git提交规范](./GIT_COMMIT_GUIDE.md)
+详见: [Git提交规范](./docs/GIT_COMMIT_GUIDE.md)
 
 ## 📄 许可证
 

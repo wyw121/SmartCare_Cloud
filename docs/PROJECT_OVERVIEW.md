@@ -1,104 +1,40 @@
-# 智慧医养大数据公共服务平台 - 项目概述# 智慧医养大数据公共服务平台 - 项目概述
+# 智慧医养大数据公共服务平台 - 项目概述
 
+## 项目描述
 
+这是一个为老年人医疗和养老服务设计的综合性云端管理平台，实现医养结合的数字化服务模式。
 
-## 项目描述## 项目描述
+## 核心功能
 
-这是一个为老年人医疗和养老服务设计的综合性云端管理平台,实现医养结合的数字化服务模式。这是一个为老年人医疗和养老服务设计的综合性云端管理平台，实现医养结合的数字化服务模式。
-
-
-
-## 核心功能## 核心功能
-
-- 老人档案管理和健康监测- 老人档案管理和健康监测
-
-- 实时健康预警和风险评估- 实时健康预警和风险评估
-
-- 医疗设备管理和数据分析- 医疗设备管理和数据分析
-
-- 用户权限控制和安全管理- 用户权限控制和安全管理
-
+- 老人档案管理和健康监测
+- 实时健康预警和风险评估
+- 医疗设备管理和数据分析
+- 用户权限控制和安全管理
 - 家属端健康信息查看
+- 大数据决策分析
 
-- 大数据决策分析## 技术架构
+## 技术架构
+
+### 技术栈版本
+
+- **后端**: Spring Boot 2.7.18 + MyBatis-Plus 3.5.3 + MySQL 8.0
+- **前端**: Vue 3.4.0 + Element Plus 2.4.4 + Vite 5.0
+- **缓存**: Redis 6.x
+- **文档**: SpringDoc OpenAPI 1.6.15
+
+### 系统架构图
 
 ```
-
-## 技术架构前端 (Vue.js 3 + Element Plus)
-
-    ↓ HTTP/HTTPS
-
-### 技术栈版本后端 (Spring Boot + MyBatis)
-
-- **后端**: Spring Boot 2.7.18 + MyBatis-Plus 3.5.3.1 + MySQL 8.0.33    ↓ JDBC
-
-- **前端**: Vue 3.4.0 + Element Plus 2.4.4 + Vite 5.0.10数据库 (MySQL 8.0 + Redis)
-
-- **缓存**: Redis```
-
-- **文档**: SpringDoc OpenAPI 1.6.15
+前端 (Vue 3 + Element Plus + Vite)
+    ↓ HTTP/HTTPS (Axios)
+后端 (Spring Boot + MyBatis-Plus)
+    ↓ JDBC
+数据库 (MySQL 8.0 + Redis)
+```
 
 ## 项目结构
 
-### 系统架构图```
-
-```SmartCare_Cloud/
-
-┌─────────────────────────────────────────┐├── backend/                    # Spring Boot后端
-
-│         前端应用层                        ││   ├── src/main/java/com/smartcare/cloud/
-
-│  Vue 3 + Element Plus + Vite            ││   │   ├── controller/         # REST API控制器
-
-└─────────────┬───────────────────────────┘│   │   ├── service/           # 业务逻辑层
-
-              │ HTTP/HTTPS (Axios)│   │   ├── mapper/            # 数据访问层
-
-              ↓│   │   ├── entity/            # JPA实体类
-
-┌─────────────────────────────────────────┐│   │   ├── dto/               # 数据传输对象
-
-│         后端服务层                        ││   │   ├── vo/                # 视图对象
-
-│  Spring Boot + Spring Security          ││   │   ├── config/            # 配置类
-
-│  RESTful API + JWT认证                  ││   │   ├── utils/             # 工具类
-
-└─────────────┬───────────────────────────┘│   │   └── exception/         # 异常处理
-
-              ││   └── src/main/resources/
-
-        ┌─────┴─────┐│       ├── mapper/            # MyBatis映射文件
-
-        ↓           ↓│       ├── application.yml    # 应用配置
-
-┌──────────────┐  ┌──────────────┐│       └── sql/               # 数据库脚本
-
-│  持久化层     │  │   缓存层      │├── frontend/                  # Vue.js前端
-
-│ MyBatis-Plus │  │    Redis     ││   ├── src/
-
-│   + Druid    │  │              ││   │   ├── views/             # 页面组件
-
-└──────┬───────┘  └──────────────┘│   │   ├── components/        # 公共组件
-
-       ↓│   │   ├── api/               # API接口
-
-┌──────────────┐│   │   ├── router/            # 路由配置
-
-│  数据库层     ││   │   ├── store/             # Pinia状态管理
-
-│  MySQL 8.0   ││   │   └── utils/             # 工具函数
-
-└──────────────┘│   └── public/                # 静态资源
-
-```├── sql/                       # 数据库脚本
-
-├── docs/                      # 项目文档
-
-## 项目结构└── docker/                    # Docker配置
-
-``````
+````
 
 SmartCare_Cloud/
 
@@ -352,9 +288,14 @@ SmartCare_Cloud/
 
 ## 相关文档
 
-- [README.md](./README.md) - 项目说明
+- [README.md](../README.md) - 项目说明
 - [DATABASE_SETUP.md](./DATABASE_SETUP.md) - 数据库设置
 - [WORKSPACE_SETUP.md](./WORKSPACE_SETUP.md) - 工作区配置
 - [GIT_COMMIT_GUIDE.md](./GIT_COMMIT_GUIDE.md) - Git提交规范
 - [RBAC权限系统说明.md](./RBAC权限系统说明.md) - 权限系统文档
-- [前端开发指南](./docs/development/前端开发指南.md) - 前端开发规范
+- [前端开发指南](./development/前端开发指南.md) - 前端开发规范
+
+---
+
+**最后更新**: 2025-10-28
+````
