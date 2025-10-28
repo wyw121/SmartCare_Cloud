@@ -50,7 +50,7 @@ public class HealthWarningEventListener {
             HealthWarning warning = event.getHealthWarning();
             log.info("接收到健康预警事件,老人ID:{},预警级别:{},来源:{},紧急:{}", 
                 warning.getElderlyId(),
-                warning.getLevel(),
+                warning.getWarningLevel(),
                 event.getWarningSource(),
                 event.isUrgent());
 
@@ -64,7 +64,7 @@ public class HealthWarningEventListener {
             logWarningCreation(warning, event.getWarningSource());
 
             // 4. 如果是紧急预警,自动分配处理人员
-            if (event.isUrgent() || "高".equals(warning.getLevel())) {
+            if (event.isUrgent() || "高".equals(warning.getWarningLevel())) {
                 assignUrgentWarning(warning);
             }
 
@@ -113,7 +113,7 @@ public class HealthWarningEventListener {
             // pushService.send(elderly.getFamilyMemberId(), notificationMessage);
             
             log.info("预警通知已发送,老人:{},级别:{},内容:{}", 
-                elderly.getName(), warning.getLevel(), notificationMessage);
+                elderly.getName(), warning.getWarningLevel(), notificationMessage);
 
         } catch (Exception e) {
             log.error("发送预警通知失败", e);
@@ -137,9 +137,9 @@ public class HealthWarningEventListener {
            .append(" ")
            .append(warning.getWarningType())
            .append(" - ")
-           .append(warning.getDescription())
+           .append(warning.getContent())
            .append(",级别:")
-           .append(warning.getLevel());
+           .append(warning.getWarningLevel());
         
         return msg.toString();
     }
@@ -152,7 +152,7 @@ public class HealthWarningEventListener {
         log.info("健康预警创建日志,ID:{},类型:{},级别:{},来源:{}", 
             warning.getId(),
             warning.getWarningType(),
-            warning.getLevel(),
+            warning.getWarningLevel(),
             source);
     }
 
@@ -182,7 +182,7 @@ public class HealthWarningEventListener {
             // 比如: 今日预警数、各级别预警数、各类型预警数等
             
             log.debug("预警统计数据已更新,类型:{},级别:{}", 
-                warning.getWarningType(), warning.getLevel());
+                warning.getWarningType(), warning.getWarningLevel());
 
         } catch (Exception e) {
             log.error("更新预警统计失败", e);

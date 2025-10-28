@@ -104,8 +104,8 @@ public class HealthWarningFacadeService {
                     HealthWarning warning = healthWarningService.getById(warningId);
                     if (warning != null) {
                         warning.setHandlerId(handlerId);
-                        warning.setHandleResult(handleResult);
-                        warning.setStatus("HANDLED");
+                        warning.setHandleRemark(handleResult);
+                        warning.setStatus(3); // 3-已处理
                         healthWarningService.updateById(warning);
                         successCount++;
                     } else {

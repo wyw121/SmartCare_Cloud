@@ -431,8 +431,8 @@ public class EquipmentServiceImpl extends ServiceImpl<EquipmentMapper, Equipment
                 warning.setElderlyId(deviceData.getElderlyId());
                 warning.setWarningType(warningType);
                 warning.setWarningLevel(warningLevel);
-                warning.setLevel(getLevelText(warningLevel));
-                warning.setDescription(warningMsg.toString());
+                warning.setTitle(getLevelText(warningLevel));
+                warning.setContent(warningMsg.toString());
                 warning.setStatus(0); // 未查看
                 warning.setTriggerTime(deviceData.getCollectTime());
                 warning.setDataSource("设备监测");
@@ -491,7 +491,7 @@ public class EquipmentServiceImpl extends ServiceImpl<EquipmentMapper, Equipment
         // record.setBloodGlucose(deviceData.getBloodGlucose());
         
         if (deviceData.getRemark() != null) {
-            record.setRemark(deviceData.getRemark());
+            record.setRemarks(deviceData.getRemark());
         }
         
         return record;

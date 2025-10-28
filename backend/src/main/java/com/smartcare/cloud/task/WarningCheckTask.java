@@ -51,8 +51,8 @@ public class WarningCheckTask {
                     log.warn("超时预警: ID={}, 老人ID={}, 级别={}, 创建时间={}",
                             warning.getId(),
                             warning.getElderlyId(),
-                            warning.getLevel(),
-                            warning.getCreatedTime());
+                            warning.getWarningLevel(),
+                            warning.getCreateTime());
                 }
             }
 
@@ -86,11 +86,11 @@ public class WarningCheckTask {
                 // TODO: 检查处理时长,超过阈值发送催办通知
                 LocalDateTime urgentThreshold = LocalDateTime.now().minusHours(2);
                 for (HealthWarning warning : highLevelWarnings) {
-                    if (warning.getCreatedTime().isBefore(urgentThreshold)) {
+                    if (warning.getCreateTime().isBefore(urgentThreshold)) {
                         log.warn("高级别预警处理超时: ID={}, 老人ID={}, 级别={}, 已处理时长>2小时",
                                 warning.getId(),
                                 warning.getElderlyId(),
-                                warning.getLevel());
+                                warning.getWarningLevel());
                     }
                 }
             }

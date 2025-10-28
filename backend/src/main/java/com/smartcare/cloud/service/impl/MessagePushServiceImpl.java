@@ -33,7 +33,7 @@ public class MessagePushServiceImpl implements MessagePushService {
             Map<String, Object> message = buildWarningMessage(warning);
             messagingTemplate.convertAndSend(TOPIC_WARNINGS, message);
             log.info("推送健康预警到所有用户,预警ID:{},级别:{}", 
-                    warning.getId(), warning.getLevel());
+                    warning.getId(), warning.getWarningLevel());
         } catch (Exception e) {
             log.error("推送健康预警到所有用户失败", e);
         }
@@ -49,7 +49,7 @@ public class MessagePushServiceImpl implements MessagePushService {
                 message
             );
             log.info("推送健康预警到用户{},预警ID:{},级别:{}", 
-                    userId, warning.getId(), warning.getLevel());
+                    userId, warning.getId(), warning.getWarningLevel());
         } catch (Exception e) {
             log.error("推送健康预警到用户{}失败", userId, e);
         }
@@ -107,11 +107,11 @@ public class MessagePushServiceImpl implements MessagePushService {
         message.put("id", warning.getId());
         message.put("elderlyId", warning.getElderlyId());
         message.put("elderlyName", warning.getElderlyName());
-        message.put("type", warning.getType());
-        message.put("level", warning.getLevel());
-        message.put("levelName", getLevelName(warning.getLevel()));
+        message.put("type", warning.getWarningType());
+        message.put("level", warning.getWarningLevel());
+        message.put("levelName", getLevelName(warning.getWarningLevel()));
         message.put("content", warning.getContent());
-        message.put("createdTime", formatDateTime(warning.getCreatedTime()));
+        message.put("createdTime", formatDateTime(warning.getCreateTime()));
         message.put("timestamp", System.currentTimeMillis());
         message.put("messageType", "warning");
         return message;

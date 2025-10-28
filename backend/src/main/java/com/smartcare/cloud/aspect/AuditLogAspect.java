@@ -42,6 +42,7 @@ public class AuditLogAspect {
     
     private final AuditLogService auditLogService;
     private final ObjectMapper objectMapper;
+    private final JwtUtil jwtUtil;
     
     // SpEL表达式解析器
     private final ExpressionParser parser = new SpelExpressionParser();
@@ -75,7 +76,7 @@ public class AuditLogAspect {
             if (token != null && token.startsWith("Bearer ")) {
                 token = token.substring(7);
                 try {
-                    String username = JwtUtil.getUsernameFromToken(token);
+                    String username = jwtUtil.getUsernameFromToken(token);
                     auditLog.setUsername(username);
                     // TODO: 从token中获取userId
                 } catch (Exception e) {
