@@ -35,25 +35,46 @@ spring:
       filters: stat,wall,slf4j
       connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
 
-  # Redis配置（暂未启用，待后续性能优化时开启缓存功能）
-  # redis:
-  #   host: localhost
-  #   port: 6379
-  #   password:
-  #   database: 0
-  #   timeout: 10000ms
-  #   jedis:
-  #     pool:
-  #       max-active: 8
-  #       max-wait: -1ms
-  #       max-idle: 8
-  #       min-idle: 0
+  # Redis配置
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    database: 0
+    timeout: 10000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1ms
+        max-idle: 8
+        min-idle: 0
+
+  # 缓存配置
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000  # 缓存过期时间(毫秒) 10分钟
+      cache-null-values: false  # 不缓存空值
 
   # Jackson配置
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
     default-property-inclusion: non_null
+
+  # 文件上传配置
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 50MB
+      file-size-threshold: 2KB
+
+# 文件存储配置
+file:
+  upload:
+    base-path: ./uploads
+    max-size-mb: 10
 
 # MyBatis Plus配置
 mybatis-plus:
