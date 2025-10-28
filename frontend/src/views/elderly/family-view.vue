@@ -154,8 +154,12 @@
                 size="small" 
                 @click="viewHealthRecord(elderly)"
                 :icon="Document"
+                :disabled="!hasPermission(elderly, 'VIEW_HEALTH_RECORD')"
               >
                 健康档案
+                <el-icon v-if="!hasPermission(elderly, 'VIEW_HEALTH_RECORD')" style="margin-left: 5px;">
+                  <Lock />
+                </el-icon>
               </el-button>
               <el-button 
                 v-if="elderly.warnings && elderly.warnings.length > 0"
@@ -174,6 +178,21 @@
               >
                 联系医护
               </el-button>
+              <el-dropdown trigger="click" @command="(cmd) => handleMoreActions(cmd, elderly)">
+                <el-button size="small" type="default">
+                  更多 <el-icon class="el-icon--right"><ArrowDown /></el-icon>
+                </el-button>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item command="permissions" :icon="Setting">
+                      权限设置
+                    </el-dropdown-item>
+                    <el-dropdown-item command="subscribe" :icon="Bell">
+                      {{ elderly.subscribed ? '取消预警推送' : '订阅预警推送' }}
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </div>
           </template>
         </el-card>
@@ -228,18 +247,131 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 权限设置对话框 -->
+    <el-dialog 
+      v-model="permissionDialogVisible"
+      title="权限设置"
+      width="600px"
+    >
+      <div class="permission-dialog-content">
+        <el-alert
+          title="权限说明"
+          type="info"
+          :closable="false"
+          style="margin-bottom: 20px;"
+        >
+          <template #default>
+            作为家属,您当前拥有以下权限。部分敏感权限需要长辈本人或管理员授权。
+          </template>
+        </el-alert>
+        
+        <div class="current-permissions">
+          <h4>当前权限状态</h4>
+          <el-table :data="currentElderlyPermissions" style="width: 100%">
+            <el-table-column prop="name" label="权限名称" width="200" />
+            <el-table-column prop="description" label="权限说明" />
+            <el-table-column label="状态" width="100" align="center">
+              <template #default="scope">
+                <el-tag :type="scope.row.granted ? 'success' : 'info'" size="small">
+                  {{ scope.row.granted ? '已授权' : '未授权' }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="120" align="center">
+              <template #default="scope">
+                <el-button 
+                  v-if="!scope.row.granted && scope.row.canRequest"
+                  type="primary" 
+                  size="small"
+                  @click="requestPermission(scope.row)"
+                >
+                  申请权限
+                </el-button>
+                <span v-else-if="!scope.row.canRequest" class="text-gray">
+                  需管理员授权
+                </span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="permissionDialogVisible = false">关闭</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <!-- 预警推送订阅对话框 -->
+    <el-dialog 
+      v-model="subscribeDialogVisible"
+      title="预警推送设置"
+      width="500px"
+    >
+      <el-form :model="subscribeForm" label-width="120px">
+        <el-form-item label="长辈姓名">
+          <el-input v-model="subscribeForm.elderlyName" disabled />
+        </el-form-item>
+        <el-form-item label="推送方式">
+          <el-checkbox-group v-model="subscribeForm.methods">
+            <el-checkbox label="app" border>应用内通知</el-checkbox>
+            <el-checkbox label="sms" border>短信通知</el-checkbox>
+            <el-checkbox label="email" border>邮件通知</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="推送级别">
+          <el-radio-group v-model="subscribeForm.level">
+            <el-radio label="all">全部预警</el-radio>
+            <el-radio label="medium">中级及以上</el-radio>
+            <el-radio label="high">高级及紧急</el-radio>
+            <el-radio label="urgent">仅紧急预警</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="免打扰时段">
+          <el-time-picker
+            v-model="subscribeForm.quietHours"
+            is-range
+            range-separator="至"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            format="HH:mm"
+            value-format="HH:mm"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-alert
+            title="提示"
+            type="warning"
+            :closable="false"
+          >
+            紧急预警将忽略免打扰时段,确保您能及时收到重要通知
+          </el-alert>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="subscribeDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="saveSubscribeSettings">保存设置</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import {
     getFamilyElderlyList,
+    getFamilyPermissions,
     getLatestVitals,
     getWarnings,
-    sendContactRequest
+    requestFamilyPermission,
+    sendContactRequest,
+    subscribeWarningNotification,
+    unsubscribeWarningNotification
 } from '@/api/family'
 import { useUserStore } from '@/store/user'
-import { Bell, Document, Message, View, Warning } from '@element-plus/icons-vue'
+import { ArrowDown, Bell, Document, Lock, Message, Setting, View, Warning } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -250,11 +382,28 @@ const userStore = useUserStore()
 // 响应式数据
 const elderlyList = ref([])
 const loading = ref(false)
+
+// 联系医护相关
 const contactDialogVisible = ref(false)
 const contactForm = ref({
   elderlyName: '',
   urgency: 'normal',
   message: ''
+})
+
+// 权限管理相关
+const permissionDialogVisible = ref(false)
+const currentElderlyId = ref(null)
+const currentElderlyPermissions = ref([])
+
+// 预警订阅相关
+const subscribeDialogVisible = ref(false)
+const subscribeForm = ref({
+  elderlyId: null,
+  elderlyName: '',
+  methods: ['app'],
+  level: 'medium',
+  quietHours: null
 })
 
 // 计算属性
@@ -394,6 +543,13 @@ const viewElderlyDetail = (elderly) => {
 }
 
 const viewHealthRecord = (elderly) => {
+  // 检查权限
+  if (!hasPermission(elderly, 'VIEW_HEALTH_RECORD')) {
+    ElMessage.warning('您暂无健康档案查看权限,请先申请权限')
+    handleMoreActions('permissions', elderly)
+    return
+  }
+  
   router.push({
     path: '/health/record',
     query: { elderlyId: elderly.id }
@@ -438,7 +594,168 @@ const submitContactRequest = async () => {
   }
 }
 
-// Mock数据函数（用于测试）
+// 检查权限
+const hasPermission = (elderly, permissionCode) => {
+  if (!elderly.permissions) {
+    return false
+  }
+  return elderly.permissions.some(p => p.code === permissionCode && p.granted)
+}
+
+// 处理更多操作菜单
+const handleMoreActions = async (command, elderly) => {
+  if (command === 'permissions') {
+    await showPermissionDialog(elderly)
+  } else if (command === 'subscribe') {
+    await showSubscribeDialog(elderly)
+  }
+}
+
+// 显示权限设置对话框
+const showPermissionDialog = async (elderly) => {
+  try {
+    currentElderlyId.value = elderly.id
+    
+    // 获取家属对该老人的权限列表
+    const response = await getFamilyPermissions(elderly.id)
+    
+    if (response && response.code === 200) {
+      currentElderlyPermissions.value = response.data.map(perm => ({
+        code: perm.code,
+        name: perm.name,
+        description: perm.description,
+        granted: perm.granted,
+        canRequest: perm.canRequest !== false // 默认可以申请
+      }))
+    } else {
+      // 使用默认权限列表
+      currentElderlyPermissions.value = getDefaultPermissions(elderly)
+    }
+    
+    permissionDialogVisible.value = true
+  } catch (error) {
+    console.error('获取权限列表失败:', error)
+    // 使用默认权限列表
+    currentElderlyPermissions.value = getDefaultPermissions(elderly)
+    permissionDialogVisible.value = true
+  }
+}
+
+// 获取默认权限列表
+const getDefaultPermissions = (elderly) => {
+  const permissions = [
+    {
+      code: 'VIEW_BASIC_INFO',
+      name: '查看基本信息',
+      description: '查看长辈的姓名、年龄等基础信息',
+      granted: true,
+      canRequest: false
+    },
+    {
+      code: 'VIEW_HEALTH_RECORD',
+      name: '查看健康档案',
+      description: '查看长辈的健康记录、体检报告等',
+      granted: elderly.permissions?.some(p => p.code === 'VIEW_HEALTH_RECORD') || false,
+      canRequest: true
+    },
+    {
+      code: 'VIEW_MEDICATION',
+      name: '查看用药记录',
+      description: '查看长辈的用药历史和当前用药情况',
+      granted: elderly.permissions?.some(p => p.code === 'VIEW_MEDICATION') || false,
+      canRequest: true
+    },
+    {
+      code: 'RECEIVE_WARNINGS',
+      name: '接收健康预警',
+      description: '接收长辈的健康异常预警通知',
+      granted: elderly.permissions?.some(p => p.code === 'RECEIVE_WARNINGS') || true,
+      canRequest: true
+    },
+    {
+      code: 'CONTACT_MEDICAL',
+      name: '联系医护人员',
+      description: '代表长辈联系医护人员',
+      granted: true,
+      canRequest: false
+    }
+  ]
+  
+  return permissions
+}
+
+// 申请权限
+const requestPermission = async (permission) => {
+  try {
+    const response = await requestFamilyPermission({
+      elderlyId: currentElderlyId.value,
+      permissionCode: permission.code,
+      reason: `申请${permission.name}权限`
+    })
+    
+    if (response && response.code === 200) {
+      ElMessage.success('权限申请已提交,等待审核')
+      permission.granted = false // 等待审核状态
+    } else {
+      ElMessage.error('权限申请失败,请重试')
+    }
+  } catch (error) {
+    console.error('申请权限失败:', error)
+    ElMessage.error('权限申请失败,请重试')
+  }
+}
+
+// 显示预警订阅对话框
+const showSubscribeDialog = async (elderly) => {
+  subscribeForm.value = {
+    elderlyId: elderly.id,
+    elderlyName: elderly.name,
+    methods: elderly.subscribed ? (elderly.subscribeMethods || ['app']) : ['app'],
+    level: elderly.subscribeLevel || 'medium',
+    quietHours: elderly.quietHours || null
+  }
+  subscribeDialogVisible.value = true
+}
+
+// 保存订阅设置
+const saveSubscribeSettings = async () => {
+  try {
+    if (subscribeForm.value.methods.length === 0) {
+      ElMessage.warning('请至少选择一种推送方式')
+      return
+    }
+    
+    const params = {
+      elderlyId: subscribeForm.value.elderlyId,
+      methods: subscribeForm.value.methods,
+      level: subscribeForm.value.level,
+      quietHours: subscribeForm.value.quietHours
+    }
+    
+    const response = await subscribeWarningNotification(params)
+    
+    if (response && response.code === 200) {
+      ElMessage.success('预警推送设置已保存')
+      subscribeDialogVisible.value = false
+      
+      // 更新列表中的订阅状态
+      const elderly = elderlyList.value.find(e => e.id === subscribeForm.value.elderlyId)
+      if (elderly) {
+        elderly.subscribed = true
+        elderly.subscribeMethods = subscribeForm.value.methods
+        elderly.subscribeLevel = subscribeForm.value.level
+        elderly.quietHours = subscribeForm.value.quietHours
+      }
+    } else {
+      ElMessage.error('保存设置失败,请重试')
+    }
+  } catch (error) {
+    console.error('保存订阅设置失败:', error)
+    ElMessage.error('保存设置失败,请重试')
+  }
+}
+
+// Mock数据函数(用于测试)
 const getMockElderlyData = () => {
   return [
     {

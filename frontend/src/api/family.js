@@ -98,3 +98,49 @@ export function getFamilyElderlyList() {
     method: 'get'
   })
 }
+
+/**
+ * 获取家属对指定老人的权限列表
+ * @param {Number} elderlyId 老人ID
+ */
+export function getFamilyPermissions(elderlyId) {
+  return request({
+    url: `/family/elderly/${elderlyId}/permissions`,
+    method: 'get'
+  })
+}
+
+/**
+ * 申请家属权限
+ * @param {Object} data 权限申请数据
+ */
+export function requestFamilyPermission(data) {
+  return request({
+    url: '/family/permissions/request',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 订阅健康预警推送
+ * @param {Object} data 订阅配置
+ */
+export function subscribeWarningNotification(data) {
+  return request({
+    url: '/family/warnings/subscribe',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 取消订阅健康预警推送
+ * @param {Number} elderlyId 老人ID
+ */
+export function unsubscribeWarningNotification(elderlyId) {
+  return request({
+    url: `/family/warnings/unsubscribe/${elderlyId}`,
+    method: 'post'
+  })
+}
