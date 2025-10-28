@@ -40,10 +40,12 @@ public class FamilyPermissionController {
     /**
      * 检查家属是否可以访问指定老人信息
      */
-    @Operation(summary = "检查家属老人访问权限", description = "检查家属是否可以访问指定老人的信息")
+    @Operation(summary = "检查家属老人访问权限", description = "检查家属是否可以访问指定老人的信息，符合医疗信息隐私保护标准")
     @GetMapping("/check-elderly-access/{elderlyId}/{familyId}")
     public ResponseResult<Map<String, Object>> checkElderlyAccess(
+            @io.swagger.v3.oas.annotations.Parameter(description = "老人ID", example = "1", required = true)
             @PathVariable Long elderlyId,
+            @io.swagger.v3.oas.annotations.Parameter(description = "家属ID", example = "1", required = true)
             @PathVariable Long familyId,
             HttpServletRequest request) {
         try {
@@ -66,9 +68,10 @@ public class FamilyPermissionController {
     /**
      * 获取家属关联的老人列表
      */
-    @Operation(summary = "获取家属关联老人列表", description = "获取指定家属可以查看的老人列表")
+    @Operation(summary = "获取家属关联老人列表", description = "获取指定家属可以查看的所有老人列表，包含访问权限信息")
     @GetMapping("/elderly-list/{familyId}")
     public ResponseResult<List<FamilyElderlyAccessDTO>> getElderlyList(
+            @io.swagger.v3.oas.annotations.Parameter(description = "家属ID", example = "1", required = true)
             @PathVariable Long familyId,
             HttpServletRequest request) {
         try {

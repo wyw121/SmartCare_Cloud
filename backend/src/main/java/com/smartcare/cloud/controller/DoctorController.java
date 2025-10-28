@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.pagehelper.PageInfo;
+import com.smartcare.cloud.annotation.AuditLog;
 import com.smartcare.cloud.dto.DoctorPageDTO;
 import com.smartcare.cloud.entity.Doctor;
 import com.smartcare.cloud.service.DoctorService;
@@ -24,6 +25,7 @@ import com.smartcare.cloud.vo.DoctorStatisticsVO;
 import com.smartcare.cloud.vo.ResponseResult;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
@@ -47,9 +49,10 @@ public class DoctorController {
      * @param dto 查询条件
      * @return 分页结果
      */
-    @Operation(summary = "分页查询医生列表")
+    @Operation(summary = "分页查询医生列表", description = "支持按姓名、科室、职称等条件分页查询医生信息")
     @PostMapping("/page")
-    public ResponseResult<PageInfo<Doctor>> getPageList(@RequestBody DoctorPageDTO dto) {
+    public ResponseResult<PageInfo<Doctor>> getPageList(
+            @Parameter(description = "分页查询参数，包含姓名、科室、职称等筛选条件") @RequestBody DoctorPageDTO dto) {
         try {
             PageInfo<Doctor> pageInfo = doctorService.getPageList(dto);
             return ResponseResult.success(pageInfo);
@@ -64,9 +67,11 @@ public class DoctorController {
      * @param doctor 医生信息
      * @return 操作结果
      */
-    @Operation(summary = "新增医生")
+    @AuditLog(module = "DOCTOR", type = "CREATE", description = "新增医生: #doctor.name")
+    @Operation(summary = "新增医生", description = "添加新的医生信息，工号不能重复")
     @PostMapping("/add")
-    public ResponseResult<String> add(@Valid @RequestBody Doctor doctor) {
+    public ResponseResult<String> add(
+            @Parameter(description = "医生信息对象，包含姓名、工号、科室、职称等") @Valid @RequestBody Doctor doctor) {
         try {
             // 检查工号是否重复
             Doctor existing = doctorService.getByEmployeeNumber(doctor.getEmployeeNumber());
@@ -91,9 +96,11 @@ public class DoctorController {
      * @param doctor 医生信息
      * @return 操作结果
      */
-    @Operation(summary = "更新医生信息")
+    @AuditLog(module = "DOCTOR", type = "UPDATE", description = "更新医生信息: #doctor.name")
+    @Operation(summary = "更新医生信息", description = "根据医生ID更新医生的详细信息")
     @PutMapping("/update")
-    public ResponseResult<String> update(@Valid @RequestBody Doctor doctor) {
+    public ResponseResult<String> update(
+            @Parameter(description = "医生信息对象，必须包含ID") @Valid @RequestBody Doctor doctor) {
         try {
             boolean result = doctorService.updateById(doctor);
             if (result) {
@@ -112,9 +119,10 @@ public class DoctorController {
      * @param id 医生ID
      * @return 医生详情
      */
-    @Operation(summary = "查询医生详情")
+    @Operation(summary = "查询医生详情", description = "根据医生ID获取医生的完整信息")
     @GetMapping("/{id}")
-    public ResponseResult<Doctor> getById(@PathVariable Long id) {
+    public ResponseResult<Doctor> getById(
+            @Parameter(description = "医生ID", required = true, example = "1") @PathVariable Long id) {
         try {
             Doctor doctor = doctorService.getById(id);
             if (doctor != null) {
@@ -133,9 +141,11 @@ public class DoctorController {
      * @param id 医生ID
      * @return 操作结果
      */
-    @Operation(summary = "删除医生")
+    @AuditLog(module = "DOCTOR", type = "DELETE", description = "删除医生 ID:#id")
+    @Operation(summary = "删除医生", description = "根据医生ID删除医生信息（逻辑删除）")
     @DeleteMapping("/{id}")
-    public ResponseResult<String> delete(@PathVariable Long id) {
+    public ResponseResult<String> delete(
+            @Parameter(description = "医生ID", required = true, example = "1") @PathVariable Long id) {
         try {
             boolean result = doctorService.removeById(id);
             if (result) {
@@ -154,6 +164,7 @@ public class DoctorController {
      * @param ids 医生ID列表
      * @return 操作结果
      */
+    @AuditLog(module = "DOCTOR", type = "DELETE", description = "批量删除医生")
     @Operation(summary = "批量删除医生")
     @DeleteMapping("/batch")
     public ResponseResult<String> deleteBatch(@RequestBody List<Long> ids) {

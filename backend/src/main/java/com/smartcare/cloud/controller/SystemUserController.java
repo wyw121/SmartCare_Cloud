@@ -47,14 +47,19 @@ public class SystemUserController {
     /**
      * 获取用户列表（分页）
      */
-    @Operation(summary = "获取用户列表", description = "获取系统用户列表，支持分页和条件查询")
+    @Operation(summary = "获取用户列表", description = "支持按关键字、状态、角色等条件分页查询系统用户列表")
     @GetMapping
     public ResponseResult<IPage<User>> getUserList(
-            @Parameter(description = "当前页") @RequestParam(defaultValue = "1") Integer current,
-            @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") Integer size,
-            @Parameter(description = "关键词") @RequestParam(required = false) String keyword,
-            @Parameter(description = "状态") @RequestParam(required = false) Integer status,
-            @Parameter(description = "角色ID") @RequestParam(required = false) Long roleId) {
+            @Parameter(description = "当前页码", example = "1") 
+            @RequestParam(defaultValue = "1") Integer current,
+            @Parameter(description = "每页记录数", example = "10") 
+            @RequestParam(defaultValue = "10") Integer size,
+            @Parameter(description = "搜索关键词，可模糊匹配用户名、真实姓名、邮箱、手机号") 
+            @RequestParam(required = false) String keyword,
+            @Parameter(description = "用户状态，0-禁用 1-启用") 
+            @RequestParam(required = false) Integer status,
+            @Parameter(description = "角色ID，用于筛选特定角色的用户") 
+            @RequestParam(required = false) Long roleId) {
         try {
             Page<User> page = new Page<>(current, size);
             LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();

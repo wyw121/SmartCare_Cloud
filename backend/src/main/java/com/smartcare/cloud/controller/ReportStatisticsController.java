@@ -38,7 +38,7 @@ public class ReportStatisticsController {
     /**
      * 获取数据概览统计
      */
-    @Operation(summary = "获取数据概览统计")
+    @Operation(summary = "获取数据概览统计", description = "获取平台核心数据概览，包括老人总数、医生数量、预警数量等关键指标")
     @GetMapping("/overview")
     public ResponseResult<Map<String, Object>> getOverviewStatistics() {
         log.info("获取数据概览统计");
@@ -54,7 +54,7 @@ public class ReportStatisticsController {
     /**
      * 获取健康状况统计
      */
-    @Operation(summary = "获取健康状况统计")
+    @Operation(summary = "获取健康状况统计", description = "统计老人健康状况分布，包括健康、亚健康、疾病等各状态的人数及占比")
     @GetMapping("/health-status")
     public ResponseResult<Map<String, Object>> getHealthStatusStatistics() {
         log.info("获取健康状况统计");
@@ -70,7 +70,7 @@ public class ReportStatisticsController {
     /**
      * 获取预警统计分析
      */
-    @Operation(summary = "获取预警统计分析")
+    @Operation(summary = "获取预警统计分析", description = "统计健康预警数据，包括预警级别分布、处理状态、趋势分析等")
     @GetMapping("/warning-analysis")
     public ResponseResult<Map<String, Object>> getWarningAnalysis() {
         log.info("获取预警统计分析");
@@ -86,7 +86,7 @@ public class ReportStatisticsController {
     /**
      * 获取医疗服务统计
      */
-    @Operation(summary = "获取医疗服务统计")
+    @Operation(summary = "获取医疗服务统计", description = "统计医疗服务数据，包括就诊次数、常见疾病、用药统计等")
     @GetMapping("/medical-service")
     public ResponseResult<Map<String, Object>> getMedicalServiceStatistics() {
         log.info("获取医疗服务统计");

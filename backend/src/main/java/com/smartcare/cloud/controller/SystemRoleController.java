@@ -56,13 +56,17 @@ public class SystemRoleController {
     /**
      * 分页查询角色列表
      */
-    @Operation(summary = "分页查询角色", description = "分页查询角色列表")
+    @Operation(summary = "分页查询角色", description = "支持按关键字、状态等条件分页查询角色列表")
     @GetMapping
     public ResponseResult<Page<Role>> getRolePage(
-            @Parameter(description = "当前页") @RequestParam(defaultValue = "1") Long current,
-            @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") Long size,
-            @Parameter(description = "关键字") @RequestParam(required = false) String keyword,
-            @Parameter(description = "状态") @RequestParam(required = false) Integer status) {
+            @Parameter(description = "当前页码", example = "1") 
+            @RequestParam(defaultValue = "1") Long current,
+            @Parameter(description = "每页记录数", example = "10") 
+            @RequestParam(defaultValue = "10") Long size,
+            @Parameter(description = "搜索关键字，可模糊匹配角色名称、角色编码") 
+            @RequestParam(required = false) String keyword,
+            @Parameter(description = "角色状态，0-禁用 1-启用") 
+            @RequestParam(required = false) Integer status) {
         try {
             Page<Role> page = new Page<>(current, size);
             Page<Role> result = roleService.getRolePage(page, keyword, status);
@@ -75,9 +79,11 @@ public class SystemRoleController {
     /**
      * 获取角色详情
      */
-    @Operation(summary = "获取角色详情", description = "根据ID获取角色详情")
+    @Operation(summary = "获取角色详情", description = "根据角色ID获取角色的详细信息及权限列表")
     @GetMapping("/{id}")
-    public ResponseResult<Role> getRoleById(@PathVariable Long id) {
+    public ResponseResult<Role> getRoleById(
+            @Parameter(description = "角色ID", example = "1", required = true)
+            @PathVariable Long id) {
         try {
             Role role = roleService.getById(id);
             if (role == null) {
@@ -92,9 +98,13 @@ public class SystemRoleController {
     /**
      * 创建角色
      */
-    @Operation(summary = "创建角色", description = "创建新的角色")
+    @Operation(summary = "创建角色", description = "创建新的角色，需提供角色名称、角色编码等信息")
     @PostMapping
-    public ResponseResult<Role> createRole(@RequestBody Role role) {
+    public ResponseResult<Role> createRole(
+            @Parameter(description = "角色信息，包含roleName(角色名称)、roleCode(角色编码)、description(描述)等", 
+                      required = true,
+                      example = "{\"roleName\": \"护士\", \"roleCode\": \"nurse\", \"description\": \"护理人员\"}")
+            @RequestBody Role role) {
         try {
             // 检查角色编码是否存在
             if (roleService.checkRoleCodeExists(role.getRoleCode(), null)) {

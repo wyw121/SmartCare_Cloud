@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.smartcare.cloud.annotation.AuditLog;
 import com.smartcare.cloud.dto.UserLoginDTO;
 import com.smartcare.cloud.dto.UserRegisterDTO;
 import com.smartcare.cloud.service.UserAuthService;
@@ -49,9 +50,14 @@ public class AuthController {
         return ResponseResult.success("服务正常运行", "健康检查通过");
     }
 
-    @Operation(summary = "用户登录", description = "支持三类角色（管理员/医生/家属）的登录认证")
+    @AuditLog(module = "SYSTEM", type = "LOGIN", description = "用户登录: #loginDTO.username")
+    @Operation(summary = "用户登录", description = "支持三类角色（管理员/医生/家属）的登录认证，返回JWT token")
     @PostMapping("/login")
-    public ResponseResult<LoginVO> login(@Validated @RequestBody UserLoginDTO loginDTO) {
+    public ResponseResult<LoginVO> login(
+            @Parameter(description = "登录信息，包含username(用户名)、password(密码)、roleCode(角色代码)", 
+                      required = true,
+                      example = "{\"username\": \"admin\", \"password\": \"123456\", \"roleCode\": \"admin\"}")
+            @Validated @RequestBody UserLoginDTO loginDTO) {
         try {
             LoginVO loginVO = userAuthService.login(loginDTO);
             return ResponseResult.success(loginVO, "登录成功");
@@ -60,9 +66,14 @@ public class AuthController {
         }
     }
 
-    @Operation(summary = "用户注册", description = "支持三类角色的用户注册")
+    @AuditLog(module = "SYSTEM", type = "CREATE", description = "用户注册: #registerDTO.username")
+    @Operation(summary = "用户注册", description = "支持三类角色的用户注册，需提供用户名、密码、角色等信息")
     @PostMapping("/register")
-    public ResponseResult<UserRegisterVO> register(@Validated @RequestBody UserRegisterDTO registerDTO) {
+    public ResponseResult<UserRegisterVO> register(
+            @Parameter(description = "注册信息，包含username(用户名)、password(密码)、realName(真实姓名)、roleCode(角色代码)等", 
+                      required = true,
+                      example = "{\"username\": \"doctor01\", \"password\": \"123456\", \"realName\": \"李医生\", \"roleCode\": \"doctor\"}")
+            @Validated @RequestBody UserRegisterDTO registerDTO) {
         try {
             UserRegisterVO registerVO = userAuthService.register(registerDTO);
             return ResponseResult.success(registerVO, "注册成功");
@@ -92,6 +103,7 @@ public class AuthController {
         }
     }
 
+    @AuditLog(module = "SYSTEM", type = "LOGOUT", description = "用户登出")
     @Operation(summary = "用户登出", description = "用户退出登录")
     @PostMapping("/logout")
     public ResponseResult<Void> logout(HttpServletRequest request) {

@@ -60,14 +60,19 @@ public class SystemPermissionController {
     /**
      * 分页查询权限列表
      */
-    @Operation(summary = "分页查询权限", description = "分页查询权限列表")
+    @Operation(summary = "分页查询权限", description = "支持按关键字、权限类型、状态等条件分页查询权限列表")
     @GetMapping
     public ResponseResult<List<Permission>> getPermissionPage(
-            @Parameter(description = "当前页") @RequestParam(defaultValue = "1") Long current,
-            @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") Long size,
-            @Parameter(description = "关键字") @RequestParam(required = false) String keyword,
-            @Parameter(description = "权限类型") @RequestParam(required = false) String permissionType,
-            @Parameter(description = "状态") @RequestParam(required = false) Integer status) {
+            @Parameter(description = "当前页码", example = "1") 
+            @RequestParam(defaultValue = "1") Long current,
+            @Parameter(description = "每页记录数", example = "10") 
+            @RequestParam(defaultValue = "10") Long size,
+            @Parameter(description = "搜索关键字，可模糊匹配权限名称、权限编码") 
+            @RequestParam(required = false) String keyword,
+            @Parameter(description = "权限类型，如：menu(菜单)、button(按钮)、api(接口)") 
+            @RequestParam(required = false) String permissionType,
+            @Parameter(description = "权限状态，0-禁用 1-启用") 
+            @RequestParam(required = false) Integer status) {
         try {
             // 这里简化实现，直接返回树形结构
             List<Permission> permissions = permissionService.getAllPermissionsTree();
@@ -81,9 +86,11 @@ public class SystemPermissionController {
     /**
      * 获取权限详情
      */
-    @Operation(summary = "获取权限详情", description = "根据ID获取权限详情")
+    @Operation(summary = "获取权限详情", description = "根据权限ID获取权限的详细信息")
     @GetMapping("/{id}")
-    public ResponseResult<Permission> getPermissionById(@PathVariable Long id) {
+    public ResponseResult<Permission> getPermissionById(
+            @Parameter(description = "权限ID", example = "1", required = true)
+            @PathVariable Long id) {
         try {
             Permission permission = permissionService.getById(id);
             if (permission == null) {

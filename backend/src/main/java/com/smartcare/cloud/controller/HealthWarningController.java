@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.pagehelper.PageInfo;
+import com.smartcare.cloud.annotation.AuditLog;
 import com.smartcare.cloud.dto.HealthWarningPageDTO;
 import com.smartcare.cloud.entity.HealthWarning;
 import com.smartcare.cloud.service.HealthWarningService;
@@ -52,9 +53,11 @@ public class HealthWarningController {
     /**
      * 分页查询健康预警列表
      */
-    @Operation(summary = "分页查询健康预警列表")
+    @Operation(summary = "分页查询健康预警列表", description = "支持按老人ID、预警级别、状态、类型等条件分页查询")
     @PostMapping("/page")
-    public ResponseResult<Map<String, Object>> getPageList(@RequestBody @Valid HealthWarningPageDTO dto) {
+    public ResponseResult<Map<String, Object>> getPageList(
+            @Parameter(description = "分页查询条件，包含pageNum(页码)、pageSize(每页数量)、elderlyId(老人ID)、warningLevel(预警级别)、status(状态)等", required = true)
+            @RequestBody @Valid HealthWarningPageDTO dto) {
         log.info("分页查询健康预警列表，参数：{}", dto);
         try {
             PageInfo<HealthWarning> pageInfo = healthWarningService.getPageList(dto);
@@ -76,10 +79,11 @@ public class HealthWarningController {
     /**
      * 根据ID查询健康预警详情
      */
-    @Operation(summary = "根据ID查询健康预警详情")
+    @Operation(summary = "根据ID查询健康预警详情", description = "获取健康预警的完整信息")
     @GetMapping("/{id}")
     public ResponseResult<HealthWarning> getById(
-            @Parameter(description = "预警ID") @PathVariable @NotNull Long id) {
+            @Parameter(description = "预警ID", required = true, example = "1") 
+            @PathVariable @NotNull Long id) {
         log.info("查询健康预警详情，ID：{}", id);
         try {
             HealthWarning healthWarning = healthWarningService.getById(id);
@@ -96,9 +100,12 @@ public class HealthWarningController {
     /**
      * 新增健康预警
      */
-    @Operation(summary = "新增健康预警")
+    @AuditLog(module = "HEALTH_WARNING", type = "CREATE", description = "新增健康预警: #healthWarning.warningType")
+    @Operation(summary = "新增健康预警", description = "创建新的健康预警记录")
     @PostMapping("/add")
-    public ResponseResult<String> add(@RequestBody @Valid HealthWarning healthWarning) {
+    public ResponseResult<String> add(
+            @Parameter(description = "健康预警信息，包含elderlyId(老人ID)、warningType(预警类型)、warningLevel(预警级别)等必填字段", required = true)
+            @RequestBody @Valid HealthWarning healthWarning) {
         log.info("新增健康预警，参数：{}", healthWarning);
         try {
             boolean result = healthWarningService.save(healthWarning);
@@ -116,7 +123,8 @@ public class HealthWarningController {
     /**
      * 更新健康预警
      */
-    @Operation(summary = "更新健康预警")
+    @AuditLog(module = "HEALTH_WARNING", type = "UPDATE", description = "更新健康预警 ID:#healthWarning.id")
+    @Operation(summary = "更新健康预警", description = "更新健康预警信息，常用于处理预警")
     @PutMapping("/update")
     public ResponseResult<String> update(@RequestBody @Valid HealthWarning healthWarning) {
         log.info("更新健康预警，参数：{}", healthWarning);
@@ -177,6 +185,7 @@ public class HealthWarningController {
     /**
      * 处理健康预警
      */
+    @AuditLog(module = "HEALTH_WARNING", type = "UPDATE", description = "处理健康预警 ID:#id")
     @Operation(summary = "处理健康预警")
     @PutMapping("/{id}/handle")
     public ResponseResult<String> handleWarning(

@@ -13,7 +13,7 @@
         <el-form-item label="姓名">
           <el-input 
             v-model="searchForm.name" 
-            placeholder="请输入姓名" 
+            placeholder="输入姓名自动搜索" 
             clearable 
             style="width: 180px;"
           />
@@ -21,7 +21,7 @@
         <el-form-item label="身份证号">
           <el-input 
             v-model="searchForm.idCard" 
-            placeholder="请输入身份证号" 
+            placeholder="输入身份证号自动搜索" 
             clearable 
             style="width: 200px;"
           />
@@ -29,7 +29,7 @@
         <el-form-item label="健康状态">
           <el-select 
             v-model="searchForm.healthStatus" 
-            placeholder="请选择健康状态" 
+            placeholder="选择健康状态" 
             clearable
             style="width: 150px;"
           >
@@ -42,10 +42,6 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSearch">
-            <i class="el-icon-search"></i>
-            搜索
-          </el-button>
           <el-button @click="handleReset">
             <i class="el-icon-refresh"></i>
             重置
@@ -372,8 +368,9 @@ import {
 import CareStatisticsDialog from '@/components/CareStatisticsDialog.vue'
 import AssessmentReportDialog from '@/components/elderly/AssessmentReportDialog.vue'
 import HealthStatisticsDialog from '@/components/HealthStatisticsDialog.vue'
+import { debounce, createCancelableRequest } from '@/utils/request-optimize'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 export default {
@@ -402,6 +399,9 @@ export default {
     
     // 照护统计弹窗
     const careStatisticsDialogVisible = ref(false)
+
+    // 创建可取消的请求
+    const { request, cancel } = createCancelableRequest()
 
     // 搜索表单
     const searchForm = reactive({
@@ -539,7 +539,10 @@ export default {
           ...searchForm
         }
         console.log('请求参数:', params)
-        const response = await getElderlyPage(params)
+        
+        // 使用可取消的请求
+        const response = await request(getElderlyPage, params)
+        
         console.log('响应数据:', response)
         if (response.code === 200) {
           tableData.value = response.data.records
@@ -549,9 +552,12 @@ export default {
           loadMockData()
         }
       } catch (error) {
-        console.error('请求错误:', error)
-        ElMessage.warning('后端服务连接失败，显示模拟数据进行演示')
-        loadMockData()
+        // 忽略取消错误
+        if (error.name !== 'CanceledError') {
+          console.error('请求错误:', error)
+          ElMessage.warning('后端服务连接失败，显示模拟数据进行演示')
+          loadMockData()
+        }
       } finally {
         loading.value = false
       }
@@ -893,8 +899,38 @@ export default {
       })
     }
 
+    // 创建防抖搜索函数 (500ms延迟)
+    const debouncedSearch = debounce(() => {
+      pagination.current = 1
+      fetchData()
+    }, 500)
+
+    // 监听搜索表单变化，自动触发防抖搜索
+    watch(() => searchForm.name, () => {
+      if (searchForm.name !== undefined) {
+        debouncedSearch()
+      }
+    })
+
+    watch(() => searchForm.idCard, () => {
+      if (searchForm.idCard !== undefined) {
+        debouncedSearch()
+      }
+    })
+
+    watch(() => searchForm.healthStatus, () => {
+      if (searchForm.healthStatus !== undefined) {
+        debouncedSearch()
+      }
+    })
+
     onMounted(() => {
       fetchData()
+    })
+
+    // 组件卸载时取消所有pending请求
+    onBeforeUnmount(() => {
+      cancel('组件已卸载')
     })
 
     return {

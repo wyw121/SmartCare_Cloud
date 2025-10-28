@@ -34,11 +34,13 @@ public class FileUploadController {
     /**
      * 上传老人照片
      */
-    @Operation(summary = "上传老人照片", description = "上传老人个人照片,支持jpg/png/gif格式")
+    @Operation(summary = "上传老人照片", description = "上传老人个人照片,支持jpg/png/gif格式,文件大小限制5MB")
     @PostMapping("/elderly/{elderlyId}/photo")
     public ResponseResult<Map<String, Object>> uploadElderlyPhoto(
-            @Parameter(description = "老人ID") @PathVariable Long elderlyId,
-            @Parameter(description = "照片文件") @RequestParam("file") MultipartFile file) {
+            @Parameter(description = "老人ID", example = "1", required = true) 
+            @PathVariable Long elderlyId,
+            @Parameter(description = "照片文件,支持jpg/png/gif格式,最大5MB", required = true) 
+            @RequestParam("file") MultipartFile file) {
         try {
             String fileUrl = fileStorageService.uploadFile(file, "photo", elderlyId);
             Map<String, Object> result = createFileInfoMap(file, fileUrl);
@@ -52,11 +54,13 @@ public class FileUploadController {
     /**
      * 上传健康报告
      */
-    @Operation(summary = "上传健康报告", description = "上传老人健康报告,支持pdf/doc/docx/xls/xlsx格式")
+    @Operation(summary = "上传健康报告", description = "上传老人健康报告,支持pdf/doc/docx/xls/xlsx格式,文件大小限制20MB")
     @PostMapping("/elderly/{elderlyId}/report")
     public ResponseResult<Map<String, Object>> uploadHealthReport(
-            @Parameter(description = "老人ID") @PathVariable Long elderlyId,
-            @Parameter(description = "报告文件") @RequestParam("file") MultipartFile file) {
+            @Parameter(description = "老人ID", example = "1", required = true) 
+            @PathVariable Long elderlyId,
+            @Parameter(description = "报告文件,支持pdf/doc/docx/xls/xlsx格式,最大20MB", required = true) 
+            @RequestParam("file") MultipartFile file) {
         try {
             String fileUrl = fileStorageService.uploadFile(file, "report", elderlyId);
             Map<String, Object> result = createFileInfoMap(file, fileUrl);
@@ -88,10 +92,13 @@ public class FileUploadController {
     /**
      * 删除文件
      */
-    @Operation(summary = "删除文件", description = "根据文件URL删除文件")
+    @Operation(summary = "删除文件", description = "根据文件URL删除文件,物理删除服务器上的文件")
     @DeleteMapping
     public ResponseResult<Void> deleteFile(
-            @Parameter(description = "文件URL") @RequestParam String fileUrl) {
+            @Parameter(description = "文件URL,完整的文件访问路径", 
+                      example = "http://localhost:8080/uploads/photo/1/avatar.jpg",
+                      required = true) 
+            @RequestParam String fileUrl) {
         try {
             boolean success = fileStorageService.deleteFile(fileUrl);
             if (success) {

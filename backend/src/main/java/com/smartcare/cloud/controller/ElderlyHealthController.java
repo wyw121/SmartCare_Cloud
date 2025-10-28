@@ -46,10 +46,11 @@ public class ElderlyHealthController {
     /**
      * 获取老人健康档案
      */
-    @Operation(summary = "获取老人健康档案")
+    @Operation(summary = "获取老人健康档案", description = "查询指定老人的健康档案信息，包括体检记录、病史、用药记录等")
     @GetMapping("/{id}/health-records")
     public ResponseResult<Object> getElderlyHealthRecords(
-            @Parameter(description = "老人ID") @PathVariable @NotNull Long id) {
+            @Parameter(description = "老人ID", example = "1", required = true) 
+            @PathVariable @NotNull Long id) {
         log.info("获取老人健康档案，ID：{}", id);
         return elderlyService.getElderlyHealthRecords(id);
     }
@@ -57,10 +58,14 @@ public class ElderlyHealthController {
     /**
      * 添加健康记录
      */
-    @Operation(summary = "添加健康记录")
+    @Operation(summary = "添加健康记录", description = "为指定老人添加健康记录，包括体征数据、诊断结果等")
     @PostMapping("/{id}/health-records")
     public ResponseResult<Void> addHealthRecord(
-            @Parameter(description = "老人ID") @PathVariable @NotNull Long id,
+            @Parameter(description = "老人ID", example = "1", required = true) 
+            @PathVariable @NotNull Long id,
+            @Parameter(description = "健康记录信息，包含recordType(记录类型)、recordData(记录数据)、recordTime(记录时间)等", 
+                      required = true,
+                      example = "{\"recordType\": \"体检\", \"bloodPressure\": \"120/80\", \"heartRate\": 75}")
             @RequestBody Object healthRecord) {
         log.info("添加健康记录，老人ID：{}", id);
         return elderlyService.addHealthRecord(id, healthRecord);
@@ -73,10 +78,11 @@ public class ElderlyHealthController {
     /**
      * 获取健康预警信息
      */
-    @Operation(summary = "获取健康预警信息")
+    @Operation(summary = "获取健康预警信息", description = "查询指定老人的所有健康预警信息，按预警级别和时间排序")
     @GetMapping("/{id}/health-warnings")
     public ResponseResult<Object> getHealthWarnings(
-            @Parameter(description = "老人ID") @PathVariable @NotNull Long id) {
+            @Parameter(description = "老人ID", example = "1", required = true) 
+            @PathVariable @NotNull Long id) {
         log.info("获取健康预警信息，ID：{}", id);
         return elderlyService.getHealthWarnings(id);
     }
@@ -84,10 +90,11 @@ public class ElderlyHealthController {
     /**
      * 获取老人预警信息（家属权限）
      */
-    @Operation(summary = "获取老人预警信息", description = "家属查看关联老人的健康预警信息")
+    @Operation(summary = "获取老人预警信息", description = "家属查看关联老人的健康预警信息，包括预警级别、建议措施等")
     @GetMapping("/{elderlyId}/warnings")
     public ResponseResult<java.util.List<Object>> getWarnings(
-            @Parameter(description = "老人ID") @PathVariable Long elderlyId) {
+            @Parameter(description = "老人ID", example = "1", required = true) 
+            @PathVariable Long elderlyId) {
         log.info("获取老人预警信息，老人ID：{}", elderlyId);
         try {
             // 这里可以调用预警服务获取预警信息
@@ -114,9 +121,11 @@ public class ElderlyHealthController {
     /**
      * 标记预警为已读（家属权限）
      */
-    @Operation(summary = "标记预警为已读", description = "家属标记预警信息为已读状态")
+    @Operation(summary = "标记预警为已读", description = "家属标记预警信息为已读状态，批量操作")
     @PostMapping("/warnings/mark-read")
-    public ResponseResult<Void> markWarningsAsRead(@RequestBody java.util.List<Long> warningIds) {
+    public ResponseResult<Void> markWarningsAsRead(
+            @Parameter(description = "预警ID列表", example = "[1, 2, 3]", required = true)
+            @RequestBody java.util.List<Long> warningIds) {
         log.info("标记预警为已读，预警IDs：{}", warningIds);
         try {
             // 这里可以调用预警服务标记为已读

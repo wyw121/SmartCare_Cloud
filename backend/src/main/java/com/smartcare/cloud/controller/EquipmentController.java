@@ -52,14 +52,19 @@ public class EquipmentController {
     /**
      * 分页查询设备列表
      */
-    @Operation(summary = "分页查询设备列表")
+    @Operation(summary = "分页查询设备列表", description = "支持按设备类型、状态、关键词等条件分页查询设备信息")
     @GetMapping("/list")
     public ResponseResult<Page<Equipment>> getEquipmentList(
-            @Parameter(description = "当前页") @RequestParam(defaultValue = "1") int current,
-            @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") int size,
-            @Parameter(description = "设备类型") @RequestParam(required = false) String deviceType,
-            @Parameter(description = "设备状态") @RequestParam(required = false) String status,
-            @Parameter(description = "搜索关键词") @RequestParam(required = false) String keyword) {
+            @Parameter(description = "当前页码", example = "1") 
+            @RequestParam(defaultValue = "1") int current,
+            @Parameter(description = "每页记录数", example = "10") 
+            @RequestParam(defaultValue = "10") int size,
+            @Parameter(description = "设备类型，如：血压计、心率监测仪等") 
+            @RequestParam(required = false) String deviceType,
+            @Parameter(description = "设备状态，如：在用、维修、报废") 
+            @RequestParam(required = false) String status,
+            @Parameter(description = "搜索关键词，可模糊匹配设备名称、编号") 
+            @RequestParam(required = false) String keyword) {
 
         log.info("分页查询设备列表 - 当前页:{}, 每页大小:{}, 设备类型:{}, 状态:{}, 关键词:{}",
                 current, size, deviceType, status, keyword);
@@ -76,9 +81,11 @@ public class EquipmentController {
     /**
      * 获取设备详情
      */
-    @Operation(summary = "获取设备详情")
+    @Operation(summary = "获取设备详情", description = "根据设备ID查询设备的完整信息")
     @GetMapping("/{id}")
-    public ResponseResult<Equipment> getEquipmentDetail(@PathVariable Long id) {
+    public ResponseResult<Equipment> getEquipmentDetail(
+            @Parameter(description = "设备ID", example = "1", required = true)
+            @PathVariable Long id) {
         log.info("获取设备详情 - ID:{}", id);
 
         try {

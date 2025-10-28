@@ -61,7 +61,9 @@ public class FamilyController {
      */
     @Operation(summary = "家属批量获取老人信息", description = "家属根据关联的老人ID列表批量获取老人信息")
     @PostMapping("/elderly/batch")
-    public ResponseResult<List<Elderly>> getElderlyByIds(@RequestBody FamilyElderlyRequest request) {
+    public ResponseResult<List<Elderly>> getElderlyByIds(
+            @Parameter(description = "请求体包含elderlyIds字段（老人ID数组）", required = true, example = "{\"elderlyIds\": [1, 2, 3]}")
+            @RequestBody FamilyElderlyRequest request) {
         log.info("家属批量获取老人信息，老人IDs：{}", request.getElderlyIds());
         try {
             // 暂时使用固定的家属用户ID进行权限验证
@@ -84,10 +86,11 @@ public class FamilyController {
     /**
      * 获取老人最新体征数据（家属权限）
      */
-    @Operation(summary = "获取老人最新体征数据", description = "家属查看关联老人的最新体征数据")
+    @Operation(summary = "获取老人最新体征数据", description = "家属查看关联老人的最新体征数据（血压、心率、体温等）")
     @GetMapping("/elderly/{elderlyId}/vitals/latest")
     public ResponseResult<Object> getLatestVitals(
-            @Parameter(description = "老人ID") @PathVariable Long elderlyId) {
+            @Parameter(description = "老人ID", required = true, example = "1") 
+            @PathVariable Long elderlyId) {
         log.info("获取老人最新体征数据，老人ID：{}", elderlyId);
         try {
             // 权限验证

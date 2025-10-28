@@ -46,10 +46,11 @@ public class ElderlyContactController {
     /**
      * 获取老人紧急联系人
      */
-    @Operation(summary = "获取老人紧急联系人")
+    @Operation(summary = "获取老人紧急联系人", description = "查询指定老人的所有紧急联系人信息")
     @GetMapping("/{id}/emergency-contacts")
     public ResponseResult<Object> getEmergencyContacts(
-            @Parameter(description = "老人ID") @PathVariable @NotNull Long id) {
+            @Parameter(description = "老人ID", example = "1", required = true) 
+            @PathVariable @NotNull Long id) {
         log.info("获取老人紧急联系人，ID：{}", id);
         return elderlyService.getEmergencyContacts(id);
     }
@@ -57,10 +58,12 @@ public class ElderlyContactController {
     /**
      * 更新紧急联系人
      */
-    @Operation(summary = "更新紧急联系人")
+    @Operation(summary = "更新紧急联系人", description = "更新指定老人的紧急联系人信息")
     @PutMapping("/{id}/emergency-contacts")
     public ResponseResult<Void> updateEmergencyContacts(
-            @Parameter(description = "老人ID") @PathVariable @NotNull Long id,
+            @Parameter(description = "老人ID", example = "1", required = true) 
+            @PathVariable @NotNull Long id,
+            @Parameter(description = "紧急联系人信息，包含姓名、关系、电话等字段", required = true)
             @RequestBody Object emergencyContacts) {
         log.info("更新紧急联系人，老人ID：{}", id);
         return elderlyService.updateEmergencyContacts(id, emergencyContacts);
@@ -73,9 +76,13 @@ public class ElderlyContactController {
     /**
      * 发送联系医护请求（家属权限）
      */
-    @Operation(summary = "发送联系医护请求", description = "家属发送联系医护人员的请求")
+    @Operation(summary = "发送联系医护请求", description = "家属发送联系医护人员的请求，系统会通知相关医护人员")
     @PostMapping("/contact/send")
-    public ResponseResult<Void> sendContactRequest(@RequestBody java.util.Map<String, Object> contactData) {
+    public ResponseResult<Void> sendContactRequest(
+            @Parameter(description = "联系请求数据，包含elderlyName(老人姓名)、urgency(紧急程度)、message(留言信息)等", 
+                      required = true,
+                      example = "{\"elderlyName\": \"张三\", \"urgency\": \"high\", \"message\": \"请尽快联系\"}")
+            @RequestBody java.util.Map<String, Object> contactData) {
         log.info("发送联系医护请求，数据：{}", contactData);
         try {
             // 这里可以调用通知服务发送联系请求

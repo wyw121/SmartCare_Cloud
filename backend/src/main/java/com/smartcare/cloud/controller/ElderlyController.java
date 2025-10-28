@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.smartcare.cloud.annotation.AuditLog;
 import com.smartcare.cloud.dto.ElderlyPageDTO;
 import com.smartcare.cloud.entity.Elderly;
 import com.smartcare.cloud.service.ElderlyService;
@@ -63,9 +64,12 @@ public class ElderlyController {
     /**
      * 分页查询老人档案
      */
-    @Operation(summary = "分页查询老人档案")
+    @Operation(summary = "分页查询老人档案", description = "支持按姓名、健康状态、照护等级等条件分页查询老人档案")
     @PostMapping("/page")
-    public ResponseResult<Page<Elderly>> getElderlyPage(@RequestBody ElderlyPageDTO pageDTO) {
+    public ResponseResult<Page<Elderly>> getElderlyPage(
+            @Parameter(description = "分页查询条件，包含pageNum(页码)、pageSize(每页数量)、name(姓名)、healthStatus(健康状态)等", 
+                      required = true)
+            @RequestBody ElderlyPageDTO pageDTO) {
         log.info("分页查询老人档案，参数：{}", pageDTO);
         // 设置默认值
         if (pageDTO.getPageNum() == null || pageDTO.getPageNum() < 1) {
@@ -80,10 +84,11 @@ public class ElderlyController {
     /**
      * 根据ID获取老人档案详情
      */
-    @Operation(summary = "获取老人档案详情")
+    @Operation(summary = "获取老人档案详情", description = "根据老人ID查询完整的档案信息，包括基本信息、健康状态、照护等级等")
     @GetMapping("/{id}")
     public ResponseResult<Elderly> getElderlyById(
-            @Parameter(description = "老人ID") @PathVariable @NotNull Long id) {
+            @Parameter(description = "老人ID，唯一标识", example = "1", required = true) 
+            @PathVariable @NotNull Long id) {
         log.info("获取老人档案详情，ID：{}", id);
         return elderlyService.getElderlyById(id);
     }
@@ -91,9 +96,13 @@ public class ElderlyController {
     /**
      * 新增老人档案
      */
-    @Operation(summary = "新增老人档案")
+    @AuditLog(module = "ELDERLY", type = "CREATE", description = "创建老人档案：#elderly.name")
+    @Operation(summary = "新增老人档案", description = "创建新的老人档案记录，需要提供姓名、性别、年龄等必填字段")
     @PostMapping
-    public ResponseResult<Void> addElderly(@Valid @RequestBody Elderly elderly) {
+    public ResponseResult<Void> addElderly(
+            @Parameter(description = "老人档案信息，包含name(姓名)、gender(性别)、age(年龄)、idCard(身份证号)等字段", 
+                      required = true)
+            @Valid @RequestBody Elderly elderly) {
         log.info("新增老人档案，参数：{}", elderly.getName());
         return elderlyService.addElderly(elderly);
     }
@@ -101,6 +110,7 @@ public class ElderlyController {
     /**
      * 更新老人档案
      */
+    @AuditLog(module = "ELDERLY", type = "UPDATE", description = "更新老人档案：#elderly.name")
     @Operation(summary = "更新老人档案")
     @PutMapping
     public ResponseResult<Void> updateElderly(@RequestBody Elderly elderly) {
@@ -111,10 +121,12 @@ public class ElderlyController {
     /**
      * 删除老人档案
      */
-    @Operation(summary = "删除老人档案")
+    @AuditLog(module = "ELDERLY", type = "DELETE", description = "删除老人档案 ID:#id")
+    @Operation(summary = "删除老人档案", description = "删除指定ID的老人档案记录（软删除）")
     @DeleteMapping("/{id}")
     public ResponseResult<Void> deleteElderly(
-            @Parameter(description = "老人ID") @PathVariable @NotNull Long id) {
+            @Parameter(description = "要删除的老人ID", example = "1", required = true) 
+            @PathVariable @NotNull Long id) {
         log.info("删除老人档案，ID：{}", id);
         return elderlyService.deleteElderly(id);
     }
@@ -122,9 +134,12 @@ public class ElderlyController {
     /**
      * 批量删除老人档案
      */
-    @Operation(summary = "批量删除老人档案")
+    @AuditLog(module = "ELDERLY", type = "DELETE", description = "批量删除老人档案")
+    @Operation(summary = "批量删除老人档案", description = "批量删除多个老人档案记录")
     @DeleteMapping("/batch")
-    public ResponseResult<Void> batchDeleteElderly(@RequestBody List<Long> ids) {
+    public ResponseResult<Void> batchDeleteElderly(
+            @Parameter(description = "要删除的老人ID列表", example = "[1, 2, 3]", required = true)
+            @RequestBody List<Long> ids) {
         log.info("批量删除老人档案，IDs：{}", ids);
         return elderlyService.batchDeleteElderly(ids);
     }

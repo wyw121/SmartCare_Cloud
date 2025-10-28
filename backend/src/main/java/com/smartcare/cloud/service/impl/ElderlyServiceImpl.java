@@ -30,7 +30,6 @@ import com.smartcare.cloud.entity.HealthRecord;
 import com.smartcare.cloud.event.ElderlyUpdatedEvent;
 import com.smartcare.cloud.mapper.ElderlyMapper;
 import com.smartcare.cloud.service.ElderlyService;
-import com.smartcare.cloud.service.facade.ElderlyFacadeService;
 import com.smartcare.cloud.vo.HealthStatisticsVO;
 import com.smartcare.cloud.vo.HealthStatisticsVO.AgeHealthDistribution;
 import com.smartcare.cloud.vo.HealthStatisticsVO.HealthRiskAssessment;
@@ -54,10 +53,6 @@ import com.smartcare.cloud.vo.ResponseResult;
 public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> implements ElderlyService {
 
     private static final Logger log = LoggerFactory.getLogger(ElderlyServiceImpl.class);
-
-    @Lazy
-    @Autowired
-    private ElderlyFacadeService elderlyFacadeService;
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
@@ -293,24 +288,18 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
 
     @Override
     public ResponseResult<Object> getElderlyHealthRecords(Long id) {
-        // 使用Facade封装跨模块调用
-        return elderlyFacadeService.getElderlyHealthRecords(id);
+        // 注意：此方法已废弃，建议Controller直接调用ElderlyFacadeService
+        // 避免循环依赖：ElderlyService <-> ElderlyFacadeService
+        log.warn("getElderlyHealthRecords已废弃，建议使用ElderlyFacadeService");
+        return ResponseResult.error("此方法已废弃，请使用Facade服务");
     }
 
     @Override
     public ResponseResult<Void> addHealthRecord(Long id, Object healthRecord) {
-        try {
-            // 将Object转换为HealthRecord
-            ObjectMapper objectMapper = new ObjectMapper();
-            HealthRecord record = objectMapper.convertValue(healthRecord, HealthRecord.class);
-
-            // 使用Facade封装跨模块调用
-            return elderlyFacadeService.addHealthRecord(id, record);
-
-        } catch (Exception e) {
-            log.error("添加健康记录失败，ID：{}", id, e);
-            return ResponseResult.error("添加健康记录失败");
-        }
+        // 注意：此方法已废弃，建议Controller直接调用ElderlyFacadeService
+        // 避免循环依赖：ElderlyService <-> ElderlyFacadeService
+        log.warn("addHealthRecord已废弃，建议使用ElderlyFacadeService");
+        return ResponseResult.error("此方法已废弃，请使用Facade服务");
     }
 
     @Override
@@ -408,8 +397,10 @@ public class ElderlyServiceImpl extends ServiceImpl<ElderlyMapper, Elderly> impl
 
     @Override
     public ResponseResult<Object> generateAssessmentReport(Long id) {
-        // 使用Facade封装跨模块调用
-        return elderlyFacadeService.generateAssessmentReport(id);
+        // 注意：此方法已废弃，建议Controller直接调用ElderlyFacadeService
+        // 避免循环依赖：ElderlyService <-> ElderlyFacadeService
+        log.warn("generateAssessmentReport已废弃，建议使用ElderlyFacadeService");
+        return ResponseResult.error("此方法已废弃，请使用Facade服务");
     }
 
     @Override

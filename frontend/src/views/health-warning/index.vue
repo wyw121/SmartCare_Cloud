@@ -29,10 +29,10 @@
     <el-card class="search-card" shadow="never">
       <el-form :model="queryForm" inline>
         <el-form-item label="老人姓名">
-          <el-input v-model="queryForm.elderlyName" placeholder="请输入老人姓名" clearable style="width: 200px" />
+          <el-input v-model="queryForm.elderlyName" placeholder="输入姓名自动搜索" clearable style="width: 200px" />
         </el-form-item>
         <el-form-item label="预警类型">
-          <el-select v-model="queryForm.warningType" placeholder="请选择预警类型" clearable style="width: 200px">
+          <el-select v-model="queryForm.warningType" placeholder="选择类型自动筛选" clearable style="width: 200px">
             <el-option label="全部" value="" />
             <el-option label="血压异常" value="血压异常" />
             <el-option label="心率异常" value="心率异常" />
@@ -43,7 +43,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="预警级别">
-          <el-select v-model="queryForm.warningLevel" placeholder="请选择预警级别" clearable style="width: 200px">
+          <el-select v-model="queryForm.warningLevel" placeholder="选择级别自动筛选" clearable style="width: 200px">
             <el-option label="全部" value="" />
             <el-option label="紧急" :value="4" />
             <el-option label="高" :value="3" />
@@ -52,7 +52,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="状态">
-          <el-select v-model="queryForm.status" placeholder="请选择状态" clearable style="width: 200px">
+          <el-select v-model="queryForm.status" placeholder="选择状态自动筛选" clearable style="width: 200px">
             <el-option label="全部" value="" />
             <el-option label="待处理" :value="0" />
             <el-option label="处理中" :value="1" />
@@ -61,9 +61,6 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery">
-            <el-icon><Search /></el-icon> 查询
-          </el-button>
           <el-button @click="handleReset">
             <el-icon><RefreshLeft /></el-icon> 重置
           </el-button>
@@ -207,13 +204,17 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { 
-  Warning, Refresh, Search, RefreshLeft, View, 
+  Warning, Refresh, RefreshLeft, View, 
   CircleCheck, CircleClose
 } from '@element-plus/icons-vue'
 import { getWarningList, getWarningDetail, handleWarning, ignoreWarning } from '@/api/healthWarning'
+import { debounce, throttle, createCancelableRequest } from '@/utils/request-optimize'
+
+// 创建可取消的请求
+const { request, cancel } = createCancelableRequest()
 
 // 统计数据
 const statistics = ref([
@@ -270,15 +271,21 @@ const fetchWarningList = async () => {
       pageNum: pagination.pageNum,
       pageSize: pagination.pageSize
     }
-    const res = await getWarningList(params)
+    
+    // 使用可取消的请求
+    const res = await request(getWarningList, params)
+    
     if (res.code === 200) {
       warningList.value = res.data.list || []
       pagination.total = res.data.total || 0
       updateStatistics()
     }
   } catch (error) {
-    console.error('获取预警列表失败:', error)
-    ElMessage.error('获取预警列表失败')
+    // 忽略取消错误
+    if (error.name !== 'CanceledError') {
+      console.error('获取预警列表失败:', error)
+      ElMessage.error('获取预警列表失败')
+    }
   } finally {
     loading.value = false
   }
@@ -313,9 +320,9 @@ const handleReset = () => {
   handleQuery()
 }
 
-// 刷新
+// 刷新 (使用节流，避免频繁刷新)
 const handleRefresh = () => {
-  fetchWarningList()
+  throttledRefresh()
 }
 
 // 分页改变
@@ -454,8 +461,49 @@ const getStatusText = (status) => {
   return textMap[status] || '未知'
 }
 
+// 创建防抖查询函数 (300ms延迟)
+const debouncedQuery = debounce(() => {
+  pagination.pageNum = 1
+  fetchWarningList()
+}, 300)
+
+// 创建节流刷新函数 (5秒限制，避免频繁刷新)
+const throttledRefresh = throttle(() => {
+  fetchWarningList()
+}, 5000)
+
+// 监听搜索表单变化，自动触发防抖查询
+watch(() => queryForm.elderlyName, () => {
+  if (queryForm.elderlyName !== undefined) {
+    debouncedQuery()
+  }
+})
+
+watch(() => queryForm.warningType, () => {
+  if (queryForm.warningType !== undefined) {
+    debouncedQuery()
+  }
+})
+
+watch(() => queryForm.warningLevel, () => {
+  if (queryForm.warningLevel !== undefined) {
+    debouncedQuery()
+  }
+})
+
+watch(() => queryForm.status, () => {
+  if (queryForm.status !== undefined) {
+    debouncedQuery()
+  }
+})
+
 onMounted(() => {
   fetchWarningList()
+})
+
+// 组件卸载时取消所有pending请求
+onBeforeUnmount(() => {
+  cancel('组件已卸载')
 })
 </script>
 

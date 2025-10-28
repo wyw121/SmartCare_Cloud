@@ -27,6 +27,7 @@ import App from './App.vue'
 import router from './router'
 import './styles/index.scss'
 import { permissionDirective, roleDirective } from './utils/permission'
+import directives from './directives' // 导入自定义指令
 
 // 注册 ECharts 组件
 echarts.use([
@@ -54,6 +55,9 @@ app.provide(THEME_KEY, 'light')
 // 注册权限指令
 app.directive('permission', permissionDirective)
 app.directive('role', roleDirective)
+
+// 注册自定义指令（图片懒加载等）
+app.use(directives)
 
 app.use(createPinia())
 app.use(router)

@@ -87,9 +87,13 @@ public class UserController {
     /**
      * 更新当前用户信息
      */
-    @Operation(summary = "更新当前用户信息", description = "更新当前登录用户的基本信息")
+    @Operation(summary = "更新当前用户信息", description = "更新当前登录用户的基本信息，如真实姓名、邮箱、手机号等")
     @PutMapping("/info")
-    public ResponseResult<Void> updateCurrentUserInfo(@RequestBody UserUpdateDTO updateDTO, HttpServletRequest request) {
+    public ResponseResult<Void> updateCurrentUserInfo(
+            @io.swagger.v3.oas.annotations.Parameter(description = "用户更新信息，包含realName(真实姓名)、email(邮箱)、phone(手机号)等字段", 
+                      required = true,
+                      example = "{\"realName\": \"张三\", \"email\": \"zhangsan@example.com\", \"phone\": \"13800138000\"}")
+            @RequestBody UserUpdateDTO updateDTO, HttpServletRequest request) {
         try {
             // 从请求头中获取token
             String token = request.getHeader("Authorization");
@@ -118,9 +122,13 @@ public class UserController {
     /**
      * 修改当前用户密码
      */
-    @Operation(summary = "修改当前用户密码", description = "修改当前登录用户的密码")
+    @Operation(summary = "修改当前用户密码", description = "修改当前登录用户的密码，需要提供原密码验证")
     @PutMapping("/password")
-    public ResponseResult<Void> changePassword(@RequestBody PasswordChangeDTO passwordChangeDTO, HttpServletRequest request) {
+    public ResponseResult<Void> changePassword(
+            @io.swagger.v3.oas.annotations.Parameter(description = "密码修改信息，包含oldPassword(原密码)、newPassword(新密码)、confirmPassword(确认密码)", 
+                      required = true,
+                      example = "{\"oldPassword\": \"123456\", \"newPassword\": \"newpass123\", \"confirmPassword\": \"newpass123\"}")
+            @RequestBody PasswordChangeDTO passwordChangeDTO, HttpServletRequest request) {
         try {
             // 从请求头中获取token
             String token = request.getHeader("Authorization");
@@ -149,9 +157,11 @@ public class UserController {
     /**
      * 上传用户头像
      */
-    @Operation(summary = "上传用户头像", description = "上传当前登录用户的头像")
+    @Operation(summary = "上传用户头像", description = "上传当前登录用户的头像，支持jpg/png/gif格式，最大5MB")
     @PutMapping("/avatar")
-    public ResponseResult<Map<String, String>> uploadAvatar(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+    public ResponseResult<Map<String, String>> uploadAvatar(
+            @io.swagger.v3.oas.annotations.Parameter(description = "头像文件，支持jpg/png/gif格式，最大5MB", required = true)
+            @RequestParam("file") MultipartFile file, HttpServletRequest request) {
         try {
             // 从请求头中获取token
             String token = request.getHeader("Authorization");
