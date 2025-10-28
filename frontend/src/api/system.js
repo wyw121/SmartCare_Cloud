@@ -99,8 +99,6 @@ export function toggleUserStatus(id, status) {
  * @param {number} id - 用户ID
  */
 export function resetUserPassword(id) {
-  )
-  }
   return request({
     url: `/system/users/${id}/password/reset`,
     method: 'put'
@@ -111,8 +109,6 @@ export function resetUserPassword(id) {
  * 获取角色列表
  */
 export function getRoleList() {
-  )
-  }
   return request({
     url: '/system/roles',
     method: 'get'
@@ -123,8 +119,6 @@ export function getRoleList() {
  * 获取部门列表
  */
 export function getDepartmentList() {
-  )
-  }
   return request({
     url: '/system/departments',
     method: 'get'

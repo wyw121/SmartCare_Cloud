@@ -138,13 +138,12 @@ const routes = [
     redirect: '/health/warning',
     meta: { title: '健康管理', icon: 'monitor' },
     children: [
-      // 健康预警功能待实现
-      // {
-      //   path: 'warning',
-      //   name: 'HealthWarning',
-      //   component: () => import('@/views/health-warning/index.vue'),
-      //   meta: { title: '健康预警', icon: 'warning' }
-      // },
+      {
+        path: 'warning',
+        name: 'HealthWarning',
+        component: () => import('@/views/health-warning/index.vue'),
+        meta: { title: '健康预警', icon: 'warning' }
+      },
       {
         path: 'records',
         name: 'HealthRecords',
