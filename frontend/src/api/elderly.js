@@ -13,6 +13,18 @@ export function getElderlyPage(params) {
 }
 
 /**
+ * 获取老人列表(简化版,不分页)
+ * @param {Object} params 查询参数
+ */
+export function getElderlyList(params) {
+  return request({
+    url: '/elderly/page',
+    method: 'post',
+    data: params
+  })
+}
+
+/**
  * 根据ID获取老人档案详情
  * @param {Number} id 老人ID
  */

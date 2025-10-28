@@ -151,6 +151,23 @@ export function deleteHealthWarningBatch(ids) {
 }
 
 // 处理预警
+export function handleWarning(id, data) {
+  return request({
+    url: `/health-warning/${id}/handle`,
+    method: 'put',
+    data
+  })
+}
+
+// 忽略预警
+export function ignoreWarning(id) {
+  return request({
+    url: `/health-warning/${id}/ignore`,
+    method: 'put'
+  })
+}
+
+// 处理预警
 export function handleHealthWarning(id, data) {
   return request({
     url: `/health-warning/${id}/handle`,
