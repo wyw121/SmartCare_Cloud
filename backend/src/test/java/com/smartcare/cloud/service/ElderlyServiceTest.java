@@ -49,7 +49,7 @@ public class ElderlyServiceTest {
         testElderly.setPhone("13800138000");
         testElderly.setHealthStatus("HEALTHY");
         testElderly.setCareLevel(1);
-        testElderly.setCreatedTime(LocalDateTime.now());
+        testElderly.setCreateTime(LocalDateTime.now());
     }
 
     @Test
