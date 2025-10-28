@@ -1,6 +1,6 @@
 package com.smartcare.cloud.controller;
 
-import com.smartcare.cloud.common.ResponseResult;
+import com.smartcare.cloud.util.ResponseResult;
 import com.smartcare.cloud.service.FileStorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

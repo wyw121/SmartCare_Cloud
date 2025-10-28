@@ -74,6 +74,5 @@ public class Elderly {
     private Integer isDeleted;
 
     @TableField(exist = false)
-    private Integer age; // 计算字段，不存储在数据库中
-}
+    private Integer age; // 计算字段,不存储在数据库中
 }
