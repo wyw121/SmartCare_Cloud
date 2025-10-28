@@ -332,7 +332,7 @@ public class HealthAssessmentServiceImpl implements HealthAssessmentService {
         int totalScore = (bloodPressure.getScore() + heartRate.getScore() + 
                          bodyTemperature.getScore() + bloodGlucose.getScore()) / 4;
         physiological.setTotalScore(totalScore);
-        physiological.setWarningLevel(getScoreLevel(totalScore));
+        physiological.setLevel(getScoreLevel(totalScore));
         
         return physiological;
     }
