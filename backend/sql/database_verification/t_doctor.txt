@@ -1,0 +1,27 @@
+Field	Type	Null	Key	Default	Extra
+id	bigint	NO	PRI	NULL	auto_increment
+organization_id	bigint	YES	MUL	NULL	
+user_id	bigint	YES	MUL	NULL	
+employee_number	varchar(50)	NO	UNI	NULL	
+name	varchar(50)	NO	MUL	NULL	
+gender	varchar(10)	NO		NULL	
+age	int	YES		NULL	
+phone	varchar(20)	NO	MUL	NULL	
+email	varchar(100)	YES		NULL	
+department	varchar(100)	NO	MUL	NULL	
+title	varchar(50)	NO	MUL	NULL	
+specialization	text	YES		NULL	
+work_schedule	json	YES		NULL	
+service_scope	varchar(200)	YES		NULL	
+max_patients	int	YES		50	
+entry_date	date	YES		NULL	
+experience_years	int	YES		NULL	
+hospital_id	bigint	YES		NULL	
+hospital_name	varchar(100)	YES		NULL	
+license_number	varchar(50)	YES		NULL	
+qualification	varchar(100)	YES		NULL	
+status	tinyint(1)	NO	MUL	1	
+avatar	varchar(255)	YES		NULL	
+remark	text	YES		NULL	
+create_time	datetime	NO		CURRENT_TIMESTAMP	DEFAULT_GENERATED
+update_time	datetime	NO		CURRENT_TIMESTAMP	DEFAULT_GENERATED on update CURRENT_TIMESTAMP

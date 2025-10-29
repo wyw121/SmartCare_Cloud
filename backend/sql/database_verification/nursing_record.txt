@@ -1,0 +1,13 @@
+Field	Type	Null	Key	Default	Extra
+id	bigint	NO	PRI	NULL	auto_increment
+elderly_id	bigint	NO	MUL	NULL	
+nurse_id	bigint	NO	MUL	NULL	
+record_date	date	NO	MUL	NULL	
+record_time	time	NO		NULL	
+care_type	varchar(50)	YES	MUL	NULL	
+care_content	text	YES		NULL	
+elderly_status	varchar(200)	YES		NULL	
+abnormal_situation	varchar(500)	YES		NULL	
+images	json	YES		NULL	
+duration_minutes	int	YES		NULL	
+create_time	datetime	YES		CURRENT_TIMESTAMP	DEFAULT_GENERATED

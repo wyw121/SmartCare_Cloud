@@ -1,0 +1,16 @@
+Field	Type	Null	Key	Default	Extra
+id	bigint	NO	PRI	NULL	auto_increment
+user_id	bigint	YES	MUL	NULL	
+username	varchar(50)	YES	MUL	NULL	
+operation_type	varchar(20)	NO	MUL	NULL	
+operation_module	varchar(50)	YES	MUL	NULL	
+operation_desc	varchar(500)	YES		NULL	
+request_method	varchar(10)	YES		NULL	
+request_url	varchar(500)	YES		NULL	
+request_params	text	YES		NULL	
+ip_address	varchar(50)	YES	MUL	NULL	
+user_agent	varchar(500)	YES		NULL	
+operation_status	tinyint	YES		1	
+error_message	text	YES		NULL	
+execution_time	int	YES		NULL	
+created_time	datetime	NO	MUL	CURRENT_TIMESTAMP	DEFAULT_GENERATED

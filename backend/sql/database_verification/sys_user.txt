@@ -1,0 +1,11 @@
+Field	Type	Null	Key	Default	Extra
+id	bigint	NO	PRI	NULL	auto_increment
+username	varchar(50)	NO	UNI	NULL	
+password	varchar(255)	NO		NULL	
+real_name	varchar(50)	NO	MUL	NULL	
+role_code	varchar(50)	NO	MUL	admin	
+organization_id	bigint	YES	MUL	NULL	
+avatar	varchar(200)	YES		NULL	
+status	tinyint(1)	NO	MUL	1	
+created_time	datetime	NO		CURRENT_TIMESTAMP	DEFAULT_GENERATED
+updated_time	datetime	NO		CURRENT_TIMESTAMP	DEFAULT_GENERATED on update CURRENT_TIMESTAMP

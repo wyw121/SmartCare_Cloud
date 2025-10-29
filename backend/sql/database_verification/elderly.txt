@@ -1,0 +1,40 @@
+Field	Type	Null	Key	Default	Extra
+id	bigint	NO	PRI	NULL	auto_increment
+organization_id	bigint	YES	MUL	NULL	
+name	varchar(50)	NO	MUL	NULL	
+gender	tinyint(1)	NO		NULL	
+id_card	varchar(18)	NO	UNI	NULL	
+birth_date	date	YES		NULL	
+age	int	YES		NULL	
+phone	varchar(20)	YES	MUL	NULL	
+address	varchar(255)	YES		NULL	
+emergency_contact_name	varchar(50)	YES		NULL	
+emergency_contact_phone	varchar(20)	YES		NULL	
+health_status	varchar(20)	NO	MUL	HEALTHY	
+care_level	tinyint(1)	NO	MUL	1	
+disability_level	tinyint	YES		NULL	
+mental_status	varchar(50)	YES		NULL	
+payment_method	varchar(50)	YES		NULL	
+insurance_type	varchar(50)	YES		NULL	
+medical_history	text	YES		NULL	
+allergy_history	text	YES		NULL	
+chronic_diseases	json	YES		NULL	
+family_doctor_id	bigint	YES		NULL	
+status	tinyint(1)	NO	MUL	1	
+remarks	text	YES		NULL	
+create_time	datetime	NO	MUL	CURRENT_TIMESTAMP	DEFAULT_GENERATED
+update_time	datetime	NO		CURRENT_TIMESTAMP	DEFAULT_GENERATED on update CURRENT_TIMESTAMP
+create_by	varchar(50)	YES		NULL	
+update_by	varchar(50)	YES		NULL	
+is_deleted	tinyint(1)	NO		0	
+room_number	varchar(20)	YES		NULL	
+admission_date	date	YES	MUL	NULL	
+admission_type	varchar(20)	YES		NULL	
+responsible_doctor_id	bigint	YES	MUL	NULL	
+responsible_nurse_id	bigint	YES	MUL	NULL	
+responsible_social_worker_id	bigint	YES		NULL	
+guardian_name	varchar(50)	YES		NULL	
+guardian_phone	varchar(20)	YES		NULL	
+emergency_contact	varchar(50)	YES		NULL	
+emergency_phone	varchar(20)	YES		NULL	
+family_medical_history	text	YES		NULL	

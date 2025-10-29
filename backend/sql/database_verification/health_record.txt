@@ -1,0 +1,27 @@
+Field	Type	Null	Key	Default	Extra
+id	bigint	NO	PRI	NULL	auto_increment
+elderly_id	bigint	NO	MUL	NULL	
+doctor_id	bigint	YES	MUL	NULL	
+record_type	int	NO	MUL	1	
+record_date	varchar(20)	NO	MUL	NULL	
+title	varchar(100)	YES		NULL	
+doctor_name	varchar(50)	YES		NULL	
+blood_pressure_high	int	YES		NULL	
+blood_pressure_low	int	YES		NULL	
+heart_rate	int	YES		NULL	
+temperature	decimal(4,1)	YES		NULL	
+blood_sugar	decimal(5,2)	YES		NULL	
+weight	decimal(5,2)	YES		NULL	
+symptoms	text	YES		NULL	
+diagnosis	text	YES		NULL	
+treatment	text	YES		NULL	
+medication	text	YES		NULL	
+description	text	YES		NULL	
+risk_level	int	NO	MUL	0	
+is_abnormal	tinyint(1)	NO	MUL	0	
+remarks	text	YES		NULL	
+create_time	datetime	NO		CURRENT_TIMESTAMP	DEFAULT_GENERATED
+update_time	datetime	NO		CURRENT_TIMESTAMP	DEFAULT_GENERATED on update CURRENT_TIMESTAMP
+create_by	varchar(50)	YES		NULL	
+update_by	varchar(50)	YES		NULL	
+is_deleted	tinyint(1)	NO		0	

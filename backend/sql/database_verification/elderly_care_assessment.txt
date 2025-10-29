@@ -1,0 +1,13 @@
+Field	Type	Null	Key	Default	Extra
+id	bigint	NO	PRI	NULL	auto_increment
+elderly_id	bigint	NO	MUL	NULL	
+assessment_date	date	NO	MUL	NULL	
+assessment_type	varchar(20)	NO	MUL	NULL	
+total_score	int	NO		NULL	
+risk_level	varchar(10)	NO	MUL	NULL	
+assessment_result	text	YES		NULL	
+suggestions	text	YES		NULL	
+assessor_name	varchar(50)	YES		NULL	
+create_time	datetime	YES		CURRENT_TIMESTAMP	DEFAULT_GENERATED
+update_time	datetime	YES		CURRENT_TIMESTAMP	DEFAULT_GENERATED on update CURRENT_TIMESTAMP
+is_deleted	tinyint	YES		0	

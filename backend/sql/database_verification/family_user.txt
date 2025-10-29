@@ -1,0 +1,13 @@
+Field	Type	Null	Key	Default	Extra
+id	bigint	NO	PRI	NULL	auto_increment
+sys_user_id	bigint	NO	UNI	NULL	
+real_name	varchar(50)	NO	MUL	NULL	
+gender	tinyint(1)	YES		1	
+phone	varchar(20)	YES	MUL	NULL	
+email	varchar(100)	YES		NULL	
+status	tinyint(1)	YES	MUL	1	
+is_deleted	tinyint(1)	YES		0	
+create_time	datetime	YES	MUL	CURRENT_TIMESTAMP	DEFAULT_GENERATED
+update_time	datetime	YES		CURRENT_TIMESTAMP	DEFAULT_GENERATED on update CURRENT_TIMESTAMP
+create_by	bigint	YES		NULL	
+update_by	bigint	YES		NULL	

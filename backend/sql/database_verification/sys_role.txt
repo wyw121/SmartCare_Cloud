@@ -1,0 +1,10 @@
+Field	Type	Null	Key	Default	Extra
+id	bigint	NO	PRI	NULL	auto_increment
+role_code	varchar(20)	NO	UNI	NULL	
+role_name	varchar(50)	NO		NULL	
+role_desc	varchar(200)	YES		NULL	
+data_scope	varchar(20)	YES		all	
+status	tinyint	YES	MUL	1	
+create_time	datetime	YES		CURRENT_TIMESTAMP	DEFAULT_GENERATED
+update_time	datetime	YES		CURRENT_TIMESTAMP	DEFAULT_GENERATED on update CURRENT_TIMESTAMP
+is_deleted	tinyint	YES		0	

@@ -1,0 +1,12 @@
+Field	Type	Null	Key	Default	Extra
+id	bigint	NO	PRI	NULL	auto_increment
+permission_code	varchar(50)	NO	UNI	NULL	
+permission_name	varchar(50)	NO		NULL	
+permission_type	varchar(20)	YES		NULL	
+parent_id	bigint	YES	MUL	NULL	
+resource_path	varchar(200)	YES		NULL	
+method	varchar(10)	YES		NULL	
+sort_order	int	YES		0	
+status	tinyint	YES	MUL	1	
+create_time	datetime	YES		CURRENT_TIMESTAMP	DEFAULT_GENERATED
+update_time	datetime	YES		CURRENT_TIMESTAMP	DEFAULT_GENERATED on update CURRENT_TIMESTAMP

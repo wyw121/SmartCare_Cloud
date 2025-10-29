@@ -1,0 +1,29 @@
+Field	Type	Null	Key	Default	Extra
+id	bigint	NO	PRI	NULL	auto_increment
+elderly_id	bigint	NO	MUL	NULL	
+elderly_name	varchar(50)	NO		NULL	
+warning_type	varchar(30)	NO	MUL	NULL	
+warning_level	int	NO	MUL	NULL	
+title	varchar(200)	NO		NULL	
+content	text	NO		NULL	
+trigger_data	varchar(255)	YES		NULL	
+data_source	varchar(50)	YES		NULL	
+trigger_time	datetime	NO	MUL	NULL	
+status	int	NO	MUL	0	
+assigned_doctor_id	bigint	YES	MUL	NULL	
+assigned_time	datetime	YES		NULL	
+handle_deadline	datetime	YES	MUL	NULL	
+handler_id	bigint	YES		NULL	
+handler_name	varchar(50)	YES		NULL	
+handle_time	datetime	YES		NULL	
+handle_result	text	YES		NULL	
+handle_evaluation	varchar(500)	YES		NULL	
+handle_remark	text	YES		NULL	
+is_notified_family	tinyint(1)	NO		0	
+is_notified_doctor	tinyint(1)	NO		0	
+remark	varchar(500)	YES		NULL	
+create_time	datetime	NO		CURRENT_TIMESTAMP	DEFAULT_GENERATED
+update_time	datetime	NO		CURRENT_TIMESTAMP	DEFAULT_GENERATED on update CURRENT_TIMESTAMP
+create_by	varchar(50)	YES		NULL	
+update_by	varchar(50)	YES		NULL	
+is_deleted	tinyint(1)	NO		0	

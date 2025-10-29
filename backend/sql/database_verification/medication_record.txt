@@ -1,0 +1,18 @@
+Field	Type	Null	Key	Default	Extra
+id	bigint	NO	PRI	NULL	auto_increment
+elderly_id	bigint	NO	MUL	NULL	
+doctor_id	bigint	YES	MUL	NULL	
+medication_name	varchar(100)	NO	MUL	NULL	
+medication_type	varchar(50)	YES		NULL	
+dosage	varchar(50)	YES		NULL	
+frequency	varchar(50)	YES		NULL	
+start_date	date	NO		NULL	
+end_date	date	YES		NULL	
+administration_route	varchar(50)	YES		NULL	
+purpose	varchar(200)	YES		NULL	
+side_effects	varchar(500)	YES		NULL	
+precautions	varchar(500)	YES		NULL	
+actual_records	json	YES		NULL	
+status	tinyint	YES	MUL	1	
+create_time	datetime	YES		CURRENT_TIMESTAMP	DEFAULT_GENERATED
+update_time	datetime	YES		CURRENT_TIMESTAMP	DEFAULT_GENERATED on update CURRENT_TIMESTAMP

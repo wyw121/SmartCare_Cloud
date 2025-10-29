@@ -1,0 +1,18 @@
+Field	Type	Null	Key	Default	Extra
+id	bigint	NO	PRI	NULL	auto_increment
+user_id	bigint	NO	UNI	NULL	
+organization_id	bigint	YES	MUL	NULL	
+employee_number	varchar(50)	NO	UNI	NULL	
+name	varchar(50)	NO	MUL	NULL	
+gender	tinyint	YES		NULL	
+phone	varchar(20)	YES		NULL	
+id_card	varchar(18)	YES		NULL	
+entry_date	date	YES		NULL	
+certificate_type	varchar(50)	YES		NULL	
+certificate_number	varchar(50)	YES		NULL	
+work_area	varchar(100)	YES	MUL	NULL	
+max_care_count	int	YES		5	
+status	tinyint	YES	MUL	1	
+create_time	datetime	YES		CURRENT_TIMESTAMP	DEFAULT_GENERATED
+update_time	datetime	YES		CURRENT_TIMESTAMP	DEFAULT_GENERATED on update CURRENT_TIMESTAMP
+is_deleted	tinyint	YES		0	

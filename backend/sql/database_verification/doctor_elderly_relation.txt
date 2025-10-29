@@ -1,0 +1,14 @@
+Field	Type	Null	Key	Default	Extra
+id	bigint	NO	PRI	NULL	auto_increment
+doctor_id	bigint	NO	MUL	NULL	
+elderly_id	bigint	NO	MUL	NULL	
+relationship_type	varchar(20)	NO	MUL	primary	
+start_date	date	NO		NULL	
+end_date	date	YES		NULL	
+status	tinyint	YES	MUL	1	
+remark	varchar(500)	YES		NULL	
+create_time	datetime	YES		CURRENT_TIMESTAMP	DEFAULT_GENERATED
+update_time	datetime	YES		CURRENT_TIMESTAMP	DEFAULT_GENERATED on update CURRENT_TIMESTAMP
+create_by	bigint	YES		NULL	
+update_by	bigint	YES		NULL	
+is_deleted	tinyint	YES		0	
