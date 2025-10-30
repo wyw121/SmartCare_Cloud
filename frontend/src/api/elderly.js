@@ -381,7 +381,7 @@ export function markWarningsAsRead(warningIds) {
 }
 
 /**
- * 发送联系医护请求（家属权限）
+ * 发送联系医护请求(家属权限)
  * @param {Object} contactData 联系请求数据
  */
 export function sendContactRequest(contactData) {
@@ -389,5 +389,19 @@ export function sendContactRequest(contactData) {
     url: '/elderly/contact/send',
     method: 'post',
     data: contactData
+  })
+}
+
+/**
+ * 获取我负责的老人列表(医生/护工专用)
+ * 根据当前用户角色自动过滤数据
+ * @param {Number} current 页码
+ * @param {Number} size 每页数量
+ */
+export function getMyPatients(current = 1, size = 20) {
+  return request({
+    url: '/elderly/my-patients',
+    method: 'get',
+    params: { current, size }
   })
 }

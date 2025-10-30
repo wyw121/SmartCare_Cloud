@@ -81,6 +81,15 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 处理业务异常
+     */
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ResponseResult<String>> handleBusinessException(BusinessException ex) {
+        ResponseResult<String> result = ResponseResult.error(ex.getMessage());
+        return ResponseEntity.status(ex.getCode() != null ? ex.getCode() : 500).body(result);
+    }
+
+    /**
      * 处理一般异常
      */
     @ExceptionHandler(Exception.class)

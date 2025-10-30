@@ -315,7 +315,7 @@ public class FamilyPermissionServiceImpl implements FamilyPermissionService {
         // 获取关联关系信息
         FamilyElderlyRelation relation = familyElderlyRelationMapper.selectByFamilyIdAndElderlyId(familyId, elderly.getId());
         if (relation != null) {
-            dto.setRelationship(relation.getRelationship());
+            dto.setRelationship(relation.getRelationshipName());
             dto.setAccessLevel(relation.getAccessLevel());
         }
 

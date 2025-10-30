@@ -45,7 +45,7 @@
 
   <sql id="Base_Column_List"> id, username, password, real_name, email, phone, gender,
     role_code, role_name, doctor_title, doctor_speciality, family_relationship, status,
-    create_time, update_time, is_deleted </sql>
+    created_time AS create_time, updated_time AS update_time, is_deleted </sql>
 
   <!-- 根据用户名查询用户 -->
   <select id="selectByUsername" resultMap="BaseResultMap"> SELECT <include refid="Base_Column_List" />

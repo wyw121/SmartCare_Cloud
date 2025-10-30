@@ -1,7 +1,7 @@
 import Layout from '@/layout/index.vue'
+import { canAccessRoute as canAccessRouteUtil } from '@/router/role-config'
 import { useTagsViewStore } from '@/store/tagsView'
 import { useUserStore } from '@/store/user'
-import { canAccessRoute } from '@/utils/permission'
 import { createRouter, createWebHistory } from 'vue-router'
 
 /**
@@ -91,6 +91,17 @@ const routes = [
         meta: { title: '老人详情', activeMenu: '/elderly/list', hidden: true }
       },
       {
+        path: 'family-detail/:id(\\d+)',
+        name: 'FamilyElderlyDetail',
+        component: () => import('@/views/family/ElderlyDetail.vue'),
+        meta: { 
+          title: '长辈详情', 
+          activeMenu: '/elderly/family-view', 
+          hidden: true,
+          roles: ['family']
+        }
+      },
+      {
         path: 'profile/:id(\\d+)',
         name: 'ElderlyProfile',
         component: () => import('@/views/elderly/profile.vue'),
@@ -127,9 +138,43 @@ const routes = [
         path: 'list',
         name: 'DoctorList',
         component: () => import('@/views/doctor/list.vue'),
-        meta: { title: '医生列表', icon: 'list' }
+        meta: { title: '医生列表', icon: 'list', roles: ['business_admin'] }
+      },
+      {
+        path: 'workbench',
+        name: 'DoctorWorkbench',
+        component: () => import('@/views/doctor/Workbench.vue'),
+        meta: { title: '医生工作台', icon: 'briefcase', roles: ['doctor'] }
       }
       // 模块化医生管理已归档至 __archive__/modular-pages/
+    ]
+  },
+  {
+    path: '/nurse',
+    component: Layout,
+    redirect: '/nurse/workbench',
+    meta: { title: '护工管理', icon: 'user', roles: ['nurse', 'business_admin'] },
+    children: [
+      {
+        path: 'workbench',
+        name: 'NurseWorkbench',
+        component: () => import('@/views/nurse/Workbench.vue'),
+        meta: { title: '护工工作台', icon: 'briefcase', roles: ['nurse'] }
+      }
+    ]
+  },
+  {
+    path: '/social-worker',
+    component: Layout,
+    redirect: '/social-worker/workbench',
+    meta: { title: '社工管理', icon: 'user', roles: ['social_worker', 'business_admin'] },
+    children: [
+      {
+        path: 'workbench',
+        name: 'SocialWorkerWorkbench',
+        component: () => import('@/views/social-worker/Workbench.vue'),
+        meta: { title: '社工工作台', icon: 'briefcase', roles: ['social_worker'] }
+      }
     ]
   },
   {
@@ -155,6 +200,48 @@ const routes = [
         name: 'HealthAssessment',
         component: () => import('@/views/health/assessment.vue'),
         meta: { title: '评估报告', icon: 'data-analysis' }
+      }
+    ]
+  },
+  {
+    path: '/nursing',
+    component: Layout,
+    redirect: '/nursing/record',
+    meta: { title: '护理管理', icon: 'document', roles: ['nurse', 'doctor', 'business_admin', 'family'] },
+    children: [
+      {
+        path: 'record',
+        name: 'NursingRecord',
+        component: () => import('@/views/nursing/NursingRecord.vue'),
+        meta: { title: '护理记录', icon: 'document' }
+      }
+    ]
+  },
+  {
+    path: '/medication',
+    component: Layout,
+    redirect: '/medication/record',
+    meta: { title: '用药管理', icon: 'medicine', roles: ['doctor', 'nurse', 'business_admin', 'family'] },
+    children: [
+      {
+        path: 'record',
+        name: 'MedicationRecord',
+        component: () => import('@/views/medication/MedicationRecord.vue'),
+        meta: { title: '用药记录', icon: 'document' }
+      }
+    ]
+  },
+  {
+    path: '/patrol',
+    component: Layout,
+    redirect: '/patrol/record',
+    meta: { title: '巡诊管理', icon: 'document', roles: ['doctor', 'business_admin'] },
+    children: [
+      {
+        path: 'record',
+        name: 'PatrolRecord',
+        component: () => import('@/views/patrol/PatrolRecord.vue'),
+        meta: { title: '巡诊记录', icon: 'document' }
       }
     ]
   },
@@ -253,6 +340,13 @@ const routes = [
   //   component: () => import('@/views/__tests__/user-switcher.vue'),
   //   meta: { title: '用户切换（测试）', hidden: true }
   // },
+  // 错误页面
+  {
+    path: '/error/403',
+    name: 'Error403',
+    component: () => import('@/views/error/403.vue'),
+    meta: { title: '权限不足', hidden: true }
+  },
   // 404页面必须放在最后
   {
     path: '/:pathMatch(.*)*',
@@ -310,19 +404,23 @@ router.beforeEach((to, from, next) => {
     return
   }
   
-  // 家属用户访问管理页面时重定向到专用页面
+  // ==================== 角色路由权限检查 ====================
+  // 使用新的角色权限配置
+  const routeName = to.name
+  
+  // 家属用户特殊重定向规则
   if (userRole === 'family') {
-    console.log('👨‍👩‍👧‍👦 [路由守卫] 家属用户权限检查', { toPath: to.path })
+    console.log('👨‍👩‍👧‍👦 [路由守卫] 家属用户权限检查', { toPath: to.path, toName: routeName })
     
     // 家属访问老人档案列表时，重定向到家属专用页面
-    if (to.path === '/elderly/list' || to.name === 'ElderlyList') {
+    if (to.path === '/elderly/list' || routeName === 'ElderlyList') {
       console.log('🔄 [路由守卫] 家属重定向到专用页面')
       next('/elderly/family-view')
       return
     }
     
     // 家属访问其他管理页面时，重定向到首页
-    const restrictedPaths = ['/doctor', '/system', '/equipment', '/reports']
+    const restrictedPaths = ['/doctor', '/system', '/equipment', '/reports/analysis']
     if (restrictedPaths.some(path => to.path.startsWith(path))) {
       console.log('🚫 [路由守卫] 家属访问受限页面，重定向到首页')
       next('/dashboard')
@@ -330,9 +428,24 @@ router.beforeEach((to, from, next) => {
     }
   }
   
-  // 检查页面访问权限
-  const routeName = to.name
-  if (routeName && !canAccessRoute(routeName, userRole)) {
+  // 医生用户访问工作台重定向
+  if (userRole === 'doctor' && to.path === '/dashboard') {
+    console.log('🩺 [路由守卫] 医生访问首页，建议跳转到工作台')
+    // 可选: 自动重定向到医生工作台
+    // next('/doctor/workbench')
+    // return
+  }
+  
+  // 护工用户访问工作台重定向
+  if (userRole === 'nurse' && to.path === '/dashboard') {
+    console.log('👩‍⚕️ [路由守卫] 护工访问首页，建议跳转到工作台')
+    // 可选: 自动重定向到护工工作台
+    // next('/nurse/workbench')
+    // return
+  }
+  
+  // 检查页面访问权限 - 使用新的权限配置
+  if (routeName && !canAccessRouteUtil(routeName, userRole)) {
     console.log('🚫 [路由守卫] 权限检查失败，跳转到首页', { routeName, userRole })
     next('/dashboard')
     return

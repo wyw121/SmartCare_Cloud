@@ -1,6 +1,7 @@
 import { useUserStore } from '@/store'
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import router from '@/router'
 
 // 创建axios实例
 const service = axios.create({
@@ -92,7 +93,22 @@ service.interceptors.response.use(
           })
           break
         case 403:
-          ElMessage.error('权限不足，拒绝访问')
+          // 权限不足，显示详细错误并跳转到403错误页
+          const errorMsg = data?.message || '权限不足，拒绝访问'
+          ElMessageBox.alert(
+            errorMsg,
+            '权限不足',
+            {
+              confirmButtonText: '返回首页',
+              type: 'error',
+              callback: () => {
+                // 跳转到403错误页或首页
+                if (router.currentRoute.value.path !== '/dashboard') {
+                  router.push('/dashboard')
+                }
+              }
+            }
+          )
           break
         case 404:
           ElMessage.error('请求的资源不存在')

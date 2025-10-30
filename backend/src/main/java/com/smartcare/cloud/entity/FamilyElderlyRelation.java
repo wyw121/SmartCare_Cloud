@@ -26,20 +26,36 @@ public class FamilyElderlyRelation {
     private Long id;
 
     @Schema(description = "家属用户ID")
-    @TableField("family_id")
+    @TableField("family_user_id")
     private Long familyId;
 
     @Schema(description = "老人ID")
     @TableField("elderly_id")
     private Long elderlyId;
 
-    @Schema(description = "关系类型：儿子、女儿、儿媳、女婿等")
-    @TableField("relationship")
-    private String relationship;
+    @Schema(description = "关系类型：child-子女,spouse-配偶,parent-父母,sibling-兄弟姐妹,grandchild-孙辈,other-其他")
+    @TableField("relationship_type")
+    private String relationshipType;
+    
+    @Schema(description = "关系名称：儿子、女儿、儿媳、女婿、孙子、孙女等")
+    @TableField("relationship_name")
+    private String relationshipName;
 
-    @Schema(description = "访问权限级别：basic-基础信息, health-健康概要, emergency-紧急联系")
-    @TableField("access_level")
+    @Schema(description = "访问权限级别(已废弃,使用authorized_operations替代)")
+    @TableField(exist = false)
     private String accessLevel;
+    
+    @Schema(description = "是否为主要联系人：0-否, 1-是")
+    @TableField("is_primary")
+    private Integer isPrimary;
+    
+    @Schema(description = "是否为紧急联系人：0-否, 1-是")
+    @TableField("is_emergency")
+    private Integer isEmergency;
+    
+    @Schema(description = "联系优先级：1-最高,5-最低")
+    @TableField("contact_priority")
+    private Integer contactPriority;
 
     @Schema(description = "关联状态：0-无效, 1-有效")
     @TableField("status")
@@ -52,14 +68,6 @@ public class FamilyElderlyRelation {
     @Schema(description = "关联结束时间")
     @TableField("end_date")
     private LocalDateTime endDate;
-
-    @Schema(description = "是否为主要联系人：0-否, 1-是")
-    @TableField("is_primary_contact")
-    private Integer isPrimaryContact;
-
-    @Schema(description = "备注")
-    @TableField("remark")
-    private String remark;
 
     @Schema(description = "创建时间")
     @TableField(value = "create_time", fill = FieldFill.INSERT)
@@ -107,12 +115,20 @@ public class FamilyElderlyRelation {
         this.elderlyId = elderlyId;
     }
 
-    public String getRelationship() {
-        return relationship;
+    public String getRelationshipType() {
+        return relationshipType;
     }
 
-    public void setRelationship(String relationship) {
-        this.relationship = relationship;
+    public void setRelationshipType(String relationshipType) {
+        this.relationshipType = relationshipType;
+    }
+
+    public String getRelationshipName() {
+        return relationshipName;
+    }
+
+    public void setRelationshipName(String relationshipName) {
+        this.relationshipName = relationshipName;
     }
 
     public String getAccessLevel() {
@@ -121,6 +137,30 @@ public class FamilyElderlyRelation {
 
     public void setAccessLevel(String accessLevel) {
         this.accessLevel = accessLevel;
+    }
+
+    public Integer getIsPrimary() {
+        return isPrimary;
+    }
+
+    public void setIsPrimary(Integer isPrimary) {
+        this.isPrimary = isPrimary;
+    }
+
+    public Integer getIsEmergency() {
+        return isEmergency;
+    }
+
+    public void setIsEmergency(Integer isEmergency) {
+        this.isEmergency = isEmergency;
+    }
+
+    public Integer getContactPriority() {
+        return contactPriority;
+    }
+
+    public void setContactPriority(Integer contactPriority) {
+        this.contactPriority = contactPriority;
     }
 
     public Integer getStatus() {
@@ -145,22 +185,6 @@ public class FamilyElderlyRelation {
 
     public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
-    }
-
-    public Integer getIsPrimaryContact() {
-        return isPrimaryContact;
-    }
-
-    public void setIsPrimaryContact(Integer isPrimaryContact) {
-        this.isPrimaryContact = isPrimaryContact;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
     }
 
     public LocalDateTime getCreateTime() {

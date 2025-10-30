@@ -53,23 +53,23 @@
     <!-- 操作栏 -->
     <el-card class="toolbar-card">
       <div class="toolbar">
-        <el-button type="primary" @click="handleAdd">
+        <el-button v-permission="'elderly:add'" type="primary" @click="handleAdd">
           <i class="el-icon-plus"></i>
           新增老人档案
         </el-button>
-        <el-button type="danger" :disabled="selectedRows.length === 0" @click="handleBatchDelete">
+        <el-button v-permission="'elderly:delete'" type="danger" :disabled="selectedRows.length === 0" @click="handleBatchDelete">
           <i class="el-icon-delete"></i>
           批量删除
         </el-button>
-        <el-button type="success" @click="handleExport">
+        <el-button v-permission="'elderly:export'" type="success" @click="handleExport">
           <i class="el-icon-download"></i>
           导出数据
         </el-button>
-        <el-button type="info" @click="handleHealthStatistics">
+        <el-button v-permission="'elderly:export'" type="info" @click="handleHealthStatistics">
           <i class="el-icon-data-analysis"></i>
           健康统计
         </el-button>
-        <el-button type="primary" @click="handleCareLevelStats">
+        <el-button v-permission="'elderly:export'" type="primary" @click="handleCareLevelStats">
           <i class="el-icon-pie-chart"></i>
           照护统计
         </el-button>
@@ -129,16 +129,16 @@
               <el-tooltip content="查看详情" placement="top">
                 <el-button text type="primary" size="small" @click="handleView(scope.row)">查看</el-button>
               </el-tooltip>
-              <el-tooltip content="编辑信息" placement="top">
+              <el-tooltip v-permission="'elderly:edit'" content="编辑信息" placement="top">
                 <el-button text type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
               </el-tooltip>
-              <el-tooltip content="健康档案管理" placement="top">
+              <el-tooltip v-permission-any="['health:view', 'health:add']" content="健康档案管理" placement="top">
                 <el-button text type="success" size="small" @click="handleHealthRecords(scope.row)">健康</el-button>
               </el-tooltip>
-              <el-tooltip content="评估报告查看" placement="top">
+              <el-tooltip v-permission-any="['assessment:view', 'assessment:add']" content="评估报告查看" placement="top">
                 <el-button text type="warning" size="small" @click="handleAssessmentReport(scope.row)">评估</el-button>
               </el-tooltip>
-              <el-tooltip content="删除老人档案" placement="top">
+              <el-tooltip v-permission="'elderly:delete'" content="删除老人档案" placement="top">
                 <el-button text type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
               </el-tooltip>
             </div>

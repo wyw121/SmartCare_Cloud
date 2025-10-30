@@ -136,8 +136,8 @@ export const useUserStore = defineStore('user', {
     isLoggedIn: (state) => !!state.token,
     userName: (state) => state.userInfo.name || '',
     userAvatar: (state) => state.userInfo.avatar || '',
-    userRole: (state) => state.userInfo.role || 'user',
-    userRoleText: (state) => state.userInfo.roleText || '用户',
+    userRole: (state) => state.userInfo.roleCode || state.userInfo.role || 'user',
+    userRoleText: (state) => state.userInfo.roleName || state.userInfo.roleText || '用户',
     userPermissions: (state) => state.userInfo.permissions || [],
     userDepartment: (state) => state.userInfo.department || '',
     userPhone: (state) => state.userInfo.phone || '',
@@ -151,17 +151,27 @@ export const useUserStore = defineStore('user', {
     
     // 角色检查方法
     hasRole: (state) => (role) => {
-      return state.userInfo.role === role
+      const userRole = state.userInfo.roleCode || state.userInfo.role
+      return userRole === role
     },
     
     // 检查是否为管理员
-    isAdmin: (state) => state.userInfo.role === 'admin',
+    isAdmin: (state) => {
+      const userRole = state.userInfo.roleCode || state.userInfo.role
+      return userRole === 'admin' || userRole === 'system_admin' || userRole === 'business_admin'
+    },
     
     // 检查是否为医生
-    isDoctor: (state) => state.userInfo.role === 'doctor',
+    isDoctor: (state) => {
+      const userRole = state.userInfo.roleCode || state.userInfo.role
+      return userRole === 'doctor'
+    },
     
     // 检查是否为家属
-    isFamily: (state) => state.userInfo.role === 'family'
+    isFamily: (state) => {
+      const userRole = state.userInfo.roleCode || state.userInfo.role
+      return userRole === 'family'
+    }
   },
 
   actions: {

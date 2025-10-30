@@ -257,21 +257,32 @@ const femaleNames = ['芳', '秀', '丽', '静', '敏', '娟', '兰', '红', '�
 const healthStatuses = ['good', 'fair', 'poor'];
 const careLevels = [1, 2, 3];
 
+// 生成身份证号
+function generateIdCard(birthDate, index) {
+  const date = new Date(birthDate);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const seq = String(index).padStart(4, '0');
+  return `110101${year}${month}${day}${seq}`;
+}
+
 console.log('TRUNCATE TABLE elderly;');
-console.log('INSERT INTO elderly (id, organization_id, name, gender, birth_date, phone, address, room_number, admission_date, admission_type, health_status, care_level, disability_level, payment_method, responsible_doctor_id, responsible_nurse_id, status) VALUES');
+console.log('INSERT INTO elderly (id, organization_id, name, gender, birth_date, id_card, phone, address, room_number, admission_date, admission_type, health_status, care_level, disability_level, payment_method, responsible_doctor_id, responsible_nurse_id, status) VALUES');
 
 for (let i = 0; i < CONFIG.elderly; i++) {
   const isLast = i === CONFIG.elderly - 1;
   const gender = randomChoice([0, 1]);
   const name = randomChoice(surnames) + (gender === 1 ? randomChoice(maleNames) : randomChoice(femaleNames));
   const birthDate = formatDate(randomDate(new Date(1930, 0, 1), new Date(1960, 11, 31)));
+  const idCard = generateIdCard(birthDate, i + 1);
   const admissionDate = formatDate(randomDate(new Date(2022, 0, 1), new Date(2024, 9, 1)));
   const roomNumber = `${randomInt(1, 5)}${String(randomInt(1, 20)).padStart(2, '0')}`;
   const doctorId = randomInt(1, doctorUsers.length);
   const nurseId = randomInt(1, nurseUsers.length);
   const orgId = randomChoice(organizations).id;
   
-  console.log(`(${i + 1}, ${orgId}, ${escape(name)}, ${gender}, ${escape(birthDate)}, '138001380${String(i).padStart(2, '0')}', '北京市朝阳区XX街道XX号', ${escape(roomNumber)}, ${escape(admissionDate)}, 'long_term', ${escape(randomChoice(healthStatuses))}, ${randomChoice(careLevels)}, ${randomChoice(careLevels)}, ${escape(randomChoice(['self', 'insurance', 'government']))}, ${doctorId}, ${nurseId}, 1)${isLast ? ';' : ','}`);
+  console.log(`(${i + 1}, ${orgId}, ${escape(name)}, ${gender}, ${escape(birthDate)}, ${escape(idCard)}, '138001380${String(i).padStart(2, '0')}', '北京市朝阳区XX街道XX号', ${escape(roomNumber)}, ${escape(admissionDate)}, 'long_term', ${escape(randomChoice(healthStatuses))}, ${randomChoice(careLevels)}, ${randomChoice(careLevels)}, ${escape(randomChoice(['self', 'insurance', 'government']))}, ${doctorId}, ${nurseId}, 1)${isLast ? ';' : ','}`);
 }
 console.log('');
 
@@ -314,10 +325,11 @@ console.log('-- 9. 家属-老人关联数据');
 console.log('-- =====================================================');
 
 const relationships = ['儿子', '女儿', '儿媳', '女婿', '孙子', '孙女'];
+const relationshipTypes = ['child', 'child', 'child', 'child', 'grandchild', 'grandchild'];
 const accessLevels = ['basic', 'health', 'full'];
 
 console.log('TRUNCATE TABLE family_elderly_relation;');
-console.log('INSERT INTO family_elderly_relation (family_id, elderly_id, relationship, access_level, is_primary_contact, status) VALUES');
+console.log('INSERT INTO family_elderly_relation (family_user_id, elderly_id, relationship_type, relationship_name, is_primary, is_emergency, contact_priority, authorized_operations, status) VALUES');
 
 const familyUsers = users.filter(u => u.roleCode === 'family');
 for (let i = 0; i < CONFIG.familyMembers; i++) {
@@ -325,8 +337,18 @@ for (let i = 0; i < CONFIG.familyMembers; i++) {
   const familyUserId = familyUsers[i].id;
   const elderlyId = (i % CONFIG.elderly) + 1; // 每个家属关联一个老人
   const isPrimary = i < CONFIG.elderly ? 1 : 0; // 前100个设为主要联系人
+  const isEmergency = isPrimary; // 主要联系人同时是紧急联系人
+  const priority = isPrimary ? 1 : randomInt(2, 5);
+  const relationIdx = i % relationships.length;
+  const accessLevel = randomChoice(accessLevels);
+  const operations = JSON.stringify({
+    view_basic: true,
+    view_health: accessLevel === 'health' || accessLevel === 'full',
+    view_records: accessLevel === 'full',
+    receive_alerts: isPrimary === 1
+  });
   
-  console.log(`(${familyUserId}, ${elderlyId}, ${escape(randomChoice(relationships))}, ${escape(randomChoice(accessLevels))}, ${isPrimary}, 1)${isLast ? ';' : ','}`);
+  console.log(`(${familyUserId}, ${elderlyId}, ${escape(relationshipTypes[relationIdx])}, ${escape(relationships[relationIdx])}, ${isPrimary}, ${isEmergency}, ${priority}, '${operations}', 1)${isLast ? ';' : ','}`);
 }
 console.log('');
 

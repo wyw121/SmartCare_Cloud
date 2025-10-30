@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import { getMenuByRole } from '@/router/role-config'
 import { useAppStore } from '@/store/app'
 import { useUserStore } from '@/store/user'
 import { computed } from 'vue'
@@ -55,108 +56,20 @@ export default {
       return path
     })
 
-    // 基于角色过滤路由
+    // 基于角色过滤路由 - 使用新的菜单配置
     const routes = computed(() => {
-      const userRole = userStore.userRole
+      const currentRole = userStore.userRole
       
       // 调试输出
-      console.log('🔍 侧边栏调试 - 当前用户角色:', userRole)
-      console.log('🔍 侧边栏调试 - 用户信息:', userStore.userInfo)
+      console.log('🔍 [侧边栏] 当前用户角色:', currentRole)
+      console.log('🔍 [侧边栏] 用户信息:', userStore.userInfo)
       
-      // 预定义的菜单结构 - 基于实际路由配置
-      let menuItems = []
+      // 使用新的角色菜单配置获取菜单
+      const menuItems = getMenuByRole(currentRole)
       
-      if (userRole === 'family') {
-        // 家属专用菜单
-        menuItems = [
-          {
-            path: '/dashboard',
-            name: 'dashboard',
-            meta: { title: '关爱首页', icon: 'HomeFilled' },
-            roles: ['family']
-          },
-          {
-            path: '/elderly/family-view',
-            name: 'elderly',
-            meta: { title: '我的关联长辈', icon: 'User' },
-            roles: ['family']
-          },
-          {
-            path: '/health/warning',
-            name: 'health-warning',
-            meta: { title: '健康提醒', icon: 'Warning' },
-            roles: ['family']
-          },
-          {
-            path: '/profile',
-            name: 'profile',
-            meta: { title: '个人中心', icon: 'Avatar' },
-            roles: ['family']
-          }
-        ]
-      } else {
-        // 管理员和医生的完整菜单
-        menuItems = [
-          {
-            path: '/dashboard',
-            name: 'dashboard',
-            meta: { title: '首页仪表板', icon: 'DataBoard' },
-            roles: ['admin', 'doctor']
-          },
-          {
-            path: '/elderly',
-            name: 'elderly',
-            meta: { title: '老人档案管理', icon: 'User' },
-            roles: ['admin', 'doctor']
-          },
-          {
-            path: '/doctor',
-            name: 'doctor',
-            meta: { title: '医生管理', icon: 'Avatar' },
-            roles: ['admin', 'doctor']
-          },
-          {
-            path: '/health/warning',
-            name: 'health-warning',
-            meta: { title: '健康预警', icon: 'Warning' },
-            roles: ['admin', 'doctor']
-          },
-          {
-            path: '/equipment',
-            name: 'equipment',
-            meta: { title: '设备管理', icon: 'Monitor' },
-            roles: ['admin', 'doctor']
-          },
-          {
-            path: '/reports',
-            name: 'reports',
-            meta: { title: '报表统计', icon: 'DataAnalysis' },
-            roles: ['admin', 'doctor']
-          },
-          {
-            path: '/system',
-            name: 'system',
-            meta: { title: '系统管理', icon: 'Setting' },
-            roles: ['admin'] // 仅系统管理员可见
-          }
-        ]
-      }
+      console.log('🔍 [侧边栏] 菜单配置:', menuItems)
       
-      // 根据角色过滤菜单
-      const filteredMenus = menuItems.filter(menu => {
-        // 如果菜单项定义了roles属性，则检查当前用户角色是否在允许列表中
-        if (menu.roles && Array.isArray(menu.roles)) {
-          return menu.roles.includes(userRole)
-        }
-        
-        // 如果没有定义roles，默认允许访问
-        return true
-      })
-      
-      console.log('🔍 侧边栏调试 - 过滤后的菜单:', filteredMenus)
-      console.log('🔍 侧边栏调试 - 用户角色:', userRole)
-      
-      return filteredMenus
+      return menuItems
     })
 
     return {

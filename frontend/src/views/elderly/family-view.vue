@@ -536,9 +536,9 @@ const getCareLevel = (level) => {
 }
 
 const viewElderlyDetail = (elderly) => {
+  // 家属访问专用详情页
   router.push({
-    path: '/elderly/detail',
-    query: { id: elderly.id }
+    path: `/elderly/family-detail/${elderly.id}`
   })
 }
 

@@ -26,7 +26,7 @@ import VChart, { THEME_KEY } from 'vue-echarts'
 import App from './App.vue'
 import router from './router'
 import './styles/index.scss'
-import { permissionDirective, roleDirective } from './utils/permission'
+import permissionDirectives from './directives/permission'
 import directives from './directives' // 导入自定义指令
 
 // 注册 ECharts 组件
@@ -53,8 +53,9 @@ app.component('v-chart', VChart)
 app.provide(THEME_KEY, 'light')
 
 // 注册权限指令
-app.directive('permission', permissionDirective)
-app.directive('role', roleDirective)
+app.directive('permission', permissionDirectives.permission)
+app.directive('permission-any', permissionDirectives.permissionAny)
+app.directive('role', permissionDirectives.role)
 
 // 注册自定义指令（图片懒加载等）
 app.use(directives)

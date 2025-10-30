@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartcare.cloud.mapper.NurseElderlyRelationMapper">
+
+    <resultMap id="BaseResultMap" type="com.smartcare.cloud.entity.NurseElderlyRelation">
+        <id column="id" property="id" />
+        <result column="nurse_id" property="nurseId" />
+        <result column="elderly_id" property="elderlyId" />
+        <result column="care_level" property="careLevel" />
+        <result column="start_date" property="startDate" />
+        <result column="end_date" property="endDate" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_deleted" property="isDeleted" />
+    </resultMap>
+
+    <!-- 查询护工负责的所有老人ID列表 -->
+    <select id="selectElderlyIdsByNurseId" resultType="java.lang.Long">
+        SELECT DISTINCT elderly_id
+        FROM nurse_elderly_relation
+        WHERE nurse_id = #{nurseId}
+          AND status = 1
+          AND is_deleted = 0
+          AND (end_date IS NULL OR end_date >= CURDATE())
+    </select>
+
+    <!-- 检查护工是否有权限访问指定老人 -->
+    <select id="checkNurseElderlyAccess" resultType="int">
+        SELECT COUNT(1)
+        FROM nurse_elderly_relation
+        WHERE nurse_id = #{nurseId}
+          AND elderly_id = #{elderlyId}
+          AND status = 1
+          AND is_deleted = 0
+          AND (end_date IS NULL OR end_date >= CURDATE())
+    </select>
+
+    <!-- 统计护工当前照护的老人数量 -->
+    <select id="countCurrentElderlyByNurseId" resultType="int">
+        SELECT COUNT(DISTINCT elderly_id)
+        FROM nurse_elderly_relation
+        WHERE nurse_id = #{nurseId}
+          AND status = 1
+          AND is_deleted = 0
+          AND (end_date IS NULL OR end_date >= CURDATE())
+    </select>
+
+</mapper>

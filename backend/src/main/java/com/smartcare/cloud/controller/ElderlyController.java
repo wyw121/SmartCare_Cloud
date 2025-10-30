@@ -1,7 +1,10 @@
 package com.smartcare.cloud.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -19,11 +22,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.smartcare.cloud.annotation.AuditLog;
+import com.smartcare.cloud.annotation.DataPermission;
 import com.smartcare.cloud.dto.ElderlyPageDTO;
 import com.smartcare.cloud.entity.Elderly;
+import com.smartcare.cloud.entity.DoctorElderlyRelation;
+import com.smartcare.cloud.entity.NurseElderlyRelation;
+import com.smartcare.cloud.entity.FamilyElderlyRelation;
+import com.smartcare.cloud.mapper.DoctorElderlyRelationMapper;
+import com.smartcare.cloud.mapper.NurseElderlyRelationMapper;
+import com.smartcare.cloud.mapper.FamilyElderlyRelationMapper;
 import com.smartcare.cloud.service.ElderlyService;
+import com.smartcare.cloud.util.JwtUtil;
 import com.smartcare.cloud.vo.ResponseResult;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,6 +68,18 @@ public class ElderlyController {
 
     @Autowired
     private ElderlyService elderlyService;
+    
+    @Autowired
+    private DoctorElderlyRelationMapper doctorElderlyRelationMapper;
+    
+    @Autowired
+    private NurseElderlyRelationMapper nurseElderlyRelationMapper;
+    
+    @Autowired
+    private FamilyElderlyRelationMapper familyElderlyRelationMapper;
+    
+    @Autowired
+    private JwtUtil jwtUtil;
 
     // ========================================
     // 核心CRUD操作
@@ -84,6 +108,7 @@ public class ElderlyController {
     /**
      * 根据ID获取老人档案详情
      */
+    @DataPermission(elderlyIdParam = "id")
     @Operation(summary = "获取老人档案详情", description = "根据老人ID查询完整的档案信息，包括基本信息、健康状态、照护等级等")
     @GetMapping("/{id}")
     public ResponseResult<Elderly> getElderlyById(
@@ -110,6 +135,7 @@ public class ElderlyController {
     /**
      * 更新老人档案
      */
+    @DataPermission(elderlyIdParam = "id")
     @AuditLog(module = "ELDERLY", type = "UPDATE", description = "更新老人档案：#elderly.name")
     @Operation(summary = "更新老人档案")
     @PutMapping
@@ -121,6 +147,7 @@ public class ElderlyController {
     /**
      * 删除老人档案
      */
+    @DataPermission(elderlyIdParam = "id")
     @AuditLog(module = "ELDERLY", type = "DELETE", description = "删除老人档案 ID:#id")
     @Operation(summary = "删除老人档案", description = "删除指定ID的老人档案记录（软删除）")
     @DeleteMapping("/{id}")
@@ -290,6 +317,113 @@ public class ElderlyController {
         } catch (Exception e) {
             log.error("数据库连接测试失败", e);
             return ResponseResult.error("数据库连接失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取我负责的老人列表（医生工作台）
+     * 
+     * 权限说明:
+     * - 医生角色: 返回本人负责的老人（通过 doctor_elderly_relation 表过滤）
+     * - 护工角色: 返回本人照护的老人（通过 nurse_elderly_relation 表过滤）
+     * - 管理员: 返回所有老人
+     * 
+     * @param current 当前页码
+     * @param size 每页数量
+     * @return 分页老人列表
+     */
+    @Operation(summary = "获取我负责/照护的老人列表", description = "医生/护工工作台专用接口,自动根据角色过滤数据")
+    @GetMapping("/my-patients")
+    @AuditLog(type = "QUERY", module = "ELDERLY", description = "查询我负责的老人列表")
+    public ResponseResult<Page<Elderly>> getMyPatients(
+            @Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer current,
+            @Parameter(description = "每页数量") @RequestParam(defaultValue = "20") Integer size,
+            HttpServletRequest request) {
+        
+        log.info("查询我负责的老人列表, 当前页: {}, 每页数量: {}", current, size);
+        
+        try {
+            // 从请求头获取JWT token并解析用户信息
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseResult.error("未授权访问");
+            }
+            
+            String token = authHeader.substring(7);
+            Long userId = jwtUtil.getUserIdFromToken(token);
+            String roleCode = jwtUtil.getRoleCodeFromToken(token);
+            
+            log.info("用户ID: {}, 角色: {}", userId, roleCode);
+            
+            // 根据角色查询对应的老人ID列表
+            List<Long> elderlyIds;
+            if ("system_admin".equals(roleCode) || "business_admin".equals(roleCode)) {
+                // 管理员可查看所有老人
+                Page<Elderly> page = new Page<>(current, size);
+                Page<Elderly> result = elderlyService.page(page);
+                log.info("管理员查询到 {} 条记录", result.getRecords().size());
+                return ResponseResult.success(result);
+            } else if ("doctor".equals(roleCode)) {
+                // 医生只能查看分配给自己的老人
+                QueryWrapper<DoctorElderlyRelation> wrapper = new QueryWrapper<>();
+                wrapper.eq("doctor_id", userId);
+                wrapper.eq("status", 1);
+                List<DoctorElderlyRelation> relations = doctorElderlyRelationMapper.selectList(wrapper);
+                elderlyIds = relations.stream()
+                    .map(DoctorElderlyRelation::getElderlyId)
+                    .collect(Collectors.toList());
+                log.info("医生 {} 关联老人数: {}", userId, elderlyIds.size());
+            } else if ("nurse".equals(roleCode)) {
+                // 护士只能查看分配给自己的老人
+                QueryWrapper<NurseElderlyRelation> wrapper = new QueryWrapper<>();
+                wrapper.eq("nurse_id", userId);
+                wrapper.eq("status", 1);
+                List<NurseElderlyRelation> relations = nurseElderlyRelationMapper.selectList(wrapper);
+                elderlyIds = relations.stream()
+                    .map(NurseElderlyRelation::getElderlyId)
+                    .collect(Collectors.toList());
+                log.info("护士 {} 关联老人数: {}", userId, elderlyIds.size());
+            } else if ("family".equals(roleCode)) {
+                // 家属只能查看关联的老人
+                QueryWrapper<FamilyElderlyRelation> wrapper = new QueryWrapper<>();
+                wrapper.eq("family_user_id", userId);
+                wrapper.eq("status", 1);
+                wrapper.eq("is_deleted", 0);
+                List<FamilyElderlyRelation> relations = familyElderlyRelationMapper.selectList(wrapper);
+                elderlyIds = relations.stream()
+                    .map(FamilyElderlyRelation::getElderlyId)
+                    .collect(Collectors.toList());
+                log.info("家属 {} 关联老人数: {}", userId, elderlyIds.size());
+            } else {
+                // 社工等其他角色暂时返回所有数据
+                Page<Elderly> page = new Page<>(current, size);
+                Page<Elderly> result = elderlyService.page(page);
+                log.info("其他角色 {} 查询到 {} 条记录", roleCode, result.getRecords().size());
+                return ResponseResult.success(result);
+            }
+            
+            // 如果没有关联的老人,返回空列表
+            if (elderlyIds == null || elderlyIds.isEmpty()) {
+                Page<Elderly> emptyPage = new Page<>(current, size);
+                emptyPage.setRecords(new ArrayList<>());
+                emptyPage.setTotal(0);
+                log.info("用户 {} ({}) 没有关联的老人", userId, roleCode);
+                return ResponseResult.success(emptyPage);
+            }
+            
+            // 分页查询关联的老人
+            Page<Elderly> page = new Page<>(current, size);
+            QueryWrapper<Elderly> elderlyWrapper = new QueryWrapper<>();
+            elderlyWrapper.in("id", elderlyIds);
+            elderlyWrapper.eq("is_deleted", 0);
+            elderlyWrapper.orderByDesc("create_time");
+            Page<Elderly> result = elderlyService.page(page, elderlyWrapper);
+            
+            log.info("成功查询到 {} 条记录", result.getRecords().size());
+            return ResponseResult.success(result);
+        } catch (Exception e) {
+            log.error("查询我负责的老人列表失败", e);
+            return ResponseResult.error("查询失败: " + e.getMessage());
         }
     }
 }
